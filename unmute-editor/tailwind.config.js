@@ -1,0 +1,53 @@
+module.exports = {
+  content: ["./src/**/*.{js,jsx}", "./public/index.html"],
+  theme: {
+    extend: {
+      colors: {
+        rose: {
+          50: "#f9f7f7",
+          100: "#f3eeed",
+          200: "#eae1de",
+          300: "#dacbc7",
+          400: "#c4aba5",
+          500: "#a5837a",
+          600: "#96756c",
+          700: "#7c6059",
+          800: "#68524c",
+          900: "#594843",
+          950: "#2e2421",
+        },
+        beige: {
+          50: "#fcfbfb",
+          100: "#f8f7f5",
+          200: "#efece9",
+          300: "#e5e1db",
+          400: "#dbd3cc",
+          500: "#dbd3cd",
+          600: "#cabeb7",
+          700: "#af9c93",
+          800: "#977f76",
+          900: "#7e6960",
+          950: "#423632",
+        },
+        muld: {
+          50: "#e2fefd",
+          100: "#9dfeff",
+          200: "#3dfbfe",
+          300: "#07afb8",
+          400: "#0a565d",
+          500: "#012c31",
+          600: "#002227",
+          700: "#011c20",
+          800: "#021619",
+          900: "#031215",
+          950: "#000a0c",
+        },
+      },
+      fontFamily: {
+        serif: ["Optima", "sans-serif"],
+        sans: ["RealHeadOT", "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+};

@@ -1,0 +1,257 @@
+import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+import clsx from "clsx";
+
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "wouter";
+
+import { Loader } from "./Loader";
+
+import { getFileUrl, uploadFile } from "../api/aws";
+import { updateUnmuteInCart } from "../api/cart";
+import { updateUnmutes } from "../features/user/userSlice";
+
+import { useDebouncedCallback } from "use-debounce";
+
+import { setActiveUnmuteIndex } from "../features/user/userSlice";
+
+import "cropperjs/dist/cropper.css";
+import "./custom-cropper.css";
+import Cropper from "react-cropper";
+
+import frame_image from "../assets/images/frame.png";
+import frame_landscape_image from "../assets/images/frame_landscape.png";
+
+const frame_padding = (scale, landscape) => {
+  if (landscape) {
+    return {
+      paddingTop: `${12 * scale}px`,
+      paddingRight: `${12 * scale}px`,
+      paddingBottom: `${6 * scale}px`,
+      paddingLeft: `${6 * scale}px`,
+    };
+  }
+
+  return {
+    paddingTop: `${6 * scale}px`,
+    paddingRight: `${12 * scale}px`,
+    paddingBottom: `${12 * scale}px`,
+    paddingLeft: `${6 * scale}px`,
+  };
+};
+
+const Unmute = ({ unmute, active }) => {
+  const dispatch = useDispatch();
+  const cropperRef = useRef(null);
+
+  const handleCrop = useDebouncedCallback(() => {
+    if (!active) return;
+
+    const cropper = cropperRef.current?.cropper;
+
+    cropper.getCroppedCanvas().toBlob((blob) => {
+      const file = new File([blob], "cropped.png", { type: "image/png" });
+
+      uploadFile({
+        path: unmute.properties._uuid,
+        file,
+      }).then(() => {
+        const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`);
+
+        updateUnmuteInCart({
+          key: unmute.key,
+          properties: {
+            ...unmute.properties,
+            _images: [fileUrl], // TODO: Add to existing list of images
+          },
+        }).then(({ data }) => {
+          dispatch(updateUnmutes(data.items));
+        });
+      });
+    });
+  }, 500);
+
+  const {
+    properties: {
+      _passepartout: passepartout,
+      _orientation: orientation,
+      _images: images,
+    },
+  } = unmute;
+
+  const scale = { small: 1, medium: 2, large: 3 }[passepartout];
+  const isLandscape = orientation === "landscape";
+  const frame = isLandscape ? frame_landscape_image : frame_image;
+  const frame_width = isLandscape ? "w-4/5" : "w-1/2";
+
+  return (
+    <div className="snap-start shrink-0 w-full">
+      <div className="shrink-0 w-full flex flex-col items-center">
+        <div
+          className={clsx(
+            "relative top-0 flex justify-center",
+            isLandscape ? "mt-24" : "mt-16"
+          )}
+        >
+          <img
+            src={frame}
+            alt="Frame"
+            className={clsx(frame_width, "relative top-0")}
+          />
+          <Cropper
+            ref={cropperRef}
+            src={images && images[images.length - 1]}
+            className={clsx(frame_width, "absolute h-full object-cover")}
+            style={frame_padding(scale, isLandscape)}
+            crossOrigin="anonymous"
+            checkCrossOrigin={true}
+            checkOrientation={false}
+            center={false}
+            modal={false}
+            guides={false}
+            highlight={false}
+            background={false}
+            cropBoxResizable={false}
+            cropBoxMovable={true}
+            viewMode={3}
+            dragMode="move"
+            movable={true}
+            autoCropArea={1}
+            rotatable={false}
+            cropend={handleCrop}
+            zoom={handleCrop}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const Frame = () => {
+  const cacheBust = Date.now();
+  const scrollRef = useRef();
+  const audioRef = useRef();
+  const [playing, setPlaying] = useState(false);
+  const dispatch = useDispatch();
+
+  const unmutes = useSelector((state) => state.user.unmutes);
+  const activeUnmuteIndex = useSelector(
+    (state) => state.user.activeUnmuteIndex
+  );
+
+  const loading = activeUnmuteIndex === null;
+
+  const debouncedSetActiveUnmuteIndex = useDebouncedCallback((snapIndex) => {
+    dispatch(setActiveUnmuteIndex(snapIndex));
+  }, 200);
+
+  useLayoutEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener("scroll", () => {
+        const { scrollLeft, clientWidth } = scrollRef.current;
+
+        if (scrollLeft === 0) {
+          return;
+        }
+
+        const snapIndex = Math.floor(scrollLeft / clientWidth);
+
+        if (snapIndex !== activeUnmuteIndex) {
+          debouncedSetActiveUnmuteIndex(snapIndex);
+        }
+      });
+    }
+  }, [activeUnmuteIndex]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (playing) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [audioRef.current, playing]);
+
+  const handlePlayAudio = () => {
+    setPlaying(true);
+  };
+
+  const handlePauseAudio = () => {
+    setPlaying(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="snap-center shrink-0">
+        <div className="flex flex-col items-center">
+          <div className="relative top-0 flex justify-center mt-16">
+            <img
+              src={frame_image}
+              alt="Frame"
+              className="relative top-0 w-1/2"
+            />
+            <div className="absolute h-full object-cover">
+              <div className="flex flex-col items-center justify-center h-full">
+                <Loader size={"w-24 h-24"} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div
+        ref={scrollRef}
+        className="relative w-full flex gap-6 snap-x snap-mandatory overflow-auto"
+      >
+        {unmutes.map((unmute, index) => (
+          <Unmute
+            key={unmute.key}
+            unmute={unmute}
+            active={activeUnmuteIndex === index}
+          />
+        ))}
+      </div>
+
+      <div className="flex flex-col items-center">
+        {unmutes[activeUnmuteIndex]?.properties?._audios?.length > 0 ? (
+          <div className="flex flex-row items-center mt-12">
+            <Link
+              to="/edit-audio"
+              className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
+            >
+              Edit audio
+            </Link>
+
+            <button
+              onClick={() => {
+                playing ? handlePauseAudio() : handlePlayAudio();
+              }}
+              className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
+            >
+              {playing ? <>⏸</> : <>▶️</>}
+            </button>
+
+            <audio
+              ref={audioRef}
+              className="hidden"
+              controls="controls"
+              src={`${unmutes[activeUnmuteIndex]?.properties?._audios[0]}?c=${cacheBust}`}
+            ></audio>
+          </div>
+        ) : (
+          <Link
+            to="/audio"
+            className="text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
+          >
+            Add your audio
+          </Link>
+        )}
+      </div>
+    </>
+  );
+};

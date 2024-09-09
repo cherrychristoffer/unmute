@@ -1,0 +1,37 @@
+/* .cropper-view-box:after {
+  content: none;
+}
+.cropper-modal {
+  background: unset;
+  background-size: cover;
+  overflow: hidden;
+  z-index: 999;
+  padding: 0;
+  margin: 0;
+}
+.cropper-container .cropper-wrap-box {
+  opacity: 0;
+  visibility: hidden;
+}
+.cropper-container .cropper-crop-box .cropper-view-box {
+  outline: 0;
+  overflow: unset;
+}
+.cropper-crop-box:before {
+  background-size: cover;
+  content: "";
+  position: absolute;
+  z-index: 99999999999999;
+  height: 100%;
+  width: 100%;
+} */
+
+.cropper-container {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.cropper-container .cropper-crop-box .cropper-view-box {
+  outline: 0;
+  visibility: hidden;
+}

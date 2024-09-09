@@ -1,0 +1,30 @@
+{
+  "name": "unmute-editor",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {
+    "shopify": "^3.66.1"
+  },
+  "trustedDependencies": [
+    "@shopify/plugin-cloudflare"
+  ],
+  "author": "ohm",
+  "private": true,
+  "workspaces": [
+    "extensions/*"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "eslint": "^9.9.1",
+    "eslint-plugin-react": "^7.35.0",
+    "globals": "^15.9.0"
+  }
+}

@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*********/
+/* HACKS */
+/*********/
+/* Hack to make the editor section take up the full height of the page */
+#MainContent > section,
+#MainContent > section > div,
+#MainContent > section > div > div {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+  letter-spacing: normal;
+}
+
+/* Hack to remove preview bar on Shopify preview */
+#preview-bar-iframe {
+  display: none;
+}
+
+/**********/
+/* STYLES */
+/**********/
+@layer components {
+  #progress-bar {
+    @apply hidden w-0 h-2 bg-muld-500 fixed z-50;
+    transition: width 200ms ease-out, opacity 100ms 100ms ease-in;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .text-xxs {
+    font-size: 0.5rem;
+  }
+
+  .min-h-28 {
+    min-height: 7rem;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    touch-action: none;
+    -webkit-appearance: none !important;
+    background: #a5837a;
+    border-radius: 30px;
+    height: 30px;
+    width: 30px;
+  }
+}

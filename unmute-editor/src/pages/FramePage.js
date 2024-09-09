@@ -1,4 +1,9 @@
 import { React } from "react";
+import {CheckIcon} from "../assets/icons/icon_check";
+
+import black from "../assets/images/frames/black.png";
+import oak from "../assets/images/frames/oak.png";
+import white from "../assets/images/frames/white.png";
 
 import { updateUnmute, updateUnmutes } from "../features/user/userSlice";
 import { useDispatch } from "react-redux";
@@ -30,23 +35,34 @@ export const FramePage = () => {
     });
   };
 
+  const OAK_FRAMES = [
+    {
+      value: 'oak',
+      image: oak
+    },
+    {
+      value: 'black',
+      image: black
+    },
+    {
+      value: 'white',
+      image: white
+    }
+  ];
+
   return (
-    <div className="flex flex-col items-center">
-      <div className="mt-16 flex flex-row justify-center items-center gap-4">
-        {/* <%= link_to unmute_path(@unmute, { frame: :oak }), data: { "turbo-method": :patch } do %> */}
-        <button onClick={() => handleClick("oak")}>
-          {/* <%#= image_tag "frame/oak", class: "h-fit" %> */}
-          oak
-        </button>
-        <button onClick={() => handleClick("black")}>
-          {/* <%#= image_tag "frame/black", class: "h-fit" %> */}
-          black
-        </button>
-        <button onClick={() => handleClick("white")}>
-          {/* <%#= image_tag "frame/white", class: "h-fit" %> */}
-          white
-        </button>
+    <div className={'pb-[60px]'}>
+      <div className="flex flex-col items-center">
+        <div className="mt-16 flex flex-row justify-center items-center gap-6">
+          {OAK_FRAMES.map((item, index) =>
+            <button key={index} onClick={() => handleClick(item.value)} className={'relative'}>
+              <img src={item.image} className="w-[80px] h-[80px] rounded-md" alt={item.value}/>
+              {activeUnmute.properties._frame === item.value && <CheckIcon color={'fill-rose-100'} size={16} className={'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'}/>}
+            </button>
+          )}
+        </div>
       </div>
     </div>
+
   );
 };

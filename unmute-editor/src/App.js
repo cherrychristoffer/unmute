@@ -28,6 +28,18 @@ function App() {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
 
+  const appHeight = () => {
+    const doc = document.documentElement;
+    doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+  };
+
+  function init() {
+    window.addEventListener('resize', appHeight);
+  }
+
+  useEffect(init, []);
+  useEffect(appHeight, []);
+
   useEffect(() => {
     fetchCartData().then(({ data }) => {
       dispatch(setActiveUnmuteIndex(0));
@@ -46,8 +58,14 @@ function App() {
     });
   }, [dispatch]);
 
+  const location = useLocation();
+  const specialRoutesRegex = /\/(orientation|frame|passepartout|crop)/;
+
+  // Check if the current path matches any of the special routes
+  const isSpecialRoute = specialRoutesRegex.test(location.pathname);
+
   return (
-    <>
+    <div className={`app-wrapper ${isSpecialRoute ? 'with-navigation' : ''}`}>
       <progress id="progress-bar"></progress>
 
       <Switch>
@@ -82,7 +100,7 @@ function App() {
           component={UnmuteBottomNavigation}
         />
       </Switch>
-    </>
+    </div>
   );
 }
 

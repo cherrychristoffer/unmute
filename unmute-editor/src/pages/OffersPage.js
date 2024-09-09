@@ -23,95 +23,76 @@ export const OffersPage = () => {
     });
   };
 
+  const UNMUTE = [
+    {
+      image: offer1,
+      quantity: 1,
+      title: 'Unmute',
+      price: '399',
+    },
+    {
+      image: offer2,
+      quantity: 2,
+      title: 'Todays special',
+      price: '699',
+      saving: 100
+    },
+    {
+      image: offer3,
+      quantity: 1,
+      title: 'Collage',
+      price: '399',
+    },
+    {
+      image: offer4,
+      quantity: 3,
+      title: 'Best offer',
+      price: '999',
+      saving: 200,
+      special: true
+    },
+  ];
+
   return (
-    <>
-      <div className="mx-auto mt-12 flex flex-col items-center">
-        <h1 className="font-serif text-muld-500 text-6xl mb-4">Unmute</h1>
-        <h2 className="font-serif text-rose-500 text-lg text-center leading-tight">
-          Choose 3 and
-          <br />
-          save 100 DKK
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mx-4 mt-6">
-        <div
-          onClick={() => handleClick({ quantity: 1 })}
-          className="flex flex-col items-center"
-        >
-          <img
-            src={offer1}
-            className="rounded-sm aspect-square object-cover"
-            alt="Offer 1"
-          />
-          <div className="-mt-12 py-2 px-3 bg-muld-500 w-5/6 min-h-36">
-            <div className="mb-3 font-light text-gray-700">
-              <div className="text-rose-500">Unmute</div>
-              <div className="text-lg text-white">399 DKK</div>
-              <div className="text-[10px] text-beige-500">1 unmute frame</div>
-            </div>
-          </div>
+    <div className={'offers-page flex items-center py-10'}>
+      <div className="content">
+        <div className="mx-auto flex flex-col items-center">
+          <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
+          <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
+            Choose 3 and
+            <br/>
+            save 100 DKK
+          </h2>
         </div>
 
-        <div
-          onClick={() => handleClick({ quantity: 2 })}
-          className="flex flex-col items-center"
-        >
-          <img
-            src={offer2}
-            className="rounded-sm aspect-square object-cover"
-            alt="Offer 2"
-          />
-          <div className="-mt-12 py-2 px-3 bg-muld-500 w-5/6 min-h-36">
-            <div className="mb-3 font-light text-gray-700">
-              <div className="text-rose-500">Todays special</div>
-              <div className="text-lg text-white">699 DKK</div>
-              <div className="text-[10px] text-beige-500">
-                2 unmute frames{" "}
-                <div className="text-rose-500">(Save 100 DKK)</div>
+        <div className="grid grid-cols-2 gap-4 mx-4 mt-14">
+          {UNMUTE.map((item, index) =>
+            <div
+                key={index}
+                onClick={() => handleClick({quantity: item.quantity})}
+                className="flex flex-col items-center my-2 cursor-pointer"
+            >
+              <img
+                  src={item.image}
+                  className="rounded-[3px] aspect-square object-cover"
+                  alt={item.title}
+              />
+              <div
+                  className={`-mt-12 px-2.5 py-2 w-5/6 rounded-[4px] ${item.special ? 'bg-rose-500' : 'bg-muld-1000'}`}>
+                <div className="font-light text-gray-700">
+                  <p className={`${item.special ? 'text-white' : 'text-rose-500'} text-[12px]`}>{item.title}</p>
+                  <p className="text-lg text-white text-[12px] my-1">{item.price} DKK</p>
+                  <p className="text-[10px] text-beige-200">
+                    {item.quantity} unmute {item.quantity === 1 && 'frame'}
+                    {item.saving && <span
+                        className={item.special ? 'text-white' : 'text-rose-500'}>(Save ${item.saving} DKK)</span>}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div
-          onClick={() => handleClick({ quantity: 1 })}
-          className="flex flex-col items-center opacity-50"
-        >
-          <img
-            src={offer3}
-            className="rounded-sm aspect-square object-cover"
-            alt="Offer 3"
-          />
-          <div className="-mt-12 py-2 px-3 bg-muld-500 w-5/6 min-h-36">
-            <div className="mb-3 font-light text-gray-700">
-              <div className="text-rose-500">Collage</div>
-              <div className="text-lg text-white">399 DKK</div>
-              <div className="text-[10px] text-beige-500">1 unmute frame</div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          onClick={() => handleClick({ quantity: 3 })}
-          className="flex flex-col items-center"
-        >
-          <img
-            src={offer4}
-            className="rounded-sm aspect-square object-cover"
-            alt="Offer 4"
-          />
-          <div className="-mt-12 py-2 px-3 bg-rose-500 w-5/6 min-h-36">
-            <div className="mb-3 font-light text-gray-700">
-              <div className="text-white">Best offer</div>
-              <div className="text-lg text-white">999 DKK</div>
-              <div className="text-[10px] text-beige-500">
-                3 unmute frames <div className="text-white">(Save 200 DKK)</div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

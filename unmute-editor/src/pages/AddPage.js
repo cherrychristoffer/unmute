@@ -17,7 +17,7 @@ export const AddPage = () => {
           </Link>
         </div>
 
-        <div className="font-serif text-muld-500 text-2xl mt-12">
+        <div className="font-serif text-muld-1000 text-2xl mt-12">
           Start creating
         </div>
       </div>

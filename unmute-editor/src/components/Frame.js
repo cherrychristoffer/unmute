@@ -25,18 +25,18 @@ import frame_landscape_image from "../assets/images/frame_landscape.png";
 const frame_padding = (scale, landscape) => {
   if (landscape) {
     return {
-      paddingTop: `${12 * scale}px`,
-      paddingRight: `${12 * scale}px`,
-      paddingBottom: `${6 * scale}px`,
-      paddingLeft: `${6 * scale}px`,
+      paddingTop: `${18 * scale}px`,
+      paddingRight: `${17 * scale}px`,
+      paddingBottom: `${18 * scale}px`,
+      paddingLeft: `${18 * scale}px`,
     };
   }
 
   return {
-    paddingTop: `${6 * scale}px`,
-    paddingRight: `${12 * scale}px`,
-    paddingBottom: `${12 * scale}px`,
-    paddingLeft: `${6 * scale}px`,
+    paddingTop: `${14 * scale}px`,
+    paddingRight: `${13 * scale}px`,
+    paddingBottom: `${13 * scale}px`,
+    paddingLeft: `${13 * scale}px`,
   };
 };
 
@@ -86,7 +86,6 @@ const Unmute = ({ unmute, active }) => {
 
   return (
     <div className="snap-start shrink-0 w-full">
-      <div className="shrink-0 w-full flex flex-col items-center">
         <div
           className={clsx(
             "relative top-0 flex justify-center",
@@ -96,7 +95,7 @@ const Unmute = ({ unmute, active }) => {
           <img
             src={frame}
             alt="Frame"
-            className={clsx(frame_width, "relative top-0")}
+            className={clsx(frame_width, "relative top-0 z-[1] pointer-events-none")}
           />
           <Cropper
             ref={cropperRef}
@@ -122,7 +121,6 @@ const Unmute = ({ unmute, active }) => {
             zoom={handleCrop}
           />
         </div>
-      </div>
     </div>
   );
 };
@@ -183,18 +181,16 @@ export const Frame = () => {
 
   if (loading) {
     return (
-      <div className="snap-center shrink-0">
-        <div className="flex flex-col items-center">
-          <div className="relative top-0 flex justify-center mt-16">
-            <img
-              src={frame_image}
-              alt="Frame"
-              className="relative top-0 w-1/2"
-            />
-            <div className="absolute h-full object-cover">
-              <div className="flex flex-col items-center justify-center h-full">
-                <Loader size={"w-24 h-24"} />
-              </div>
+      <div className="snap-start">
+        <div className="relative top-0 flex justify-center mt-16">
+          <img
+            src={frame_image}
+            alt="Frame"
+            className="relative top-0 w-1/2"
+          />
+          <div className="absolute h-full object-cover">
+            <div className="flex flex-col items-center justify-center h-full">
+              <Loader size={"w-24 h-24"} />
             </div>
           </div>
         </div>

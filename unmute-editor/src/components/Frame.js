@@ -25,10 +25,10 @@ import frame_landscape_image from "../assets/images/frame_landscape.png";
 const frame_padding = (scale, landscape) => {
   if (landscape) {
     return {
-      paddingTop: `${18 * scale}px`,
+      paddingTop: `${17 * scale}px`,
       paddingRight: `${17 * scale}px`,
-      paddingBottom: `${18 * scale}px`,
-      paddingLeft: `${18 * scale}px`,
+      paddingBottom: `${17 * scale}px`,
+      paddingLeft: `${17 * scale}px`,
     };
   }
 
@@ -82,14 +82,14 @@ const Unmute = ({ unmute, active }) => {
   const scale = { small: 1, medium: 2, large: 3 }[passepartout];
   const isLandscape = orientation === "landscape";
   const frame = isLandscape ? frame_landscape_image : frame_image;
-  const frame_width = isLandscape ? "w-4/5" : "w-1/2";
+  const frame_width = isLandscape ? "min-w-[300px] w-[55%]" : "min-w-[250px] w-1/2";
 
   return (
-    <div className="snap-start shrink-0 w-full">
+    <div className="snap-start shrink-0 w-full pt-14 pb-2 flex items-center justify-center">
         <div
           className={clsx(
-            "relative top-0 flex justify-center",
-            isLandscape ? "mt-24" : "mt-16"
+            "relative top-0 flex justify-center overflow-hidden",
+            isLandscape ? "mt-0" : "mt-0"
           )}
         >
           <img

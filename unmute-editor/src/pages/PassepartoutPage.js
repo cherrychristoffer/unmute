@@ -52,12 +52,12 @@ export const PassepartoutPage = () => {
   ];
 
   return (
-    <div className={'pb-[60px]'}>
-      <div className="mt-16 mx-6 flex flex-row justify-center items-center gap-6">
+    <div className={'pb-[80px] flex justify-center'}>
+      <div className="mt-16 mx-6 flex flex-row justify-center items-center gap-6 max-w-sm">
         {PASSEPARTOUT.map((item, index) =>
           <button key={index} onClick={() => handleClick(item.value)} className={`relative`}>
             <img src={item.image} alt="Small passepartout"/>
-            {activeUnmute.properties._passepartout === item.value && <CheckIcon color={'fill-rose-100'} size={16} className={'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'}/>}
+            {activeUnmute?.properties?._passepartout === item.value && <CheckIcon color={'fill-rose-100'} size={16} className={'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'}/>}
           </button>
         )}
       </div>

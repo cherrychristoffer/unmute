@@ -91,16 +91,17 @@ export const EditAudioPage = () => {
           {blobAudio && (
             <AudioVisualizer
               blob={blobAudio}
-              width={document.body.clientWidth * 0.8}
-              height={100}
+              width={300}
+              height={82}
               barWidth={1}
               gap={4}
-              backgroundColor="#dbd3cd"
-              barColor="#a5837a"
+              backgroundColor="#F3F3F3"
+              barColor="#B0928C"
               style={{
-                maxWidth: "80%",
+                borderRadius: 4,
+                maxWidth: "100%",
                 borderWidth: "1px",
-                borderColor: "#a5837a",
+                borderColor: "#B0928C",
               }}
             />
           )}

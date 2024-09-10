@@ -1,5 +1,5 @@
 import { React, useRef } from "react";
-import { useLocation } from "wouter";
+import {Link, useLocation} from "wouter";
 
 import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
 import { useDispatch } from "react-redux";
@@ -37,26 +37,37 @@ export const InspirationPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-24">
-      <div className="text-rose-500 text-2xl text-center">
-        Write the text that you <br />
-        would like to record.
-      </div>
+      <div className="flex flex-col items-center mt-24">
+        <div className="mx-auto flex flex-col items-center">
+          <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Write text</h1>
+          <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
+            Write down ideas or a script
+            <br/> on what you would like to say.
+          </h2>
+        </div>
 
-      <div className="w-11/12 flex flex-col items-center">
+        <div className="w-11/12 flex flex-col items-center mx-auto">
         <textarea
-          ref={inspirationRef}
-          className="w-full mt-12 p-4 h-36 border border-rose-200 bg-gray-100 rounded-lg text-rose-500 font-light"
-          defaultValue={activeUnmute?.properties?._inspiration}
-          placeholder="Write your text here..."
+            ref={inspirationRef}
+            className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
+            defaultValue={activeUnmute?.properties?._inspiration}
+            placeholder="Write your text here..."
         />
-        <button
-          onClick={handleClick}
-          className="text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 mt-6 cursor-pointer"
-        >
-          Start recording
-        </button>
+        </div>
+
+        <div className="flex flex-row justify-center gap-4 mt-16">
+          <Link
+              className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+            Get inspiration
+          </Link>
+
+          <button
+              onClick={handleClick}
+              className="text-white bg-rose-500 border border-rose transition duration-200 ease-out focus:outline-none hover:bg-rose-900 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+          >
+            Start recording
+          </button>
+        </div>
       </div>
-    </div>
   );
 };

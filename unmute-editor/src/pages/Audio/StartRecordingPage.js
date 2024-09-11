@@ -106,23 +106,23 @@ export const StartRecordingPage = () => {
           )}
 
           {isRecording && (
-            <div className="text-center">
-              <div className="text-8xl text-muld-500 tabular-nums mb-4">
+            <div className="mx-auto flex flex-col items-center">
+              <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
                 {formatTime(time)}
-              </div>
-              {!isPaused && <div className="text-muld-500">Recording</div>}
+              </h1>
+              {!isPaused && <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">Recording</h2>}
               {isPaused && (
-                <div className="text-muld-500">Your recording is paused</div>
+                <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">Your recording is paused</h2>
               )}
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col items-center mt-3 h-96">
+      <div className="flex flex-col items-center mt-3 h-96 w-4/5 mx-auto">
         <textarea
           disabled
-          className="w-11/12 p-4 mt-12 h-full border border-rose-200 bg-gray-100 rounded-lg text-rose-500"
+          className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
           defaultValue={activeUnmute?.properties?._inspiration}
         />
       </div>

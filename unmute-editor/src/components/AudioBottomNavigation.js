@@ -1,14 +1,14 @@
+import clsx from "clsx";
+
 import { React } from "react";
 
 import { Link } from "wouter";
-
-import AddCheckIcon from "../assets/images/buttons/add-check.png";
-import DeleteIcon from "../assets/images/buttons/delete.png";
-import EditIcon from "../assets/images/buttons/edit.png";
-import PauseIcon from "../assets/images/buttons/pause.png";
-import PlayIcon from "../assets/images/buttons/play.png";
-import RecordIcon from "../assets/images/buttons/record.png";
-import RecordingIcon from "../assets/images/buttons/recording.png";
+import {NavCheckIcon} from "../assets/icons/icon_nav_check";
+import {NavCloseIcon} from "../assets/icons/icon_nav_close";
+import {NavEditIcon} from "../assets/icons/icon_nav_edit";
+import {NavPauseIcon} from "../assets/icons/icon_nav_pause";
+import {NavPlayIcon} from "../assets/icons/icon_nav_play";
+import {NavRecordingIcon} from "../assets/icons/icon_nav_recording";
 
 export const AudioBottomNavigation = ({
   isPaused = false,
@@ -18,77 +18,71 @@ export const AudioBottomNavigation = ({
   pauseAudio = () => {},
   deleteRecording = () => {},
 }) => {
+
+  const NAVIGATION = [
+    {
+      label: 'Play',
+      action: playAudio,
+      icon: <NavPlayIcon/>
+    },
+    {
+      label: 'Pause',
+      action: pauseAudio,
+      icon: <NavPauseIcon/>
+    },
+    {
+      label: isPaused ? 'Record' : 'Recording',
+      action: isPaused ? togglePauseResume : stopRecording,
+      icon: <NavRecordingIcon color={isPaused ? '#231F20' : '#d5695a'}/>
+    },
+    {
+      label: 'Edit',
+      to: '/edit-audio',
+      icon: <NavEditIcon/>
+    },
+    {
+      label: 'Add',
+      to: '/orientation',
+      icon: <NavCheckIcon/>
+    },
+    {
+      label: 'Delete',
+      action: deleteRecording,
+      icon: <NavCloseIcon/>
+    },
+  ];
+
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-20 bg-beige-500 border-t border-beige-600">
-      <div className="grid gap-2 h-full max-w-lg grid-cols-6 mx-auto font-medium">
-        <button
-          onClick={playAudio}
-          className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-        >
-          <img src={PlayIcon} alt="Play" />
-          <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-            Play
-          </span>
-        </button>
-
-        <button
-          onClick={pauseAudio}
-          className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-        >
-          <img src={PauseIcon} alt="Pause" />
-          <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-            Pause
-          </span>
-        </button>
-
-        {isPaused ? (
-          <button
-            onClick={togglePauseResume}
-            className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-          >
-            <img src={RecordIcon} alt="Record" />
-            <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-              Record
-            </span>
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-          >
-            <img src={RecordingIcon} alt="Recording" />
-            <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-              Recording
-            </span>
-          </button>
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
+      <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
+        {NAVIGATION.map((item, index) =>
+          item.action ?
+            <button
+              key={index}
+              onClick={item.action}
+              className={'inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400'}
+            >
+              {item.icon}
+              <p className="font-sans text-sm text-muld-1000 text-center mt-2">
+                {item.label}
+              </p>
+            </button> :
+              <Link
+                key={index}
+                to={item.to}
+                className={(active) =>
+                  clsx(
+                    "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400",
+                    active ? "bg-beige-400" : ""
+                  )
+                }
+              >
+                {item.icon}
+                <p className="font-sans text-sm text-muld-1000 text-center mt-2">
+                  {item.label}
+                </p>
+              </Link>
         )}
-
-        <button className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600">
-          <img src={EditIcon} alt="Edit" />
-          <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-            Edit
-          </span>
-        </button>
-
-        <Link
-          to="/orientation"
-          className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-        >
-          <img src={AddCheckIcon} alt="Add" />
-          <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-            Add
-          </span>
-        </Link>
-
-        <button
-          onClick={deleteRecording}
-          className="inline-flex flex-col items-center justify-center px-4 group bg-beige-500 hover:bg-beige-600"
-        >
-          <img src={DeleteIcon} alt="Delete" />
-          <span className="font-sans text-sm text-gray-500 group-hover:text-rose-600">
-            Delete
-          </span>
-        </button>
       </div>
     </div>
   );

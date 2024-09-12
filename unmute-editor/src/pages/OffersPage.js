@@ -85,7 +85,7 @@ export const OffersPage = () => {
                   <p className="text-[10px] text-beige-200">
                     {item.quantity} unmute {item.quantity === 1 && 'frame'}
                     {item.saving && <span
-                        className={item.special ? 'text-white' : 'text-rose-500'}>(Save ${item.saving} DKK)</span>}
+                        className={item.special ? 'text-white' : 'text-rose-500'}>(Save {item.saving} DKK)</span>}
                   </p>
                 </div>
               </div>

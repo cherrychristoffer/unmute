@@ -8,7 +8,7 @@ import { Link } from "wouter";
 
 import { Loader } from "./Loader";
 
-import { getFileUrl, uploadFile } from "../api/aws";
+import {deleteFile, getFileUrl, uploadFile} from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
 import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
 
@@ -197,21 +197,20 @@ export const Frame = () => {
 
   const handleDelete = (key) => {
     const unmuteToUpdate = unmutes.find((unmute) => unmute.key === key);
-
-    // const updatedImages = unmuteToUpdate.properties._images.slice(0, -1);
-
-    updateUnmuteInCart({
-      key: unmuteToUpdate.key,
-      properties: {
-        ...unmuteToUpdate.properties,
-        _images: [],
-      },
-    }).then((data) => {
-      dispatch(updateUnmutes(data.data.items))
-      navigate("/upload-image");
-    });
-
-
+    deleteFile({
+      path: unmuteToUpdate.properties._images[0],
+    }).then(() => {
+      updateUnmuteInCart({
+        key: unmuteToUpdate.key,
+        properties: {
+          ...unmuteToUpdate.properties,
+          _images: [],
+        },
+      }).then((data) => {
+        dispatch(updateUnmutes(data.data.items))
+        navigate("/upload-image");
+      });
+    })
   };
 
 

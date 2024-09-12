@@ -98,6 +98,7 @@ const Unmute = ({ unmute, active }) => {
             className={clsx(frame_width, "relative top-0 z-[1] pointer-events-none")}
           />
           <Cropper
+            key = {isLandscape}
             ref={cropperRef}
             src={images && images[images.length - 1]}
             className={clsx(frame_width, "absolute h-full object-cover")}
@@ -206,7 +207,7 @@ export const Frame = () => {
       >
         {unmutes.map((unmute, index) => (
           <Unmute
-            key={unmute.key}
+            key={unmute.id}
             unmute={unmute}
             active={activeUnmuteIndex === index}
           />

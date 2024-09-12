@@ -30,7 +30,9 @@ export const OrientationPage = () => {
         ...activeUnmute.properties,
         _orientation: orientation,
       },
-    }).then(({ data }) => {
+    }).catch(err => {
+      console.error(err)
+    }).then(({data}) => {
       dispatch(updateUnmutes(data.items));
     });
   };

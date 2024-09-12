@@ -28,7 +28,7 @@ export const CropPage = () => {
             onClick={handleDecrease}
             className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center"
         >
-          <PlusIcon size={20} className={'fill-white'}/>
+          <MinusIcon size={20} className={'fill-white'}/>
         </button>
         <input
             type="range"
@@ -42,7 +42,7 @@ export const CropPage = () => {
             onClick={handleIncrease}
             className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center"
         >
-          <MinusIcon size={20} className={'fill-white'}/>
+          <PlusIcon size={20} className={'fill-white'}/>
         </button>
       </div>
 

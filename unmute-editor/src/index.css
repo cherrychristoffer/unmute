@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Optima nova LT Pro';
+  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot');
+  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot?#iefix') format('embedded-opentype'),
+  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff2') format('woff2'),
+  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff') format('woff'),
+  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --shopify-header-height: 66px;
   --shopify-announcement-height: 0px;
@@ -75,6 +87,7 @@
 /* Normalize */
 body {
   overflow: hidden;
+  font-family: 'Optima nova LT Pro', sans-serif;
   background-color: #FAFAFA !important;
 }
 

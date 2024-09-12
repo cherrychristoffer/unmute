@@ -11,6 +11,7 @@ import { useActiveUnmute } from "../api/useUnmutes";
 
 import large from "../assets/images/passepartout/large.png";
 import medium from "../assets/images/passepartout/medium.png";
+import none from "../assets/images/passepartout/none.png";
 import small from "../assets/images/passepartout/small.png";
 
 export const PassepartoutPage = () => {
@@ -37,6 +38,10 @@ export const PassepartoutPage = () => {
   };
 
   const PASSEPARTOUT = [
+    {
+      value: 'none',
+      image: none
+    },
     {
       value: 'small',
       image: small

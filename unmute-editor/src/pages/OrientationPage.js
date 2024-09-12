@@ -39,13 +39,13 @@ export const OrientationPage = () => {
 
   const ORIENTATION = [
     {
+      value: 'portrait',
+      image: portrait
+    },
+    {
       value: 'landscape',
       image: landscape
     },
-    {
-      value: 'portrait',
-      image: portrait
-    }
   ];
 
   return (

@@ -4,7 +4,7 @@ import { React } from "react";
 import { Link, useLocation } from "wouter";
 
 import { useActiveUnmute } from "../../api/useUnmutes";
-import {NavCloseIcon} from "../../assets/icons/icon_nav_close";
+import { NavCloseIcon } from "../../assets/icons/icon_nav_close";
 
 import distance from "../../assets/images/audio/distance.png";
 import inspiration from "../../assets/images/audio/inspiration.png";
@@ -24,32 +24,35 @@ export const AudioPage = () => {
   const ONBOARDING = [
     {
       image: no_headphones,
-      label: 'Do not use in-ears to record'
+      label: "Do not use in-ears to record",
     },
     {
       image: distance,
-      label: 'Min. distance to phone 15 cm'
+      label: "Min. distance to phone 15 cm",
     },
     {
       image: inspiration,
-      label: 'Write some inpiration text'
+      label: "Write some inpiration text",
     },
   ];
 
   return (
-    <div className={'pb-[80px]'}>
-      {ONBOARDING.map((item, index) =>
-        <div key={index} className="text-center mt-8 max-w-sm mx-auto">
+    <div className={"pb-[80px]"}>
+      {ONBOARDING.map((item, index) => (
+        <div
+          key={index}
+          className="text-center mt-8 max-w-sm mx-auto"
+        >
           <img
-              src={item.image}
-              alt="No headphones"
-              className="w-full"
+            src={item.image}
+            alt="No headphones"
+            className="w-full"
           />
           <div className="font-serif text-white text-center text-2xl -mt-11 leading-tight">
             {item.label}
           </div>
         </div>
-      )}
+      ))}
 
       <div className="flex flex-row justify-center gap-4 mt-16">
         <Link className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
@@ -80,7 +83,7 @@ export const AudioPage = () => {
               )
             }
           >
-            <NavCloseIcon/>
+            <NavCloseIcon />
             <span className="font-sans text-sm text-muld-1000 text-center mt-2">
               Close
             </span>

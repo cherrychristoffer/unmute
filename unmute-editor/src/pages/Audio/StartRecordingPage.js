@@ -5,8 +5,9 @@ import { useLocation } from "wouter";
 
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 import { useAudioRecorder } from "react-audio-voice-recorder";
+import { v4 as uuid } from "uuid";
 
-import { updateUnmutes } from "../../features/user/userSlice";
+import { addUnmute, updateUnmutes } from "../../features/user/userSlice";
 
 import { updateUnmuteInCart } from "../../api/cart";
 
@@ -84,7 +85,9 @@ export const StartRecordingPage = () => {
           _audios: [fileUrl], // TODO: Add to existing list of audios
         },
       }).then(({ data }) => {
-        dispatch(updateUnmutes(data.items));
+        console.log("Dataa", data?.items);
+        dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
+        // dispatch(updateUnmutes(data.items));
         navigate("/edit-audio");
       });
     });
@@ -110,9 +113,15 @@ export const StartRecordingPage = () => {
               <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
                 {formatTime(time)}
               </h1>
-              {!isPaused && <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">Recording</h2>}
+              {!isPaused && (
+                <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
+                  Recording
+                </h2>
+              )}
               {isPaused && (
-                <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">Your recording is paused</h2>
+                <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
+                  Your recording is paused
+                </h2>
               )}
             </div>
           )}
@@ -127,7 +136,10 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

@@ -71,6 +71,9 @@ export const userSlice = createSlice({
   initialState: {
     unmutes: [],
     activeUnmuteIndex: null,
+    zoom: 1,
+    cropper: null,
+    cropperReady: false,
   },
   reducers: {
     addUnmute: (state, action) => {
@@ -121,6 +124,27 @@ export const userSlice = createSlice({
         activeUnmuteIndex: action.payload,
       };
     },
+
+    setZoom: (state, action) => {
+      return {
+        ...state,
+        zoom: action.payload,
+      };
+    },
+
+    setCropper: (state, action) => {
+      return {
+        ...state,
+        cropper: action.payload,
+      };
+    },
+
+    setCropperReady: (state, action) => {
+      return {
+        ...state,
+        cropperReady: action.payload,
+      };
+    },
   },
 });
 
@@ -132,6 +156,9 @@ export const {
   updateUnmutes,
   setRecording,
   setActiveUnmuteIndex,
+  setZoom,
+  setCropper,
+  setCropperReady,
 } = userSlice.actions;
 
 export default userSlice.reducer;

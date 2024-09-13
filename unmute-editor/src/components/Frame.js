@@ -10,11 +10,9 @@ import { Loader } from "./Loader";
 
 import {deleteFile, getFileUrl, uploadFile} from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
-import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
+import {updateUnmutes, setActiveUnmuteIndex, setCropper, setZoom, setCropperReady} from "../features/user/userSlice";
 
 import { useDebouncedCallback } from "use-debounce";
-
-import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
 import "cropperjs/dist/cropper.css";
 import "./custom-cropper.css";
@@ -44,12 +42,10 @@ const frame_padding = (scale, landscape) => {
 
 const Unmute = ({ unmute, active, onDelete }) => {
   const dispatch = useDispatch();
-  const cropperRef = useRef(null);
+  const cropper = useSelector(state => state.user.cropper);
 
   const handleCrop = useDebouncedCallback(() => {
     if (!active) return;
-
-    const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
       const file = new File([blob], "cropped.png", { type: "image/png" });
@@ -72,6 +68,22 @@ const Unmute = ({ unmute, active, onDelete }) => {
       });
     });
   }, 500);
+
+  const onZoom = (e) => {
+    let ratio = +(e.detail.ratio.toFixed(1));
+    if (ratio > 3) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      dispatch(setZoom(+(ratio.toFixed(1))));
+    }
+  };
+
+  const setRef = (value) => {
+    if (value.cropper) {
+      dispatch(setCropper(value.cropper))
+    }
+  }
 
   const {
     properties: {
@@ -103,7 +115,7 @@ const Unmute = ({ unmute, active, onDelete }) => {
               <>
                 <Cropper
                     key = {isLandscape}
-                    ref={cropperRef}
+                    ref={setRef}
                     src={images[images.length - 1]}
                     className={clsx(frame_width, "absolute h-full object-cover")}
                     style={frame_padding(scale, isLandscape)}
@@ -123,7 +135,8 @@ const Unmute = ({ unmute, active, onDelete }) => {
                     autoCropArea={1}
                     rotatable={false}
                     cropend={handleCrop}
-                    zoom={handleCrop}
+                    zoom={onZoom}
+                    ready={() => dispatch(setCropperReady(true))}
                 />
                   <button
                       onClick={() => onDelete(unmute.key)}

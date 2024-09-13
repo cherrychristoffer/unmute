@@ -1,20 +1,21 @@
-import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
+import {React, useEffect, useLayoutEffect, useRef, useState} from "react";
+import {useLocation} from "wouter";
 
 import clsx from "clsx";
 
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "wouter";
+import {useDispatch, useSelector} from "react-redux";
+import {Link} from "wouter";
+import {PlusIcon} from "../assets/icons/icon_plus";
 
-import { Loader } from "./Loader";
+import {Loader} from "./Loader";
 
 import {deleteFile, getFileUrl, uploadFile} from "../api/aws";
-import { updateUnmuteInCart } from "../api/cart";
-import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
+import {updateUnmuteInCart} from "../api/cart";
+import {updateUnmutes, updateUnmute} from "../features/user/userSlice";
 
-import { useDebouncedCallback } from "use-debounce";
+import {useDebouncedCallback} from "use-debounce";
 
-import { setActiveUnmuteIndex } from "../features/user/userSlice";
+import {setActiveUnmuteIndex} from "../features/user/userSlice";
 
 import "cropperjs/dist/cropper.css";
 import "./custom-cropper.css";
@@ -35,14 +36,14 @@ const frame_padding = (scale, landscape) => {
   }
 
   return {
-    paddingTop: `${14 * scale}px`,
+    paddingTop: `${13 * scale}px`,
     paddingRight: `${13 * scale}px`,
     paddingBottom: `${13 * scale}px`,
     paddingLeft: `${13 * scale}px`,
   };
 };
 
-const Unmute = ({ unmute, active, onDelete }) => {
+const Unmute = ({unmute, active, onDelete}) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
 
@@ -52,7 +53,7 @@ const Unmute = ({ unmute, active, onDelete }) => {
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
-      const file = new File([blob], "cropped.png", { type: "image/png" });
+      const file = new File([blob], "cropped.png", {type: "image/png"});
 
       uploadFile({
         path: unmute.properties._uuid,
@@ -66,7 +67,7 @@ const Unmute = ({ unmute, active, onDelete }) => {
             ...unmute.properties,
             _images: [fileUrl], // TODO: Add to existing list of images
           },
-        }).then(({ data }) => {
+        }).then(({data}) => {
           dispatch(updateUnmutes(data.items));
         });
       });
@@ -81,62 +82,65 @@ const Unmute = ({ unmute, active, onDelete }) => {
     },
   } = unmute;
 
-  const scale = { small: 1, medium: 2, large: 3 }[passepartout];
+  const scale = {none: 1, small: 1.7, medium: 2, large: 3}[passepartout];
   const isLandscape = orientation === "landscape";
   const frame = isLandscape ? frame_landscape_image : frame_image;
   const frame_width = isLandscape ? "min-w-[300px] w-[55%]" : "min-w-[250px] w-1/2";
 
   return (
-      <div className="snap-start shrink-0 w-full pt-14 pb-2 flex items-center justify-center relative">
-        <div
-            className={clsx(
-                "relative flex justify-center overflow-hidden",
-                isLandscape ? "mt-0" : "mt-0"
-            )}
-        >
-          <img
-              src={frame}
-              alt="Frame"
-              className={clsx(frame_width, "relative top-0 z-[1] pointer-events-none")}
-          />
-          {images && images.length > 0 && (
-              <>
-                <Cropper
-                    key = {isLandscape}
-                    ref={cropperRef}
-                    src={images[images.length - 1]}
-                    className={clsx(frame_width, "absolute h-full object-cover")}
-                    style={frame_padding(scale, isLandscape)}
-                    crossOrigin="anonymous"
-                    checkCrossOrigin={true}
-                    checkOrientation={false}
-                    center={false}
-                    modal={false}
-                    guides={false}
-                    highlight={false}
-                    background={false}
-                    cropBoxResizable={false}
-                    cropBoxMovable={true}
-                    viewMode={3}
-                    dragMode="move"
-                    movable={true}
-                    autoCropArea={1}
-                    rotatable={false}
-                    cropend={handleCrop}
-                    zoom={handleCrop}
-                />
-                  <button
-                      onClick={() => onDelete(unmute.key)}
-                      className="bg-red-400 text-white rounded-full hover:bg-red-600"
-                      style={{ width: "30px", height: "30px", zIndex: 2, marginLeft: '-31px', marginTop: '3px' }}
-                  >
-                    ✖
-                  </button>
+    <div className="snap-center flex items-center p-4">
+      <div
+        className={clsx(
+          "relative flex justify-center",
+          isLandscape ? "mt-0" : "mt-0"
+        )}
+      >
+        <img
+          src={frame}
+          alt="Frame"
+          className={clsx(frame_width, "relative top-0 z-[1] pointer-events-none")}
+        />
+        {images && images.length > 0 ? (
+          <>
+            <Cropper
+              key={isLandscape}
+              ref={cropperRef}
+              src={images[images.length - 1]}
+              className={clsx(frame_width, "absolute h-full object-cover overflow-hidden")}
+              style={frame_padding(scale, isLandscape)}
+              crossOrigin="anonymous"
+              checkCrossOrigin={true}
+              checkOrientation={false}
+              center={false}
+              modal={false}
+              guides={false}
+              highlight={false}
+              background={false}
+              cropBoxResizable={false}
+              cropBoxMovable={true}
+              viewMode={3}
+              dragMode="move"
+              movable={true}
+              autoCropArea={1}
+              rotatable={false}
+              cropend={handleCrop}
+              zoom={handleCrop}
+            />
+            <button
+              onClick={() => onDelete(unmute.key)}
+              className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
+            >
+              ✖
+            </button>
 
-              </>
-          )}
-        </div>
+          </>
+        ) : <button
+          className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
+        >
+          <PlusIcon size={20} className={'fill-white'}/>
+        </button>}
       </div>
+    </div>
   );
 };
 
@@ -147,7 +151,7 @@ export const Frame = () => {
   const [playing, setPlaying] = useState(false);
   const dispatch = useDispatch();
   const [, navigate] = useLocation(); // Initialize navigation
-  const { activeUnmute } = useActiveUnmute();
+  const {activeUnmute} = useActiveUnmute();
 
   const unmutes = useSelector((state) => state.user.unmutes);
   const activeUnmuteIndex = useSelector(
@@ -163,7 +167,7 @@ export const Frame = () => {
   useLayoutEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.addEventListener("scroll", () => {
-        const { scrollLeft, clientWidth } = scrollRef.current;
+        const {scrollLeft, clientWidth} = scrollRef.current;
 
         if (scrollLeft === 0) {
           return;
@@ -226,7 +230,7 @@ export const Frame = () => {
           />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
-              <Loader size={"w-24 h-24"} />
+              <Loader size={"w-24 h-24"}/>
             </div>
           </div>
         </div>
@@ -238,7 +242,7 @@ export const Frame = () => {
     <>
       <div
         ref={scrollRef}
-        className="relative w-full flex gap-6 snap-x snap-mandatory overflow-auto"
+        className="relative w-full flex gap-4 snap-x snap-mandatory overflow-auto py-4"
       >
         {unmutes.map((unmute, index) => (
           <Unmute

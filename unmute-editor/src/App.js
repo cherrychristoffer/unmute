@@ -10,6 +10,8 @@ import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
 
 import { CropPage } from "./pages/CropPage";
 import { FramePage } from "./pages/FramePage";
+import {InspirationsPage} from "./pages/InspirationsPage";
+import {InspirationsVideoPage} from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
 import { PassepartoutPage } from "./pages/PassepartoutPage";
@@ -77,8 +79,10 @@ function App() {
 
       <Switch>
         {/* Starting page */}
-        <Route path="/" component={StartPage}></Route>
-        <Route path="/offers" component={OffersPage} />
+        {/*<Route path="/" component={StartPage}></Route>*/}
+        <Route path="/" component={OffersPage} />
+        <Route path="/inspirations" component={InspirationsPage} />
+        <Route path="/inspiration-video" component={InspirationsVideoPage} />
         <Route path="/upload-image" component={UploadImagePage} />
 
         <Route path="/audio" component={AudioPage} />

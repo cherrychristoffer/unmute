@@ -70,7 +70,7 @@ export const userSlice = createSlice({
   name: "user",
   initialState: {
     unmutes: [],
-    activeUnmuteIndex: null,
+    activeUnmuteIndex: 0,
   },
   reducers: {
     addUnmute: (state, action) => {

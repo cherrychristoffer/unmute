@@ -43,9 +43,41 @@ const frame_padding = (scale, landscape) => {
   };
 };
 
-const Unmute = ({unmute, active, onDelete}) => {
+const Unmute = ({unmute, active, index, onDelete}) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  console.log(unmute)
+
+  const handleChange = async (event) => {
+    setLoading(true);
+    const uuid = unmute._uuid;
+    const file = event.target.files[0];
+
+    uploadFile({
+      path: uuid,
+      file,
+    }).then(() => {
+      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+
+      updateUnmuteInCart({
+        key: unmute.key,
+        properties: {
+          ...unmute.properties,
+          _images: [fileUrl],
+        },
+      }).then(({ data }) => {
+        setLoading(false);
+        dispatch(updateUnmutes(data.items));
+      });
+    });
+  };
+
+  const setActive = () => {
+    if (!active) {
+      dispatch(setActiveUnmuteIndex(index));
+    }
+  }
 
   const handleCrop = useDebouncedCallback(() => {
     if (!active) return;
@@ -88,7 +120,7 @@ const Unmute = ({unmute, active, onDelete}) => {
   const frame_width = isLandscape ? "min-w-[300px] w-[55%]" : "min-w-[250px] w-1/2";
 
   return (
-    <div className="snap-center flex items-center p-4">
+    <div className="snap-center flex items-center p-4" onClick={setActive}>
       <div
         className={clsx(
           "relative flex justify-center",
@@ -137,7 +169,23 @@ const Unmute = ({unmute, active, onDelete}) => {
         ) : <button
           className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
         >
-          <PlusIcon size={20} className={'fill-white'}/>
+          <label
+              htmlFor={`mage-add-${unmute.key}`}
+          >
+            {loading ?(
+                <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                  Uploading...
+                  <Loader size={"w-24 h-24"}/>
+                </h2>
+            ) : <PlusIcon size={20} className={'fill-white'}/>}
+          </label>
+          <input
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              className="hidden"
+              id={`mage-add-${unmute.key}`}
+              onChange={handleChange}
+          />
         </button>}
       </div>
     </div>
@@ -150,8 +198,6 @@ export const Frame = () => {
   const audioRef = useRef();
   const [playing, setPlaying] = useState(false);
   const dispatch = useDispatch();
-  const [, navigate] = useLocation(); // Initialize navigation
-  const {activeUnmute} = useActiveUnmute();
 
   const unmutes = useSelector((state) => state.user.unmutes);
   const activeUnmuteIndex = useSelector(
@@ -160,27 +206,6 @@ export const Frame = () => {
 
   const loading = activeUnmuteIndex === null;
 
-  const debouncedSetActiveUnmuteIndex = useDebouncedCallback((snapIndex) => {
-    dispatch(setActiveUnmuteIndex(snapIndex));
-  }, 200);
-
-  useLayoutEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.addEventListener("scroll", () => {
-        const {scrollLeft, clientWidth} = scrollRef.current;
-
-        if (scrollLeft === 0) {
-          return;
-        }
-
-        const snapIndex = Math.floor(scrollLeft / clientWidth);
-
-        if (snapIndex !== activeUnmuteIndex) {
-          debouncedSetActiveUnmuteIndex(snapIndex);
-        }
-      });
-    }
-  }, [activeUnmuteIndex]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -213,7 +238,6 @@ export const Frame = () => {
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items))
-        navigate("/upload-image");
       });
     })
   };
@@ -249,6 +273,7 @@ export const Frame = () => {
             key={unmute.id}
             unmute={unmute}
             active={activeUnmuteIndex === index}
+            index={index}
             onDelete={handleDelete}
           />
         ))}

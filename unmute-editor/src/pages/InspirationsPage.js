@@ -23,7 +23,7 @@ export const InspirationsPage = () => {
       title: 'Birthday',
     },
     {
-      image: offer2,
+      image: 'https://media-api.xogrp.com/images/1e02247f-3c92-4c38-8cc6-5f0bb78f8ce0~rs_768.h',
       title: 'Love One',
     },
     {
@@ -59,7 +59,7 @@ export const InspirationsPage = () => {
                   alt={item.title}
               />
               <div
-                  className={`-mt-8 px-2.5 py-3 w-5/6 rounded-[4px] ${item.special ? 'bg-rose-500' : 'bg-muld-1000'}`}>
+                  className={`-mt-14 px-2.5 py-3 w-5/6`}>
                 <div className="font-light text-gray-700">
                   <p className={`text-white text-[12px]`}>{item.title}</p>
                 </div>

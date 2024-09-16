@@ -17,8 +17,6 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
-import "cropperjs/dist/cropper.css";
-import "./custom-cropper.css";
 import Cropper from "react-cropper";
 
 import frame_image from "../assets/images/frame.png";
@@ -152,6 +150,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
                   scale={scale}
                   frame_width={frame_width}
                   isLandscape={isLandscape}
+                  unmute={unmute}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}

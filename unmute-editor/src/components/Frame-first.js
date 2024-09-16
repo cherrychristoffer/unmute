@@ -35,6 +35,7 @@ export const UnmuteFrame = ({
             scale={scale}
             frame_width={frame_width}
             isLandscape={isLandscape}
+            unmute={unmute}
           />
           <button
             onClick={() => onDelete(unmute.key)}

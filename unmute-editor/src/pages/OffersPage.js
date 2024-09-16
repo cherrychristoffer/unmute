@@ -24,7 +24,7 @@ export const OffersPage = () => {
       navigate("/upload-image");
     });
   };
-
+  console.log("test");
   const UNMUTE = [
     {
       image: offer1,

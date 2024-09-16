@@ -8,6 +8,8 @@ import { updateUnmuteInCart } from "../../api/cart";
 
 import { useActiveUnmute } from "../../api/useUnmutes";
 
+import TextareaAutosize from 'react-textarea-autosize';
+
 export const InspirationPage = () => {
   const inspirationRef = useRef();
   const dispatch = useDispatch();
@@ -37,7 +39,7 @@ export const InspirationPage = () => {
   };
 
   return (
-      <div className="flex flex-col items-center mt-24">
+      <div className="flex flex-col items-center py-20">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Write text</h1>
           <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
@@ -47,8 +49,9 @@ export const InspirationPage = () => {
         </div>
 
         <div className="w-11/12 flex flex-col items-center mx-auto">
-        <textarea
+        <TextareaAutosize
             ref={inspirationRef}
+            minRows={4}
             className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
             defaultValue={activeUnmute?.properties?._inspiration}
             placeholder="Write your text here..."

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/*@font-face {
   font-family: 'Optima nova LT Pro';
   src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot');
   src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot?#iefix') format('embedded-opentype'),
@@ -12,7 +12,7 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}
+}*/
 
 :root {
   --shopify-header-height: 66px;

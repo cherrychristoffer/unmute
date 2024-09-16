@@ -15,7 +15,6 @@ export const OffersPage = () => {
   const dispatch = useDispatch();
 
   const handleClick = ({ quantity }) => {
-
     addUnmuteToCart({ quantity }).then(({ data }) => {
       data.items.forEach((unmute) => {
         dispatch(addUnmute(unmute));

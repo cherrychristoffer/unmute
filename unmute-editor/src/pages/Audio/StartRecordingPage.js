@@ -95,7 +95,7 @@ export const StartRecordingPage = () => {
   }, [recordingBlob]);
 
   return (
-    <>
+    <div className={"pb-[80px] pt-10"}>
       <div className="flex flex-col items-center">
         <div className="mt-6">
           {!isRecording && (
@@ -129,10 +129,11 @@ export const StartRecordingPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center mt-3 h-96 w-4/5 mx-auto">
+      <div className="flex flex-col items-center mt-3 w-4/5 mx-auto">
         <TextareaAutosize
           disabled
-          className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
+          minRows={4}
+          className="w-full mt-12 p-4 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
           defaultValue={activeUnmute?.properties?._inspiration}
         />
       </div>
@@ -150,6 +151,6 @@ export const StartRecordingPage = () => {
         togglePauseResume={togglePauseResume}
         stopRecording={stopRecording}
       />
-    </>
+    </div>
   );
 };

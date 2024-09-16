@@ -1,21 +1,21 @@
-import {React, useEffect, useLayoutEffect, useRef, useState} from "react";
-import {useLocation} from "wouter";
+import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLocation, useRoute, useRouter } from "wouter";
 
 import clsx from "clsx";
 
-import {useDispatch, useSelector} from "react-redux";
-import {Link} from "wouter";
-import {PlusIcon} from "../assets/icons/icon_plus";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "wouter";
+import { PlusIcon } from "../assets/icons/icon_plus";
 
-import {Loader} from "./Loader";
+import { Loader } from "./Loader";
 
-import {deleteFile, getFileUrl, uploadFile} from "../api/aws";
-import {updateUnmuteInCart} from "../api/cart";
-import {updateUnmutes, updateUnmute} from "../features/user/userSlice";
+import { deleteFile, getFileUrl, uploadFile } from "../api/aws";
+import { updateUnmuteInCart } from "../api/cart";
+import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
 
-import {useDebouncedCallback} from "use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 
-import {setActiveUnmuteIndex} from "../features/user/userSlice";
+import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
 import "cropperjs/dist/cropper.css";
 import "./custom-cropper.css";
@@ -23,7 +23,8 @@ import Cropper from "react-cropper";
 
 import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
-import {useActiveUnmute} from "../api/useUnmutes";
+import { useActiveUnmute } from "../api/useUnmutes";
+import { UnmuteFrame } from "./Frame-first";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -43,9 +44,33 @@ const frame_padding = (scale, landscape) => {
   };
 };
 
-const Unmute = ({unmute, active, onDelete}) => {
+const Unmute = ({ unmute, active, onDelete, length }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = async (event) => {
+    setLoading(true);
+    const uuid = unmute._uuid;
+    const file = event.target.files[0];
+
+    uploadFile({
+      path: uuid,
+      file,
+    }).then(() => {
+      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+      updateUnmuteInCart({
+        key: unmute.key,
+        properties: {
+          ...unmute.properties,
+          _images: [fileUrl],
+        },
+      }).then(({ data }) => {
+        setLoading(false);
+        dispatch(updateUnmutes(data.items));
+      });
+    });
+  };
 
   const handleCrop = useDebouncedCallback(() => {
     if (!active) return;
@@ -53,7 +78,7 @@ const Unmute = ({unmute, active, onDelete}) => {
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
-      const file = new File([blob], "cropped.png", {type: "image/png"});
+      const file = new File([blob], "cropped.png", { type: "image/png" });
 
       uploadFile({
         path: unmute.properties._uuid,
@@ -67,7 +92,7 @@ const Unmute = ({unmute, active, onDelete}) => {
             ...unmute.properties,
             _images: [fileUrl], // TODO: Add to existing list of images
           },
-        }).then(({data}) => {
+        }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
         });
       });
@@ -82,81 +107,144 @@ const Unmute = ({unmute, active, onDelete}) => {
     },
   } = unmute;
 
-  const scale = {none: 1, small: 1.7, medium: 2, large: 3}[passepartout];
+  const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
   const isLandscape = orientation === "landscape";
   const frame = isLandscape ? frame_landscape_image : frame_image;
-  const frame_width = isLandscape ? "min-w-[300px] w-[55%]" : "min-w-[250px] w-1/2";
+  const frame_width = isLandscape
+    ? "min-w-[300px] w-[55%]"
+    : "min-w-[250px] w-1/2";
 
   return (
-    <div className="snap-center flex items-center p-4">
-      <div
-        className={clsx(
-          "relative flex justify-center",
-          isLandscape ? "mt-0" : "mt-0"
-        )}
-      >
-        <img
-          src={frame}
-          alt="Frame"
-          className={clsx(frame_width, "relative top-0 z-[1] pointer-events-none")}
+    <>
+      {length === 1 ? (
+        <UnmuteFrame
+          unmute={unmute}
+          onDelete={onDelete}
+          frame={frame}
+          isLandscape={isLandscape}
+          frame_width={frame_width}
+          images={images}
+          frame_padding={frame_padding}
+          scale={scale}
+          handleCrop={handleCrop}
         />
-        {images && images.length > 0 ? (
-          <>
-            <Cropper
-              key={isLandscape}
-              ref={cropperRef}
-              src={images[images.length - 1]}
-              className={clsx(frame_width, "absolute h-full object-cover overflow-hidden")}
-              style={frame_padding(scale, isLandscape)}
-              crossOrigin="anonymous"
-              checkCrossOrigin={true}
-              checkOrientation={false}
-              center={false}
-              modal={false}
-              guides={false}
-              highlight={false}
-              background={false}
-              cropBoxResizable={false}
-              cropBoxMovable={true}
-              viewMode={3}
-              dragMode="move"
-              movable={true}
-              autoCropArea={1}
-              rotatable={false}
-              cropend={handleCrop}
-              zoom={handleCrop}
+      ) : (
+        <div className="snap-center flex items-center p-4">
+          <div
+            className={clsx(
+              "relative flex justify-center",
+              isLandscape ? "mt-0" : "mt-0"
+            )}
+          >
+            <img
+              src={frame}
+              alt="Frame"
+              className={clsx(
+                frame_width,
+                "relative top-0 z-[1] pointer-events-none"
+              )}
             />
-            <button
-              onClick={() => onDelete(unmute.key)}
-              className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
-            >
-              ✖
-            </button>
-
-          </>
-        ) : <button
-          className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
-        >
-          <PlusIcon size={20} className={'fill-white'}/>
-        </button>}
-      </div>
-    </div>
+            {images && images.length > 0 ? (
+              <>
+                <Cropper
+                  key={isLandscape}
+                  ref={cropperRef}
+                  src={images[images.length - 1]}
+                  className={clsx(
+                    frame_width,
+                    "absolute h-full object-cover overflow-hidden"
+                  )}
+                  style={frame_padding(scale, isLandscape)}
+                  crossOrigin="anonymous"
+                  checkCrossOrigin={true}
+                  checkOrientation={false}
+                  center={false}
+                  modal={false}
+                  guides={false}
+                  highlight={false}
+                  background={false}
+                  cropBoxResizable={false}
+                  cropBoxMovable={true}
+                  viewMode={3}
+                  dragMode="move"
+                  movable={true}
+                  autoCropArea={1}
+                  rotatable={false}
+                  cropend={handleCrop}
+                  zoom={handleCrop}
+                />
+                <button
+                  onClick={() => onDelete(unmute.key)}
+                  className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
+                >
+                  ✖
+                </button>
+              </>
+            ) : (
+              <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+                <label
+                    htmlFor={`mage-add-${unmute.key}`}
+                >
+                  {loading ?(
+                      <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                        Uploading...
+                        <Loader size={"w-24 h-24"}/>
+                      </h2>
+                  ) : <PlusIcon size={20} className={'fill-white'}/>}
+                </label>
+                <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id={`mage-add-${unmute.key}`}
+                    onChange={handleChange}
+                />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
 export const Frame = () => {
   const cacheBust = Date.now();
+
   const scrollRef = useRef();
   const audioRef = useRef();
+
   const [playing, setPlaying] = useState(false);
   const dispatch = useDispatch();
   const [, navigate] = useLocation(); // Initialize navigation
-  const {activeUnmute} = useActiveUnmute();
+  const { activeUnmute } = useActiveUnmute();
 
-  const unmutes = useSelector((state) => state.user.unmutes);
+  const unmutesCopy = useSelector((state) => state.user.unmutes);
+  const unmutes = [...unmutesCopy];
+
+  if (unmutes?.length === 2) {
+    const emptyImages = unmutes.find(
+      (item) => item.properties._images?.length === 0
+    );
+    console.log("emptyImages", emptyImages);
+    console.log("unmutes", unmutes);
+    unmutes.push({ ...emptyImages });
+  }
+  const withImage = unmutes?.filter(
+    (item) => item.properties._images?.length > 0
+  );
+
+  const sortedUnmutes = unmutes.filter(
+    (item) => item.properties._images?.length === 0
+  );
+  if (withImage) {
+    sortedUnmutes.splice(1, 0, ...withImage);
+  }
+
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
+  console.log("unmutesCopy", activeUnmuteIndex);
 
   const loading = activeUnmuteIndex === null;
 
@@ -164,24 +252,33 @@ export const Frame = () => {
     dispatch(setActiveUnmuteIndex(snapIndex));
   }, 200);
 
+  // useLayoutEffect(() => {
+  //   if (scrollRef.current) {
+  //     scrollRef.current.addEventListener("scroll", () => {
+  //       const { scrollLeft, clientWidth } = scrollRef.current;
+
+  //       if (scrollLeft === 0) {
+  //         return;
+  //       }
+
+  //       const snapIndex = Math.floor(scrollLeft / clientWidth);
+
+  //       if (snapIndex !== activeUnmuteIndex) {
+  //         debouncedSetActiveUnmuteIndex(snapIndex);
+  //       }
+  //     });
+  //   }
+  // }, [activeUnmuteIndex]);
   useLayoutEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.addEventListener("scroll", () => {
-        const {scrollLeft, clientWidth} = scrollRef.current;
+    if (scrollRef.current && unmutes.length === 3) {
+      const clientWidth = scrollRef.current.clientWidth;
+      const middleIndex = 2;
+      const unmuteWidth = clientWidth / 2;
+      const scrollPosition = unmuteWidth * middleIndex - clientWidth / 2;
 
-        if (scrollLeft === 0) {
-          return;
-        }
-
-        const snapIndex = Math.floor(scrollLeft / clientWidth);
-
-        if (snapIndex !== activeUnmuteIndex) {
-          debouncedSetActiveUnmuteIndex(snapIndex);
-        }
-      });
+      scrollRef.current.scrollTo({ left: scrollPosition, behavior: "smooth" });
     }
-  }, [activeUnmuteIndex]);
-
+  }, [unmutes]);
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
@@ -212,12 +309,10 @@ export const Frame = () => {
           _images: [],
         },
       }).then((data) => {
-        dispatch(updateUnmutes(data.data.items))
-        navigate("/upload-image");
+        dispatch(updateUnmutes(data.data.items));
       });
-    })
+    });
   };
-
 
   if (loading) {
     return (
@@ -230,7 +325,7 @@ export const Frame = () => {
           />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
-              <Loader size={"w-24 h-24"}/>
+              <Loader size={"w-24 h-24"} />
             </div>
           </div>
         </div>
@@ -244,12 +339,29 @@ export const Frame = () => {
         ref={scrollRef}
         className="relative w-full flex gap-4 snap-x snap-mandatory overflow-auto py-4"
       >
-        {unmutes.map((unmute, index) => (
+        {/* {unmutes?.length === 1 ? (
+          <></>
+        ) : (
+          <>
+            {unmutes.map((unmute, index) => (
+              <Unmute
+                key={unmute.id}
+                unmute={unmute}
+                active={activeUnmuteIndex === index}
+                onDelete={handleDelete}
+                length  ={unmutes?.length}
+              />
+            ))}
+          </>
+        )} */}
+
+        {sortedUnmutes.map((unmute, index) => (
           <Unmute
             key={unmute.id}
             unmute={unmute}
             active={activeUnmuteIndex === index}
             onDelete={handleDelete}
+            length={unmutes?.length}
           />
         ))}
       </div>

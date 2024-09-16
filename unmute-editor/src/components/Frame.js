@@ -47,6 +47,30 @@ const frame_padding = (scale, landscape) => {
 const Unmute = ({ unmute, active, onDelete, length }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = async (event) => {
+    setLoading(true);
+    const uuid = unmute._uuid;
+    const file = event.target.files[0];
+
+    uploadFile({
+      path: uuid,
+      file,
+    }).then(() => {
+      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+      updateUnmuteInCart({
+        key: unmute.key,
+        properties: {
+          ...unmute.properties,
+          _images: [fileUrl],
+        },
+      }).then(({ data }) => {
+        setLoading(false);
+        dispatch(updateUnmutes(data.items));
+      });
+    });
+  };
 
   const handleCrop = useDebouncedCallback(() => {
     if (!active) return;
@@ -158,9 +182,22 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
               </>
             ) : (
               <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                <PlusIcon
-                  size={20}
-                  className={"fill-white"}
+                <label
+                    htmlFor={`mage-add-${unmute.key}`}
+                >
+                  {loading ?(
+                      <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                        Uploading...
+                        <Loader size={"w-24 h-24"}/>
+                      </h2>
+                  ) : <PlusIcon size={20} className={'fill-white'}/>}
+                </label>
+                <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id={`mage-add-${unmute.key}`}
+                    onChange={handleChange}
                 />
               </button>
             )}
@@ -273,7 +310,6 @@ export const Frame = () => {
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items));
-        navigate("/upload-image");
       });
     });
   };

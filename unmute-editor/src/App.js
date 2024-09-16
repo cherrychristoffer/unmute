@@ -29,7 +29,6 @@ import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
 function App() {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  console.log("tes222t");
 
   const appHeight = () => {
     const doc = document.documentElement;

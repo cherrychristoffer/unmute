@@ -34,7 +34,6 @@ export const EditAudioPage = () => {
   const [duration, setDuration] = useState(0);
   const [blobAudio, setBlobAudio] = useState([]);
   const userAudio = useSelector((state) => state.user.unmutes);
-  console.log("user", userAudio);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
 
@@ -117,7 +116,6 @@ export const EditAudioPage = () => {
       }
     }
   };
-  console.log("userrr", blobAudio?.length);
 
   useEffect(() => {
     if (userAudio.length > 0) {

@@ -25,6 +25,7 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 import { useActiveUnmute } from "../api/useUnmutes";
 import { UnmuteFrame } from "./Frame-first";
+import { updateZoomValue } from "../features/image/imageSlice";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -48,7 +49,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
   const [loading, setLoading] = useState(false);
-
+  let a = 0;
   const handleChange = async (event) => {
     setLoading(true);
     const uuid = unmute._uuid;
@@ -72,9 +73,8 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
     });
   };
 
-  const handleCrop = useDebouncedCallback(() => {
+  const handleCrop = useDebouncedCallback((e) => {
     if (!active) return;
-
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -126,7 +126,6 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
           images={images}
           frame_padding={frame_padding}
           scale={scale}
-          handleCrop={handleCrop}
         />
       ) : (
         <div className="snap-center flex items-center p-4">
@@ -182,22 +181,22 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
               </>
             ) : (
               <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                <label
-                    htmlFor={`mage-add-${unmute.key}`}
-                >
-                  {loading ?(
-                      <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                        Uploading...
-                        <Loader size={"w-24 h-24"}/>
-                      </h2>
-                  ) : <PlusIcon size={20} className={'fill-white'}/>}
+                <label htmlFor={`mage-add-${unmute.key}`}>
+                  {loading ? (
+                    <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                      Uploading...
+                      <Loader size={"w-24 h-24"} />
+                    </h2>
+                  ) : (
+                    <PlusIcon size={20} className={"fill-white"} />
+                  )}
                 </label>
                 <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                    id={`mage-add-${unmute.key}`}
-                    onChange={handleChange}
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  className="hidden"
+                  id={`mage-add-${unmute.key}`}
+                  onChange={handleChange}
                 />
               </button>
             )}
@@ -226,8 +225,6 @@ export const Frame = () => {
     const emptyImages = unmutes.find(
       (item) => item.properties._images?.length === 0
     );
-    console.log("emptyImages", emptyImages);
-    console.log("unmutes", unmutes);
     unmutes.push({ ...emptyImages });
   }
   const withImage = unmutes?.filter(
@@ -244,7 +241,6 @@ export const Frame = () => {
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
-  console.log("unmutesCopy", activeUnmuteIndex);
 
   const loading = activeUnmuteIndex === null;
 
@@ -318,11 +314,7 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img
-            src={frame_image}
-            alt="Frame"
-            className="relative top-0 w-1/2"
-          />
+          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />

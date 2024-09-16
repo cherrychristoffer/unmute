@@ -15,7 +15,6 @@ export const OffersPage = () => {
   const dispatch = useDispatch();
 
   const handleClick = ({ quantity }) => {
-    console.log("quantity", quantity);
 
     addUnmuteToCart({ quantity }).then(({ data }) => {
       data.items.forEach((unmute) => {
@@ -24,7 +23,6 @@ export const OffersPage = () => {
       navigate("/upload-image");
     });
   };
-  console.log("test");
   const UNMUTE = [
     {
       image: offer1,

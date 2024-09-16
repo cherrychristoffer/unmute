@@ -4,20 +4,22 @@ import { useDispatch } from "react-redux";
 import { fetchCartData } from "./api/cart";
 
 import { Route, Switch, useLocation } from "wouter";
-
-import { Frame } from "./components/Frame";
-import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
+import {CollagePage} from "./pages/CollagePage";
 
 import { CropPage } from "./pages/CropPage";
+import { Frame } from "./components/Frame";
+import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
+import {UploadAudioPage} from "./pages/Audio/UploadAudioPage";
+
 import { FramePage } from "./pages/FramePage";
 import {InspirationsPage} from "./pages/InspirationsPage";
 import {InspirationsVideoPage} from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
 import { PassepartoutPage } from "./pages/PassepartoutPage";
-import { StartPage } from "./pages/StartPage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
+import {AudioApproachPage} from "./pages/Audio/AudioApproachPage";
 import { AudioPage } from "./pages/Audio/AudioPage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
@@ -84,8 +86,11 @@ function App() {
         <Route path="/inspirations" component={InspirationsPage} />
         <Route path="/inspiration-video" component={InspirationsVideoPage} />
         <Route path="/upload-image" component={UploadImagePage} />
+        <Route path="/collage" component={CollagePage} />
 
         <Route path="/audio" component={AudioPage} />
+        <Route path="/audio-approach" component={AudioApproachPage} />
+        <Route path="/audio-upload" component={UploadAudioPage} />
         <Route path="/start-recording" component={StartRecordingPage} />
         <Route path="/inspiration" component={InspirationPage} />
         <Route path="/edit-audio" component={EditAudioPage} />

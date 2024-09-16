@@ -1,14 +1,12 @@
 import { React } from "react";
 import { useLocation } from "wouter";
 
-import { addUnmute } from "../features/user/userSlice";
-import { addUnmuteToCart } from "../api/cart";
-import { useDispatch } from "react-redux";
-
-import offer1 from "../assets/images/offers/offer1.png";
-import offer2 from "../assets/images/offers/offer2.png";
-import offer3 from "../assets/images/offers/offer3.png";
-import offer4 from "../assets/images/offers/offer4.png";
+import Anniversary from "../assets/images/inspirations/anniversary.png";
+import BDay from "../assets/images/inspirations/bday.png";
+import LoveOne from "../assets/images/inspirations/love-one.png";
+import ParentsDay from "../assets/images/inspirations/parents-day.png";
+import Valentine from "../assets/images/inspirations/valentine.png";
+import Wedding from "../assets/images/inspirations/wedding.png";
 
 export const InspirationsPage = () => {
   const [_location, navigate] = useLocation();
@@ -19,20 +17,28 @@ export const InspirationsPage = () => {
 
   const INSPIRATIONS = [
     {
-      image: 'https://i0.wp.com/www.sugar.org/wp-content/uploads/Birthday-Cake-1.png?fit=940%2C788&ssl=1',
+      image: BDay,
       title: 'Birthday',
     },
     {
-      image: 'https://media-api.xogrp.com/images/1e02247f-3c92-4c38-8cc6-5f0bb78f8ce0~rs_768.h',
+      image: LoveOne,
       title: 'Love One',
     },
     {
-      image: offer3,
+      image: Wedding,
       title: 'Wedding',
     },
     {
-      image: offer4,
+      image: Anniversary,
       title: 'Anniversary',
+    },
+    {
+      image: Valentine,
+      title: 'Valentine',
+    },
+    {
+      image: ParentsDay,
+      title: 'Parents Day',
     },
   ];
 

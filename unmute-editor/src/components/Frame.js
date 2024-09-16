@@ -26,6 +26,7 @@ import frame_landscape_image from "../assets/images/frame_landscape.png";
 import { useActiveUnmute } from "../api/useUnmutes";
 import { UnmuteFrame } from "./Frame-first";
 import { updateZoomValue } from "../features/image/imageSlice";
+import CropperComponent from "./Cropper";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -145,32 +146,12 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
             />
             {images && images.length > 0 ? (
               <>
-                <Cropper
-                  key={isLandscape}
-                  ref={cropperRef}
-                  src={images[images.length - 1]}
-                  className={clsx(
-                    frame_width,
-                    "absolute h-full object-cover overflow-hidden"
-                  )}
-                  style={frame_padding(scale, isLandscape)}
-                  crossOrigin="anonymous"
-                  checkCrossOrigin={true}
-                  checkOrientation={false}
-                  center={false}
-                  modal={false}
-                  guides={false}
-                  highlight={false}
-                  background={false}
-                  cropBoxResizable={false}
-                  cropBoxMovable={true}
-                  viewMode={3}
-                  dragMode="move"
-                  movable={true}
-                  autoCropArea={1}
-                  rotatable={false}
-                  cropend={handleCrop}
-                  zoom={handleCrop}
+                <CropperComponent
+                  images={images}
+                  frame_padding={frame_padding}
+                  scale={scale}
+                  frame_width={frame_width}
+                  isLandscape={isLandscape}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}

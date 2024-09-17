@@ -15,6 +15,7 @@ import { updateUnmutes } from "../features/user/userSlice";
 import "cropperjs/dist/cropper.css";
 import "./custom-cropper.css";
 import { useParams } from "wouter";
+import { useDebouncedCallback } from "use-debounce";
 
 const estimateZoomCount = (value, count = 1) => {
   if (count <= 30) {
@@ -37,6 +38,8 @@ const CropperComponent = ({
   const params = useParams();
   const min = useRef(null);
   const max = useRef(null);
+  const prevPage = useRef(null);
+  const prevActive = useRef(null);
   const [update, setUpdate] = useState(0);
   let zoomStep = 0;
 
@@ -46,17 +49,25 @@ const CropperComponent = ({
       dispatch(setRatio(0));
       dispatch(updateZoomValue(0));
       min.current = null;
+      max.current = null;
     }
-  }, [params[0] + update, activeUnmute]);
+  }, [update, activeUnmute]);
 
   useEffect(() => {
-    setUpdate((prev) => prev + 1);
-  }, [activeUnmute]);
+    if (
+      (params[0] === "crop" ||
+        (prevPage.current === "crop" && params[0] !== "crop")) &&
+      (activeUnmute || (!activeUnmute && prevActive.current))
+    ) {
+      setUpdate((prev) => prev + 1);
+    }
+    prevPage.current = params[0];
+    prevActive.current = activeUnmute;
+  }, [activeUnmute, params[0]]);
 
-  const handleCrop = (e) => {
+  const handleCrop = useDebouncedCallback((e) => {
     if (params[0] !== "crop" || !activeUnmute) return;
 
-    // if (!active) return;
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -78,7 +89,7 @@ const CropperComponent = ({
         });
       });
     });
-  };
+  }, 500);
 
   const handleZoom = (e) => {
     if (e.type === "zoom") {
@@ -109,8 +120,7 @@ const CropperComponent = ({
   };
   return (
     <Cropper
-      // key={isLandscape}
-      key={params[0] + update}
+      key={update}
       ref={cropperRef}
       src={images[images.length - 1]}
       className={clsx(
@@ -124,9 +134,9 @@ const CropperComponent = ({
       modal={false}
       highlight={false}
       background={false}
-      guides={activeUnmute && params[0] === "crop" ? true : false}
-      cropBoxResizable={activeUnmute && params[0] === "crop" ? true : false}
-      center={activeUnmute && params[0] === "crop" ? true : false}
+      guides={activeUnmute && params[0] === "crop"}
+      cropBoxResizable={activeUnmute && params[0] === "crop"}
+      center={activeUnmute && params[0] === "crop"}
       cropBoxMovable={true}
       viewMode={3}
       dragMode="move"
@@ -134,7 +144,7 @@ const CropperComponent = ({
       autoCropArea={1}
       rotatable={false}
       cropend={handleCrop}
-      zoomable={true}
+      zoomable={activeUnmute && params[0] === "crop"}
       wheelZoomRatio={0.1}
       zoom={handleZoom}
     />

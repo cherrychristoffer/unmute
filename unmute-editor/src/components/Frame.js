@@ -1,4 +1,11 @@
-import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  act,
+  React,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useRoute, useRouter } from "wouter";
 
 import clsx from "clsx";
@@ -11,7 +18,11 @@ import { Loader } from "./Loader";
 
 import { deleteFile, getFileUrl, uploadFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
-import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
+import {
+  updateUnmutes,
+  updateUnmute,
+  setActiveIndexScroll,
+} from "../features/user/userSlice";
 
 import { useDebouncedCallback } from "use-debounce";
 
@@ -25,8 +36,11 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 import { useActiveUnmute } from "../api/useUnmutes";
 import { UnmuteFrame } from "./Frame-first";
+import { throttle } from "lodash";
 
 const frame_padding = (scale, landscape) => {
+  console.log("scalleeee", scale, landscape);
+
   if (landscape) {
     return {
       paddingTop: `${17 * scale}px`,
@@ -47,6 +61,7 @@ const frame_padding = (scale, landscape) => {
 const Unmute = ({ unmute, active, onDelete, length }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+  const activeIndexData = useSelector((state) => state.user.activeIndex);
 
   const handleCrop = useDebouncedCallback(() => {
     if (!active) return;
@@ -80,15 +95,19 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
       _passepartout: passepartout,
       _orientation: orientation,
       _images: images,
+      _activeIndex: activeIndex,
     },
   } = unmute;
+  console.log("images", images);
 
   const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
   const isLandscape = orientation === "landscape";
+
   const frame = isLandscape ? frame_landscape_image : frame_image;
   const frame_width = isLandscape
     ? "min-w-[300px] w-[55%]"
     : "min-w-[250px] w-1/2";
+  console.log("isLandscape", isLandscape);
 
   return (
     <>
@@ -122,6 +141,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
             />
             {images && images.length > 0 ? (
               <>
+                {console.log("lanadfwefwefwefwefwe", isLandscape)}
                 <Cropper
                   key={isLandscape}
                   ref={cropperRef}
@@ -174,7 +194,11 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
 export const Frame = () => {
   const cacheBust = Date.now();
 
-  const scrollRef = useRef();
+  const [activeindex, setActiveIndex] = useState(2);
+  const [scrollPosition, setScrollPosition] = useState();
+
+  const scrollRef = useRef(null);
+
   const audioRef = useRef();
 
   const [playing, setPlaying] = useState(false);
@@ -189,8 +213,7 @@ export const Frame = () => {
     const emptyImages = unmutes.find(
       (item) => item.properties._images?.length === 0
     );
-    console.log("emptyImages", emptyImages);
-    console.log("unmutes", unmutes);
+
     unmutes.push({ ...emptyImages });
   }
   const withImage = unmutes?.filter(
@@ -207,7 +230,6 @@ export const Frame = () => {
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
-  console.log("unmutesCopy", activeUnmuteIndex);
 
   const loading = activeUnmuteIndex === null;
 
@@ -215,33 +237,55 @@ export const Frame = () => {
     dispatch(setActiveUnmuteIndex(snapIndex));
   }, 200);
 
-  // useLayoutEffect(() => {
-  //   if (scrollRef.current) {
-  //     scrollRef.current.addEventListener("scroll", () => {
-  //       const { scrollLeft, clientWidth } = scrollRef.current;
-
-  //       if (scrollLeft === 0) {
-  //         return;
-  //       }
-
-  //       const snapIndex = Math.floor(scrollLeft / clientWidth);
-
-  //       if (snapIndex !== activeUnmuteIndex) {
-  //         debouncedSetActiveUnmuteIndex(snapIndex);
-  //       }
-  //     });
-  //   }
-  // }, [activeUnmuteIndex]);
   useLayoutEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener("scroll", () => {
+        const { scrollLeft, clientWidth } = scrollRef.current;
+        // setScrollPosition(scrollLeft);
+        if (scrollLeft < 230) {
+          setTimeout(() => {
+            dispatch(setActiveIndexScroll(1));
+          }, 100);
+        } else if (scrollLeft > 300) {
+          dispatch(setActiveIndexScroll(3));
+        } else if (scrollLeft > 230 && scrollLeft < 300) {
+          setTimeout(() => {
+            dispatch(setActiveIndexScroll(2));
+          }, 100);
+        }
+        if (scrollLeft === 0) {
+          return;
+        }
+
+        // const snapIndex = Math.floor(scrollLeft / clientWidth);
+
+        // if (snapIndex !== activeUnmuteIndex) {
+        //   debouncedSetActiveUnmuteIndex(snapIndex);
+        // }
+      });
+    }
+  }, [activeUnmuteIndex]);
+  useEffect(() => {
     if (scrollRef.current && unmutes.length === 3) {
       const clientWidth = scrollRef.current.clientWidth;
-      const middleIndex = 2;
+      const middleIndex = activeindex;
       const unmuteWidth = clientWidth / 2;
       const scrollPosition = unmuteWidth * middleIndex - clientWidth / 2;
 
       scrollRef.current.scrollTo({ left: scrollPosition, behavior: "smooth" });
     }
   }, [unmutes]);
+
+  // useEffect(() => {
+  //   if (scrollPosition < 230) {
+  //     dispatch(setActiveIndexScroll(1));
+  //   } else if (scrollPosition > 300) {
+  //     dispatch(setActiveIndexScroll(3));
+  //   } else if (scrollPosition > 230 && scrollPosition < 300) {
+  //     dispatch(setActiveIndexScroll(2));
+  //   }
+  // }, [scrollPosition]);
+
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
@@ -323,7 +367,7 @@ export const Frame = () => {
           <Unmute
             key={unmute.id}
             unmute={unmute}
-            active={activeUnmuteIndex === index}
+            active={activeindex === index}
             onDelete={handleDelete}
             length={unmutes?.length}
           />

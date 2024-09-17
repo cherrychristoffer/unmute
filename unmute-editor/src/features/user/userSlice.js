@@ -84,6 +84,9 @@ export const userSlice = createSlice({
         unmutes: newUnmutes,
       };
     },
+    updateAllUnmutes: (state, action) => {
+      state.unmutes = action.payload;
+    },
 
     deleteUnmute: (state, action) => {
       const filteredUnmutes = state.unmutes.filter(
@@ -114,11 +117,17 @@ export const userSlice = createSlice({
     },
 
     updateUnmutes: (state, action) => {
-      console.log("Action", action.payload);
-
       return {
         ...state,
-        unmutes: action.payload,
+        unmutes: state.unmutes.map((item) => {
+          const updatedUnmute = action.payload.find(
+            (state) => state.properties._uuid === item.properties._uuid
+          );
+          if (updatedUnmute) {
+            return updatedUnmute;
+          }
+          return item;
+        }),
       };
     },
 
@@ -140,6 +149,7 @@ export const userSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   addUnmute,
+  updateAllUnmutes,
   deleteUnmute,
   updateUnmute,
   updateUnmutes,

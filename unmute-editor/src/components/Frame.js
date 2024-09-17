@@ -15,6 +15,7 @@ import { Link } from "wouter";
 import { PlusIcon } from "../assets/icons/icon_plus";
 
 import { Loader } from "./Loader";
+import { v4 as uuidv4 } from "uuid";
 
 import { deleteFile, getFileUrl, uploadFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
@@ -22,25 +23,21 @@ import {
   updateUnmutes,
   updateUnmute,
   setActiveIndexScroll,
+  updateAllUnmutes,
 } from "../features/user/userSlice";
 
 import { useDebouncedCallback } from "use-debounce";
 
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
-import "cropperjs/dist/cropper.css";
-import "./custom-cropper.css";
-import Cropper from "react-cropper";
-
 import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 import { useActiveUnmute } from "../api/useUnmutes";
 import { UnmuteFrame } from "./Frame-first";
-import { throttle } from "lodash";
+
+import CropperComponent from "./Cropper";
 
 const frame_padding = (scale, landscape) => {
-  console.log("scalleeee", scale, landscape);
-
   if (landscape) {
     return {
       paddingTop: `${17 * scale}px`,
@@ -61,11 +58,36 @@ const frame_padding = (scale, landscape) => {
 const Unmute = ({ unmute, active, onDelete, length }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+
   const activeIndexData = useSelector((state) => state.user.activeIndex);
 
-  const handleCrop = useDebouncedCallback(() => {
-    if (!active) return;
+  const [loading, setLoading] = useState(false);
 
+  const handleChange = async (event) => {
+    setLoading(true);
+    const uuid = unmute._uuid;
+    const file = event.target.files[0];
+
+    uploadFile({
+      path: uuid,
+      file,
+    }).then(() => {
+      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+      updateUnmuteInCart({
+        key: unmute.key,
+        properties: {
+          ...unmute.properties,
+          _images: [fileUrl],
+        },
+      }).then(({ data }) => {
+        setLoading(false);
+        dispatch(updateUnmutes(data.items));
+      });
+    });
+  };
+
+  const handleCrop = useDebouncedCallback((e) => {
+    if (!active) return;
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -98,7 +120,6 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
       _activeIndex: activeIndex,
     },
   } = unmute;
-  console.log("images", images);
 
   const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
   const isLandscape = orientation === "landscape";
@@ -107,7 +128,6 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
   const frame_width = isLandscape
     ? "min-w-[300px] w-[55%]"
     : "min-w-[250px] w-1/2";
-  console.log("isLandscape", isLandscape);
 
   return (
     <>
@@ -121,7 +141,6 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
           images={images}
           frame_padding={frame_padding}
           scale={scale}
-          handleCrop={handleCrop}
         />
       ) : (
         <div className="snap-center flex items-center p-4">
@@ -141,33 +160,13 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
             />
             {images && images.length > 0 ? (
               <>
-                {console.log("lanadfwefwefwefwefwe", isLandscape)}
-                <Cropper
-                  key={isLandscape}
-                  ref={cropperRef}
-                  src={images[images.length - 1]}
-                  className={clsx(
-                    frame_width,
-                    "absolute h-full object-cover overflow-hidden"
-                  )}
-                  style={frame_padding(scale, isLandscape)}
-                  crossOrigin="anonymous"
-                  checkCrossOrigin={true}
-                  checkOrientation={false}
-                  center={false}
-                  modal={false}
-                  guides={false}
-                  highlight={false}
-                  background={false}
-                  cropBoxResizable={false}
-                  cropBoxMovable={true}
-                  viewMode={3}
-                  dragMode="move"
-                  movable={true}
-                  autoCropArea={1}
-                  rotatable={false}
-                  cropend={handleCrop}
-                  zoom={handleCrop}
+                <CropperComponent
+                  images={images}
+                  frame_padding={frame_padding}
+                  scale={scale}
+                  frame_width={frame_width}
+                  isLandscape={isLandscape}
+                  unmute={unmute}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}
@@ -178,9 +177,25 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
               </>
             ) : (
               <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                <PlusIcon
-                  size={20}
-                  className={"fill-white"}
+                <label htmlFor={`mage-add-${unmute.key}`}>
+                  {loading ? (
+                    <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                      Uploading...
+                      <Loader size={"w-24 h-24"} />
+                    </h2>
+                  ) : (
+                    <PlusIcon
+                      size={20}
+                      className={"fill-white"}
+                    />
+                  )}
+                </label>
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  className="hidden"
+                  id={`mage-add-${unmute.key}`}
+                  onChange={handleChange}
                 />
               </button>
             )}
@@ -198,6 +213,7 @@ export const Frame = () => {
   const [scrollPosition, setScrollPosition] = useState();
 
   const scrollRef = useRef(null);
+  const isAllready = useRef(false);
 
   const audioRef = useRef();
 
@@ -206,30 +222,45 @@ export const Frame = () => {
   const [, navigate] = useLocation(); // Initialize navigation
   const { activeUnmute } = useActiveUnmute();
 
-  const unmutesCopy = useSelector((state) => state.user.unmutes);
-  const unmutes = [...unmutesCopy];
-
-  if (unmutes?.length === 2) {
-    const emptyImages = unmutes.find(
-      (item) => item.properties._images?.length === 0
-    );
-
-    unmutes.push({ ...emptyImages });
-  }
-  const withImage = unmutes?.filter(
-    (item) => item.properties._images?.length > 0
-  );
-
-  const sortedUnmutes = unmutes.filter(
-    (item) => item.properties._images?.length === 0
-  );
-  if (withImage) {
-    sortedUnmutes.splice(1, 0, ...withImage);
-  }
+  const unmutes = useSelector((state) => state.user.unmutes);
 
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
+  useEffect(() => {
+    if (unmutes?.length > 0 && !isAllready.current) {
+      isAllready.current = true;
+      const unmutesCopy = [...unmutes];
+
+      if (unmutesCopy?.length === 2) {
+        const emptyImages = unmutes.find(
+          (item) => item.properties._images?.length === 0
+        );
+
+        unmutesCopy.push({
+          ...emptyImages,
+          properties: {
+            ...emptyImages.properties,
+            _uuid: uuidv4(),
+          },
+        });
+      }
+      const withImage = unmutesCopy?.filter(
+        (item) => item.properties._images?.length > 0
+      );
+
+      const sortedUnmutes = unmutesCopy.filter(
+        (item) => item.properties._images?.length === 0
+      );
+
+      if (withImage) {
+        sortedUnmutes.splice(1, 0, ...withImage);
+      }
+      console.log("sortedUnmutes", sortedUnmutes);
+
+      dispatch(updateAllUnmutes(sortedUnmutes));
+    }
+  }, [unmutes]);
 
   const loading = activeUnmuteIndex === null;
 
@@ -243,15 +274,14 @@ export const Frame = () => {
         const { scrollLeft, clientWidth } = scrollRef.current;
         // setScrollPosition(scrollLeft);
         if (scrollLeft < 230) {
-          setTimeout(() => {
-            dispatch(setActiveIndexScroll(1));
-          }, 100);
+          dispatch(setActiveIndexScroll(1));
+          dispatch(setActiveUnmuteIndex(0));
         } else if (scrollLeft > 300) {
           dispatch(setActiveIndexScroll(3));
+          dispatch(setActiveUnmuteIndex(2));
         } else if (scrollLeft > 230 && scrollLeft < 300) {
-          setTimeout(() => {
-            dispatch(setActiveIndexScroll(2));
-          }, 100);
+          dispatch(setActiveIndexScroll(2));
+          dispatch(setActiveUnmuteIndex(1));
         }
         if (scrollLeft === 0) {
           return;
@@ -269,6 +299,7 @@ export const Frame = () => {
     if (scrollRef.current && unmutes.length === 3) {
       const clientWidth = scrollRef.current.clientWidth;
       const middleIndex = activeindex;
+      dispatch(setActiveUnmuteIndex(1));
       const unmuteWidth = clientWidth / 2;
       const scrollPosition = unmuteWidth * middleIndex - clientWidth / 2;
 
@@ -317,7 +348,6 @@ export const Frame = () => {
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items));
-        navigate("/upload-image");
       });
     });
   };
@@ -347,23 +377,7 @@ export const Frame = () => {
         ref={scrollRef}
         className="relative w-full flex gap-4 snap-x snap-mandatory overflow-auto py-4"
       >
-        {/* {unmutes?.length === 1 ? (
-          <></>
-        ) : (
-          <>
-            {unmutes.map((unmute, index) => (
-              <Unmute
-                key={unmute.id}
-                unmute={unmute}
-                active={activeUnmuteIndex === index}
-                onDelete={handleDelete}
-                length  ={unmutes?.length}
-              />
-            ))}
-          </>
-        )} */}
-
-        {sortedUnmutes.map((unmute, index) => (
+        {unmutes.map((unmute, index) => (
           <Unmute
             key={unmute.id}
             unmute={unmute}

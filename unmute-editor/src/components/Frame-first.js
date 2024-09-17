@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { useRef } from "react";
-import { Cropper } from "react-cropper";
 import { PlusIcon } from "../assets/icons/icon_plus";
+import CropperComponent from "./Cropper";
+
 export const UnmuteFrame = ({
   unmute,
   onDelete,
@@ -11,10 +11,7 @@ export const UnmuteFrame = ({
   images,
   frame_padding,
   scale,
-  handleCrop,
 }) => {
-  const cropperRef = useRef(null);
-
   return (
     <>
       <div className="snap-center flex items-center p-4">
@@ -32,33 +29,13 @@ export const UnmuteFrame = ({
               "relative top-0 z-[1] pointer-events-none"
             )}
           />
-
-          <Cropper
-            key={isLandscape}
-            ref={cropperRef}
-            src={images[images.length - 1]}
-            className={clsx(
-              frame_width,
-              "absolute h-full object-cover overflow-hidden"
-            )}
-            style={frame_padding(scale, isLandscape)}
-            crossOrigin="anonymous"
-            checkCrossOrigin={true}
-            checkOrientation={false}
-            center={false}
-            modal={false}
-            guides={false}
-            highlight={false}
-            background={false}
-            cropBoxResizable={false}
-            cropBoxMovable={true}
-            viewMode={3}
-            dragMode="move"
-            movable={true}
-            autoCropArea={1}
-            rotatable={false}
-            cropend={handleCrop}
-            zoom={handleCrop}
+          <CropperComponent
+            images={images}
+            frame_padding={frame_padding}
+            scale={scale}
+            frame_width={frame_width}
+            isLandscape={isLandscape}
+            unmute={unmute}
           />
           <button
             onClick={() => onDelete(unmute.key)}
@@ -75,7 +52,6 @@ export const UnmuteFrame = ({
             isLandscape ? "mt-0" : "mt-0"
           )}
         >
-          {console.log("Stex")}
           <img
             src={frame}
             alt="Frame"
@@ -86,10 +62,7 @@ export const UnmuteFrame = ({
           />
 
           <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-            <PlusIcon
-              size={20}
-              className={"fill-white"}
-            />
+            <PlusIcon size={20} className={"fill-white"} />
           </button>
         </div>
       </div>

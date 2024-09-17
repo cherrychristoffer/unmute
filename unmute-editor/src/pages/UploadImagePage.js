@@ -36,7 +36,6 @@ export const UploadImagePage = () => {
         },
       }).then(({ data }) => {
         setLoading(false);
-        console.log("data", data);
 
         dispatch(updateUnmutes(data.items));
 

@@ -1,6 +1,7 @@
 import { React, useEffect, useRef, useState } from "react";
 
 import { useDispatch } from "react-redux";
+import TextareaAutosize from "react-textarea-autosize";
 import { useLocation } from "wouter";
 
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
@@ -85,7 +86,6 @@ export const StartRecordingPage = () => {
           _audios: [fileUrl], // TODO: Add to existing list of audios
         },
       }).then(({ data }) => {
-        console.log("Dataa", data?.items);
         dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
         // dispatch(updateUnmutes(data.items));
         navigate("/edit-audio");
@@ -94,7 +94,7 @@ export const StartRecordingPage = () => {
   }, [recordingBlob]);
 
   return (
-    <>
+    <div className={"pb-[80px] pt-10"}>
       <div className="flex flex-col items-center">
         <div className="mt-6">
           {!isRecording && (
@@ -128,18 +128,16 @@ export const StartRecordingPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center mt-3 h-96 w-4/5 mx-auto">
-        <textarea
+      <div className="flex flex-col items-center mt-3 w-4/5 mx-auto">
+        <TextareaAutosize
           disabled
-          className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
+          minRows={4}
+          className="w-full mt-12 p-4 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
           defaultValue={activeUnmute?.properties?._inspiration}
         />
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 
@@ -149,6 +147,6 @@ export const StartRecordingPage = () => {
         togglePauseResume={togglePauseResume}
         stopRecording={stopRecording}
       />
-    </>
+    </div>
   );
 };

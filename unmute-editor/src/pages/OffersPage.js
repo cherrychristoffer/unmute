@@ -5,10 +5,10 @@ import { addUnmute } from "../features/user/userSlice";
 import { addUnmuteToCart } from "../api/cart";
 import { useDispatch } from "react-redux";
 
-import offer1 from "../assets/images/offers/offer1.png";
-import offer2 from "../assets/images/offers/offer2.png";
-import offer3 from "../assets/images/offers/offer3.png";
-import offer4 from "../assets/images/offers/offer4.png";
+import offer1 from "../assets/images/offers/offer1.jpg";
+import offer2 from "../assets/images/offers/offer2.jpg";
+import offer3 from "../assets/images/offers/offer3.jpg";
+import offer4 from "../assets/images/offers/offer4.jpg";
 
 export const OffersPage = () => {
   const [_location, navigate] = useLocation();

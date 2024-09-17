@@ -84,7 +84,7 @@ function App() {
         {/*<Route path="/" component={StartPage}></Route>*/}
         <Route path="/" component={OffersPage} />
         <Route path="/inspirations" component={InspirationsPage} />
-        <Route path="/inspiration-video" component={InspirationsVideoPage} />
+        <Route path="/inspiration-video/:id" component={InspirationsVideoPage} />
         <Route path="/upload-image" component={UploadImagePage} />
         <Route path="/collage" component={CollagePage} />
 

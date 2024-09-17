@@ -180,11 +180,12 @@ export const Frame = () => {
       >
         {unmutes.map((unmute, index) => (
           <Unmute
-            key={unmute.id}
+            key={index}
             unmute={unmute}
             onDelete={handleDelete}
             length={unmutes?.length}
             activeUnmute={activeUnmuteIndex === index}
+            index={index}
           />
         ))}
       </div>

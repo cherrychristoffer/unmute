@@ -35,7 +35,7 @@ const frame_padding = (scale, landscape) => {
   };
 };
 
-const Unmute = ({ unmute, onDelete, length, activeUnmute }) => {
+const Unmute = ({ unmute, onDelete, length, activeUnmute, index }) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
@@ -93,6 +93,7 @@ const Unmute = ({ unmute, onDelete, length, activeUnmute }) => {
           frame_padding={frame_padding}
           scale={scale}
           activeUnmute={activeUnmute}
+          index={index}
         />
       ) : (
         <div className="snap-center flex items-center p-4">
@@ -120,6 +121,7 @@ const Unmute = ({ unmute, onDelete, length, activeUnmute }) => {
                   isLandscape={isLandscape}
                   unmute={unmute}
                   activeUnmute={activeUnmute}
+                  index={index}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}

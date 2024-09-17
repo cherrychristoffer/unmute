@@ -10,4 +10,8 @@ export default configureStore({
     image: imageSlice,
     inspiration: inspirationSlice,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

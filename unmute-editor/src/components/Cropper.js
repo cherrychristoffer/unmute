@@ -32,6 +32,7 @@ const CropperComponent = ({
   scale,
   unmute,
   activeUnmute,
+  index,
 }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
@@ -120,7 +121,7 @@ const CropperComponent = ({
   };
   return (
     <Cropper
-      key={update}
+      key={String(index) + update}
       ref={cropperRef}
       src={images[images.length - 1]}
       className={clsx(

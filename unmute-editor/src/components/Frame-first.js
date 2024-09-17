@@ -12,6 +12,7 @@ export const UnmuteFrame = ({
   frame_padding,
   scale,
   index,
+  activeUnmute,
 }) => {
   return (
     <>
@@ -38,6 +39,7 @@ export const UnmuteFrame = ({
             isLandscape={isLandscape}
             unmute={unmute}
             index={index}
+            activeUnmute={activeUnmute}
           />
           <button
             onClick={() => onDelete(unmute.key)}

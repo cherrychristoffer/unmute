@@ -91,17 +91,16 @@ export const Frame = () => {
         const halfContainerWith = calculatedContainer / 2;
 
         const diff = Math.ceil(scrollLeft - halfContainerWith);
-
         if (diff < fixedScrolled) {
           dispatch(setActiveIndexScroll(1));
           dispatch(setActiveUnmuteIndex(0));
         } else if (diff >= fixedScrolled && diff < 2 * fixedScrolled) {
           dispatch(setActiveIndexScroll(2));
           dispatch(setActiveUnmuteIndex(1));
-        } else if (diff >= 2 * fixedScrolled && diff < 4 * fixedScrolled) {
+        } else if (diff >= 2 * fixedScrolled && diff < 4.5 * fixedScrolled) {
           dispatch(setActiveIndexScroll(3));
           dispatch(setActiveUnmuteIndex(2));
-        } else if (diff >= 4 * fixedScrolled && diff < 6 * fixedScrolled) {
+        } else if (diff >= 4.5 * fixedScrolled && diff < 6 * fixedScrolled) {
           dispatch(setActiveIndexScroll(4));
           dispatch(setActiveUnmuteIndex(3));
         }

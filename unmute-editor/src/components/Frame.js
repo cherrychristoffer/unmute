@@ -1,5 +1,12 @@
-import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation, useRoute, useRouter } from "wouter";
+import {
+  act,
+  React,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { useLocation } from "wouter";
 
 import clsx from "clsx";
 
@@ -8,23 +15,26 @@ import { Link } from "wouter";
 import { PlusIcon } from "../assets/icons/icon_plus";
 
 import { Loader } from "./Loader";
+import { v4 as uuidv4 } from "uuid";
 
 import { deleteFile, getFileUrl, uploadFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
-import { updateUnmutes, updateUnmute } from "../features/user/userSlice";
+import {
+  updateUnmutes,
+  setActiveIndexScroll,
+  updateAllUnmutes,
+} from "../features/user/userSlice";
 
 import { useDebouncedCallback } from "use-debounce";
 
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
-import "cropperjs/dist/cropper.css";
-import "./custom-cropper.css";
-import Cropper from "react-cropper";
-
 import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 import { useActiveUnmute } from "../api/useUnmutes";
 import { UnmuteFrame } from "./Frame-first";
+
+import CropperComponent from "./Cropper";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -44,9 +54,10 @@ const frame_padding = (scale, landscape) => {
   };
 };
 
-const Unmute = ({ unmute, active, onDelete, length }) => {
+const Unmute = ({ unmute, active, onDelete, length, activeUnmute }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = async (event) => {
@@ -72,9 +83,8 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
     });
   };
 
-  const handleCrop = useDebouncedCallback(() => {
+  const handleCrop = useDebouncedCallback((e) => {
     if (!active) return;
-
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -104,11 +114,13 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
       _passepartout: passepartout,
       _orientation: orientation,
       _images: images,
+      _activeIndex: activeIndex,
     },
   } = unmute;
 
   const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
   const isLandscape = orientation === "landscape";
+
   const frame = isLandscape ? frame_landscape_image : frame_image;
   const frame_width = isLandscape
     ? "min-w-[300px] w-[55%]"
@@ -126,7 +138,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
           images={images}
           frame_padding={frame_padding}
           scale={scale}
-          handleCrop={handleCrop}
+          activeUnmute={activeUnmute}
         />
       ) : (
         <div className="snap-center flex items-center p-4">
@@ -146,32 +158,14 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
             />
             {images && images.length > 0 ? (
               <>
-                <Cropper
-                  key={isLandscape}
-                  ref={cropperRef}
-                  src={images[images.length - 1]}
-                  className={clsx(
-                    frame_width,
-                    "absolute h-full object-cover overflow-hidden"
-                  )}
-                  style={frame_padding(scale, isLandscape)}
-                  crossOrigin="anonymous"
-                  checkCrossOrigin={true}
-                  checkOrientation={false}
-                  center={false}
-                  modal={false}
-                  guides={false}
-                  highlight={false}
-                  background={false}
-                  cropBoxResizable={false}
-                  cropBoxMovable={true}
-                  viewMode={3}
-                  dragMode="move"
-                  movable={true}
-                  autoCropArea={1}
-                  rotatable={false}
-                  cropend={handleCrop}
-                  zoom={handleCrop}
+                <CropperComponent
+                  images={images}
+                  frame_padding={frame_padding}
+                  scale={scale}
+                  frame_width={frame_width}
+                  isLandscape={isLandscape}
+                  unmute={unmute}
+                  activeUnmute={activeUnmute}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}
@@ -182,22 +176,22 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
               </>
             ) : (
               <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                <label
-                    htmlFor={`mage-add-${unmute.key}`}
-                >
-                  {loading ?(
-                      <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                        Uploading...
-                        <Loader size={"w-24 h-24"}/>
-                      </h2>
-                  ) : <PlusIcon size={20} className={'fill-white'}/>}
+                <label htmlFor={`mage-add-${unmute.key}`}>
+                  {loading ? (
+                    <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                      Uploading...
+                      <Loader size={"w-24 h-24"} />
+                    </h2>
+                  ) : (
+                    <PlusIcon size={20} className={"fill-white"} />
+                  )}
                 </label>
                 <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                    id={`mage-add-${unmute.key}`}
-                    onChange={handleChange}
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  className="hidden"
+                  id={`mage-add-${unmute.key}`}
+                  onChange={handleChange}
                 />
               </button>
             )}
@@ -211,7 +205,12 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
 export const Frame = () => {
   const cacheBust = Date.now();
 
-  const scrollRef = useRef();
+  const [activeindex, setActiveIndex] = useState(2);
+  const [scrollPosition, setScrollPosition] = useState();
+
+  const scrollRef = useRef(null);
+  const isAllready = useRef(false);
+
   const audioRef = useRef();
 
   const [playing, setPlaying] = useState(false);
@@ -219,32 +218,44 @@ export const Frame = () => {
   const [, navigate] = useLocation(); // Initialize navigation
   const { activeUnmute } = useActiveUnmute();
 
-  const unmutesCopy = useSelector((state) => state.user.unmutes);
-  const unmutes = [...unmutesCopy];
-
-  if (unmutes?.length === 2) {
-    const emptyImages = unmutes.find(
-      (item) => item.properties._images?.length === 0
-    );
-    console.log("emptyImages", emptyImages);
-    console.log("unmutes", unmutes);
-    unmutes.push({ ...emptyImages });
-  }
-  const withImage = unmutes?.filter(
-    (item) => item.properties._images?.length > 0
-  );
-
-  const sortedUnmutes = unmutes.filter(
-    (item) => item.properties._images?.length === 0
-  );
-  if (withImage) {
-    sortedUnmutes.splice(1, 0, ...withImage);
-  }
+  const unmutes = useSelector((state) => state.user.unmutes);
 
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
-  console.log("unmutesCopy", activeUnmuteIndex);
+  useEffect(() => {
+    if (unmutes?.length > 0 && !isAllready.current) {
+      isAllready.current = true;
+      const unmutesCopy = [...unmutes];
+
+      if (unmutesCopy?.length === 2) {
+        const emptyImages = unmutes.find(
+          (item) => item.properties._images?.length === 0
+        );
+
+        unmutesCopy.push({
+          ...emptyImages,
+          properties: {
+            ...emptyImages.properties,
+            _uuid: uuidv4(),
+          },
+        });
+      }
+      const withImage = unmutesCopy?.filter(
+        (item) => item.properties._images?.length > 0
+      );
+
+      const sortedUnmutes = unmutesCopy.filter(
+        (item) => item.properties._images?.length === 0
+      );
+
+      if (withImage) {
+        sortedUnmutes.splice(1, 0, ...withImage);
+      }
+
+      dispatch(updateAllUnmutes(sortedUnmutes));
+    }
+  }, [unmutes]);
 
   const loading = activeUnmuteIndex === null;
 
@@ -252,33 +263,45 @@ export const Frame = () => {
     dispatch(setActiveUnmuteIndex(snapIndex));
   }, 200);
 
-  // useLayoutEffect(() => {
-  //   if (scrollRef.current) {
-  //     scrollRef.current.addEventListener("scroll", () => {
-  //       const { scrollLeft, clientWidth } = scrollRef.current;
-
-  //       if (scrollLeft === 0) {
-  //         return;
-  //       }
-
-  //       const snapIndex = Math.floor(scrollLeft / clientWidth);
-
-  //       if (snapIndex !== activeUnmuteIndex) {
-  //         debouncedSetActiveUnmuteIndex(snapIndex);
-  //       }
-  //     });
-  //   }
-  // }, [activeUnmuteIndex]);
   useLayoutEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener("scroll", () => {
+        const { scrollLeft, clientWidth } = scrollRef.current;
+        // setScrollPosition(scrollLeft);
+        if (scrollLeft < 230) {
+          dispatch(setActiveIndexScroll(1));
+          dispatch(setActiveUnmuteIndex(0));
+        } else if (scrollLeft > 300) {
+          dispatch(setActiveIndexScroll(3));
+          dispatch(setActiveUnmuteIndex(2));
+        } else if (scrollLeft > 230 && scrollLeft < 300) {
+          dispatch(setActiveIndexScroll(2));
+          dispatch(setActiveUnmuteIndex(1));
+        }
+        if (scrollLeft === 0) {
+          return;
+        }
+
+        // const snapIndex = Math.floor(scrollLeft / clientWidth);
+
+        // if (snapIndex !== activeUnmuteIndex) {
+        //   debouncedSetActiveUnmuteIndex(snapIndex);
+        // }
+      });
+    }
+  }, [activeUnmuteIndex]);
+  useEffect(() => {
     if (scrollRef.current && unmutes.length === 3) {
       const clientWidth = scrollRef.current.clientWidth;
-      const middleIndex = 2;
+      const middleIndex = activeindex;
+      dispatch(setActiveUnmuteIndex(1));
       const unmuteWidth = clientWidth / 2;
       const scrollPosition = unmuteWidth * middleIndex - clientWidth / 2;
 
       scrollRef.current.scrollTo({ left: scrollPosition, behavior: "smooth" });
     }
   }, [unmutes]);
+
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
@@ -318,11 +341,7 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img
-            src={frame_image}
-            alt="Frame"
-            className="relative top-0 w-1/2"
-          />
+          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -332,36 +351,20 @@ export const Frame = () => {
       </div>
     );
   }
-
   return (
     <>
       <div
         ref={scrollRef}
         className="relative w-full flex gap-4 snap-x snap-mandatory overflow-auto py-4"
       >
-        {/* {unmutes?.length === 1 ? (
-          <></>
-        ) : (
-          <>
-            {unmutes.map((unmute, index) => (
-              <Unmute
-                key={unmute.id}
-                unmute={unmute}
-                active={activeUnmuteIndex === index}
-                onDelete={handleDelete}
-                length  ={unmutes?.length}
-              />
-            ))}
-          </>
-        )} */}
-
-        {sortedUnmutes.map((unmute, index) => (
+        {unmutes.map((unmute, index) => (
           <Unmute
             key={unmute.id}
             unmute={unmute}
-            active={activeUnmuteIndex === index}
+            active={activeindex === index}
             onDelete={handleDelete}
             length={unmutes?.length}
+            activeUnmute={activeUnmuteIndex === index}
           />
         ))}
       </div>

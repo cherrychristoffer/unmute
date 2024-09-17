@@ -86,7 +86,6 @@ export const StartRecordingPage = () => {
           _audios: [fileUrl], // TODO: Add to existing list of audios
         },
       }).then(({ data }) => {
-        console.log("Dataa", data?.items);
         dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
         // dispatch(updateUnmutes(data.items));
         navigate("/edit-audio");
@@ -138,10 +137,7 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

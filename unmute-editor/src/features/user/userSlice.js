@@ -71,6 +71,7 @@ export const userSlice = createSlice({
   initialState: {
     unmutes: [],
     activeUnmuteIndex: null,
+    activeIndex: null,
   },
   reducers: {
     addUnmute: (state, action) => {
@@ -82,6 +83,9 @@ export const userSlice = createSlice({
         ...state,
         unmutes: newUnmutes,
       };
+    },
+    updateAllUnmutes: (state, action) => {
+      state.unmutes = action.payload;
     },
 
     deleteUnmute: (state, action) => {
@@ -115,7 +119,15 @@ export const userSlice = createSlice({
     updateUnmutes: (state, action) => {
       return {
         ...state,
-        unmutes: action.payload,
+        unmutes: state.unmutes.map((item) => {
+          const updatedUnmute = action.payload.find(
+            (state) => state.properties._uuid === item.properties._uuid
+          );
+          if (updatedUnmute) {
+            return updatedUnmute;
+          }
+          return item;
+        }),
       };
     },
 
@@ -125,17 +137,25 @@ export const userSlice = createSlice({
         activeUnmuteIndex: action.payload,
       };
     },
+    setActiveIndexScroll: (state, action) => {
+      return {
+        ...state,
+        activeIndex: action.payload,
+      };
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
   addUnmute,
+  updateAllUnmutes,
   deleteUnmute,
   updateUnmute,
   updateUnmutes,
   setRecording,
   setActiveUnmuteIndex,
+  setActiveIndexScroll,
 } = userSlice.actions;
 
 export default userSlice.reducer;

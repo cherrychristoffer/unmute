@@ -4,22 +4,22 @@ import { useDispatch } from "react-redux";
 import { fetchCartData } from "./api/cart";
 
 import { Route, Switch, useLocation } from "wouter";
-import {CollagePage} from "./pages/CollagePage";
+import { CollagePage } from "./pages/CollagePage";
 
 import { CropPage } from "./pages/CropPage";
 import { Frame } from "./components/Frame";
 import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
-import {UploadAudioPage} from "./pages/Audio/UploadAudioPage";
+import { UploadAudioPage } from "./pages/Audio/UploadAudioPage";
 
 import { FramePage } from "./pages/FramePage";
-import {InspirationsPage} from "./pages/InspirationsPage";
-import {InspirationsVideoPage} from "./pages/InspirationsVideoPage";
+import { InspirationsPage } from "./pages/InspirationsPage";
+import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
 import { PassepartoutPage } from "./pages/PassepartoutPage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
-import {AudioApproachPage} from "./pages/Audio/AudioApproachPage";
+import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
 import { AudioPage } from "./pages/Audio/AudioPage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
@@ -31,14 +31,15 @@ import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
 function App() {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
+  console.log("tes222t");
 
   const appHeight = () => {
     const doc = document.documentElement;
-    doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+    doc.style.setProperty("--app-height", `${window.innerHeight}px`);
   };
 
   function init() {
-    window.addEventListener('resize', appHeight);
+    window.addEventListener("resize", appHeight);
   }
 
   useEffect(init, []);
@@ -69,7 +70,7 @@ function App() {
   const isSpecialRoute = specialRoutesRegex.test(location.pathname);
 
   return (
-    <div className={`app-wrapper ${isSpecialRoute ? 'with-navigation' : ''}`}>
+    <div className={`app-wrapper ${isSpecialRoute ? "with-navigation" : ""}`}>
       <progress id="progress-bar"></progress>
 
       <Switch>

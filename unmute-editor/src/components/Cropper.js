@@ -30,6 +30,7 @@ const CropperComponent = ({
   frame_padding,
   scale,
   unmute,
+  activeUnmute,
 }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
@@ -40,16 +41,20 @@ const CropperComponent = ({
   let zoomStep = 0;
 
   useEffect(() => {
-    if (cropperRef.current) {
+    if (cropperRef.current && activeUnmute) {
       dispatch(setImageRef(cropperRef.current));
       dispatch(setRatio(0));
       dispatch(updateZoomValue(0));
       min.current = null;
     }
-  }, [params[0] + update]);
+  }, [params[0] + update, activeUnmute]);
+
+  useEffect(() => {
+    setUpdate((prev) => prev + 1);
+  }, [activeUnmute]);
 
   const handleCrop = (e) => {
-    if (params[0] !== "crop") return;
+    if (params[0] !== "crop" || !activeUnmute) return;
 
     // if (!active) return;
     const cropper = cropperRef.current?.cropper;
@@ -102,7 +107,6 @@ const CropperComponent = ({
       }
     }
   };
-
   return (
     <Cropper
       // key={isLandscape}
@@ -120,9 +124,9 @@ const CropperComponent = ({
       modal={false}
       highlight={false}
       background={false}
-      guides={params[0] === "crop" ? true : false}
-      cropBoxResizable={params[0] === "crop" ? true : false}
-      center={params[0] === "crop" ? true : false}
+      guides={activeUnmute && params[0] === "crop" ? true : false}
+      cropBoxResizable={activeUnmute && params[0] === "crop" ? true : false}
+      center={activeUnmute && params[0] === "crop" ? true : false}
       cropBoxMovable={true}
       viewMode={3}
       dragMode="move"

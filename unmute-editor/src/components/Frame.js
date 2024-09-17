@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useLocation, useRoute, useRouter } from "wouter";
+import { useLocation } from "wouter";
 
 import clsx from "clsx";
 
@@ -21,7 +21,6 @@ import { deleteFile, getFileUrl, uploadFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
 import {
   updateUnmutes,
-  updateUnmute,
   setActiveIndexScroll,
   updateAllUnmutes,
 } from "../features/user/userSlice";
@@ -55,11 +54,9 @@ const frame_padding = (scale, landscape) => {
   };
 };
 
-const Unmute = ({ unmute, active, onDelete, length }) => {
+const Unmute = ({ unmute, active, onDelete, length, activeUnmute }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
-
-  const activeIndexData = useSelector((state) => state.user.activeIndex);
 
   const [loading, setLoading] = useState(false);
 
@@ -141,6 +138,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
           images={images}
           frame_padding={frame_padding}
           scale={scale}
+          activeUnmute={activeUnmute}
         />
       ) : (
         <div className="snap-center flex items-center p-4">
@@ -167,6 +165,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
                   frame_width={frame_width}
                   isLandscape={isLandscape}
                   unmute={unmute}
+                  activeUnmute={activeUnmute}
                 />
                 <button
                   onClick={() => onDelete(unmute.key)}
@@ -184,10 +183,7 @@ const Unmute = ({ unmute, active, onDelete, length }) => {
                       <Loader size={"w-24 h-24"} />
                     </h2>
                   ) : (
-                    <PlusIcon
-                      size={20}
-                      className={"fill-white"}
-                    />
+                    <PlusIcon size={20} className={"fill-white"} />
                   )}
                 </label>
                 <input
@@ -256,7 +252,6 @@ export const Frame = () => {
       if (withImage) {
         sortedUnmutes.splice(1, 0, ...withImage);
       }
-      console.log("sortedUnmutes", sortedUnmutes);
 
       dispatch(updateAllUnmutes(sortedUnmutes));
     }
@@ -307,16 +302,6 @@ export const Frame = () => {
     }
   }, [unmutes]);
 
-  // useEffect(() => {
-  //   if (scrollPosition < 230) {
-  //     dispatch(setActiveIndexScroll(1));
-  //   } else if (scrollPosition > 300) {
-  //     dispatch(setActiveIndexScroll(3));
-  //   } else if (scrollPosition > 230 && scrollPosition < 300) {
-  //     dispatch(setActiveIndexScroll(2));
-  //   }
-  // }, [scrollPosition]);
-
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
@@ -356,11 +341,7 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img
-            src={frame_image}
-            alt="Frame"
-            className="relative top-0 w-1/2"
-          />
+          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -370,7 +351,6 @@ export const Frame = () => {
       </div>
     );
   }
-
   return (
     <>
       <div
@@ -384,6 +364,7 @@ export const Frame = () => {
             active={activeindex === index}
             onDelete={handleDelete}
             length={unmutes?.length}
+            activeUnmute={activeUnmuteIndex === index}
           />
         ))}
       </div>

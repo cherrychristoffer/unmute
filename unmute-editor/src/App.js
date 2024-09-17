@@ -47,7 +47,7 @@ function App() {
 
   useEffect(() => {
     fetchCartData().then(({ data }) => {
-      dispatch(setActiveUnmuteIndex(0));
+      // dispatch(setActiveUnmuteIndex(0));
 
       if (data.items.length === 0) {
         navigate("/");

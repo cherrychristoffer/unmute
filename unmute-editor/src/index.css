@@ -87,7 +87,9 @@
 /* Normalize */
 body {
   overflow: hidden;
+  /*
   font-family: 'Optima nova LT Pro', sans-serif;
+  */
   background-color: #FAFAFA !important;
 }
 

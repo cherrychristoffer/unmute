@@ -45,8 +45,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        serif: ["Optima nova LT Pro", "sans-serif"],
-        sans: ["RealHeadOT", "sans-serif"],
+        serif: ["Optima", "sans-serif"],
+        sans: ["Optima", "sans-serif"],
       },
     },
   },

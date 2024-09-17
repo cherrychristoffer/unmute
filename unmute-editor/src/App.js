@@ -17,6 +17,7 @@ import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
 import { PassepartoutPage } from "./pages/PassepartoutPage";
+import {ReplacePage} from "./pages/ReplacePage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
 import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
@@ -74,7 +75,7 @@ function App() {
 
       <Switch>
         <Route
-          path={/\/(orientation|frame|passepartout|crop)/}
+          path={/\/(orientation|frame|passepartout|crop|replace)/}
           component={Frame}
         />
       </Switch>
@@ -100,12 +101,13 @@ function App() {
         <Route path="/frame" component={FramePage} />
         <Route path="/passepartout" component={PassepartoutPage} />
         <Route path="/crop" component={CropPage} />
+        <Route path="/replace" component={ReplacePage} />
         <Route path="/add">ADD</Route>
       </Switch>
 
       <Switch>
         <Route
-          path={/\/(orientation|frame|passepartout|crop)/}
+          path={/\/(orientation|frame|passepartout|crop|replace)/}
           component={UnmuteBottomNavigation}
         />
       </Switch>

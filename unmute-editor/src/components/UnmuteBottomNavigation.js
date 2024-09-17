@@ -33,7 +33,7 @@ const NAVIGATION = [
     icon: <NavCropIcon/>
   },
   {
-    to: '/upload-image',
+    to: '/replace', // upload-image
     label: 'Replace',
     icon: <NavReplaceIcon/>
   },

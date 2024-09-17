@@ -1,9 +1,44 @@
 import clsx from "clsx";
-import {Link} from "wouter";
+import {Link, useParams} from "wouter";
 import {NavCloseIcon} from "../assets/icons/icon_nav_close";
-import { React } from "react";
+import { React, useEffect, useMemo } from "react";
+import { useDispatch, useSelector} from 'react-redux'
+import {setInspirations, setInspirationsLoading} from "../features/inspiration/inspirationSlice";
+import {getInspirations} from "../api/inspiration";
+import {Loader} from "../components/Loader";
 
 export const InspirationsVideoPage = () => {
+  const dispatch = useDispatch()
+  const inspirations = useSelector(state => state.inspiration.inspirations)
+  const inspirationsLoading = useSelector(state => state.inspiration.inspirationsLoading)
+  const {id} = useParams()
+  const inspiration = useMemo(() => {
+      if (inspirations && id) {
+        return inspirations.find(item => item.id === id)
+      }
+      return null
+  }, [inspirations, inspirationsLoading, id])
+
+  useEffect(() => {
+    if (!inspirations && !inspirationsLoading) {
+      fetchInspirations()
+    }
+  })
+
+  const fetchInspirations = async () => {
+    try {
+      dispatch(setInspirationsLoading(true))
+      const data = await getInspirations()
+      dispatch(setInspirations(data))
+    } finally {
+      dispatch(setInspirationsLoading(false))
+    }
+  }
+
+  if (!inspiration) {
+    return (<Loader size={"w-24 h-24"} />)
+  }
+
   return (
     <div className={'offers-page flex items-center py-10'}>
       <div className="content">
@@ -17,7 +52,7 @@ export const InspirationsVideoPage = () => {
         <div className="mt-14 w-full">
           <video
             className={'border border-rose-500 w-full rounded'}
-            src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+            src={inspiration.video_url}
             controls={false}
             autoPlay
           >

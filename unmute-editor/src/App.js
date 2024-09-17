@@ -31,7 +31,6 @@ import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
 function App() {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  console.log("tes222t");
 
   const appHeight = () => {
     const doc = document.documentElement;
@@ -85,7 +84,7 @@ function App() {
         {/*<Route path="/" component={StartPage}></Route>*/}
         <Route path="/" component={OffersPage} />
         <Route path="/inspirations" component={InspirationsPage} />
-        <Route path="/inspiration-video" component={InspirationsVideoPage} />
+        <Route path="/inspiration-video/:id" component={InspirationsVideoPage} />
         <Route path="/upload-image" component={UploadImagePage} />
         <Route path="/collage" component={CollagePage} />
 

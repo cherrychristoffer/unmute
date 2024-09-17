@@ -1,0 +1,23 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "73076e4aaf183637f8c8f7f9827936e0"
+name = "unmute-editor-staging"
+handle = "unmute-editor-staging"
+application_url = "https://example.com/"
+embedded = true
+
+[build]
+dev_store_url = "quickstart-2dddda71.myshopify.com"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [ "https://example.com/api/auth" ]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false

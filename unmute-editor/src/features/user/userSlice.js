@@ -71,6 +71,7 @@ export const userSlice = createSlice({
   initialState: {
     unmutes: [],
     activeUnmuteIndex: 0,
+    audioBlob: [],
   },
   reducers: {
     addUnmute: (state, action) => {
@@ -136,6 +137,12 @@ export const userSlice = createSlice({
         activeUnmuteIndex: action.payload,
       };
     },
+    setAudioBlob: (state, action) => {
+      return {
+        ...state,
+        audioBlob: action.payload,
+      };
+    },
   },
 });
 
@@ -148,6 +155,7 @@ export const {
   updateUnmutes,
   setRecording,
   setActiveUnmuteIndex,
+  setAudioBlob,
 } = userSlice.actions;
 
 export default userSlice.reducer;

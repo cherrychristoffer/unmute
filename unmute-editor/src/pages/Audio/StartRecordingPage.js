@@ -63,6 +63,7 @@ export const StartRecordingPage = () => {
     },
     countDown > 0 ? 1000 : null
   );
+  console.log("countDown", countDown);
 
   useEffect(() => {
     if (!recordingBlob) return;
@@ -83,7 +84,8 @@ export const StartRecordingPage = () => {
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
-          _audios: [fileUrl], // TODO: Add to existing list of audios
+          _audios: [fileUrl],
+          _countdown: formatTime(time), // TODO: Add to existing list of audios
         },
       }).then(({ data }) => {
         dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
@@ -137,7 +139,10 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

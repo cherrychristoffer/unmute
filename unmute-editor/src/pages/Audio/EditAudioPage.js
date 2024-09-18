@@ -35,7 +35,6 @@ export const EditAudioPage = () => {
   const cacheBust = Date.now();
   const { activeUnmute, loading } = useActiveUnmute();
   const [duration, setDuration] = useState(10);
-  const [blobAudio, setBlobAudio] = useState([]);
   const [range, setRange] = useState({
     start: 0,
     end: 10,
@@ -44,6 +43,7 @@ export const EditAudioPage = () => {
   const audioBlob = useSelector((state) => state.user.audioBlob);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
+  console.log(audioFiles)
 
   const handlePlayAudio = () => {
     if (audioRef.current) {
@@ -135,11 +135,18 @@ export const EditAudioPage = () => {
           })
 
           .then(({ data }) => {
-            const [minutes, seconds] = item.properties._countdown
-              ?.split(":")
-              ?.map(Number);
+            const countdown = item.properties._countdown
+            let minutes = 0
+            let seconds = 0
+            if (typeof countdown === 'number') {
+              seconds = countdown
+            }
+            if (typeof  countdown === 'string') {
+              [minutes, seconds] = countdown
+                  ?.split(":")
+                  ?.map(Number);
+            }
             const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
-
             const newData = {
               blob: data,
               seconds: dataSeconds,
@@ -188,7 +195,7 @@ export const EditAudioPage = () => {
         ))} */}
         <div onClick={goAdd}> click</div>
         <div className="w-full flex flex-col items-center mt-24">
-          {!blobAudio && <Loader size={"w-24 h-24"} />}
+          {!audioBlob && <Loader size={"w-24 h-24"} />}
           {audioBlob?.map((item, index) => (
             <div key={index}>
               <Draggable

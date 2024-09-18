@@ -8,6 +8,9 @@ export const convertVideoToAudio = async (videoKey) => {
             headers: { "Content-Type": "application/json" },
             responseType: 'blob',
         });
-        const audioBlob = new Blob([response.data], { type: 'audio/mp3' });
-        return audioBlob;
+
+    return new File([response.data], "video-to-audio.mp3", {
+        type: "audio/mp3",
+    });
+
 }

@@ -66,14 +66,14 @@ export const UploadAudioPage = () => {
         path: activeUnmute.properties._uuid,
       }).then(() => {
         const fileUrl = getFileUrl(
-            `${activeUnmute.properties._uuid}/video-to-audio.wav`
+            `${activeUnmute.properties._uuid}/video-to-audio.mp3`
         );
 
         updateUnmuteInCart({
           key: activeUnmute.key,
           properties: {
             ...activeUnmute.properties,
-            _audios: [...activeUnmute.properties._audios, fileUrl],
+            _audios: [fileUrl],
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));

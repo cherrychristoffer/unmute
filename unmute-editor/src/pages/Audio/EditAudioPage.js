@@ -35,7 +35,6 @@ export const EditAudioPage = () => {
   const cacheBust = Date.now();
   const { activeUnmute, loading } = useActiveUnmute();
   const [duration, setDuration] = useState(10);
-  const [blobAudio, setBlobAudio] = useState([]);
   const [range, setRange] = useState({
     start: 0,
     end: 10,
@@ -46,6 +45,7 @@ export const EditAudioPage = () => {
   console.log("aut", audioBlob);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
+  console.log(audioFiles);
 
   const handlePlayAudio = () => {
     if (audioRef.current) {
@@ -149,7 +149,6 @@ export const EditAudioPage = () => {
               ?.split(":")
               ?.map(Number);
             const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
-
             const newData = {
               blob: data,
               seconds: dataSeconds,
@@ -198,7 +197,7 @@ export const EditAudioPage = () => {
         ))} */}
         <div onClick={goAdd}> click</div>
         <div className="w-full flex flex-col items-center mt-24">
-          {!blobAudio && <Loader size={"w-24 h-24"} />}
+          {!audioBlob && <Loader size={"w-24 h-24"} />}
           {audioBlob?.map((item, index) => (
             <div
               className={"audio-crop"}

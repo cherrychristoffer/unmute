@@ -63,13 +63,17 @@ const CropperComponent = ({
     ) {
       setUpdate((prev) => prev + 1);
     }
+    if (
+      (activeUnmute || (!activeUnmute && prevActive.current)) &&
+      min.current
+    ) {
+      handleCrop();
+    }
     prevPage.current = params[0];
     prevActive.current = activeUnmute;
   }, [activeUnmute, params[0]]);
 
-  const handleCrop = useDebouncedCallback((e) => {
-    if (params[0] !== "crop" || !activeUnmute) return;
-
+  const handleCrop = () => {
     const cropper = cropperRef.current?.cropper;
 
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -91,7 +95,7 @@ const CropperComponent = ({
         });
       });
     });
-  }, 500);
+  };
 
   const handleZoom = (e) => {
     if (e.type === "zoom") {
@@ -118,6 +122,28 @@ const CropperComponent = ({
         dispatch(setRatio(e.detail.ratio));
         dispatch(updateZoomValue(zoomStep));
       }
+
+      // const cropper = cropperRef.current?.cropper;
+
+      // cropper.getCroppedCanvas().toBlob((blob) => {
+      //   const file = new File([blob], "cropped.png", { type: "image/png" });
+      //   uploadFile({
+      //     path: unmute.properties._uuid,
+      //     file,
+      //   }).then(() => {
+      //     const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`);
+      //     updateUnmuteInCart({
+      //       key: unmute.key,
+      //       properties: {
+      //         ...unmute.properties,
+      //         _images: [fileUrl], // TODO: Add to existing list of images
+      //       },
+      //     }).then(({ data }) => {
+      //       dispatch(updateUnmutes(data.items));
+      //       setUpdate((prev) => prev + 1);
+      //     });
+      //   });
+      // });
     }
   };
   return (
@@ -136,16 +162,20 @@ const CropperComponent = ({
       modal={false}
       highlight={false}
       background={false}
-      guides={activeUnmute && params[0] === "crop"}
-      cropBoxResizable={activeUnmute && params[0] === "crop"}
-      center={activeUnmute && params[0] === "crop"}
+      guides={false}
+      cropBoxResizable={false}
+      center={false}
+      // guides={activeUnmute && params[0] === "crop"}
+      // cropBoxResizable={activeUnmute && params[0] === "crop"}
+      // center={activeUnmute && params[0] === "crop"}
       cropBoxMovable={true}
       viewMode={3}
       dragMode="move"
       movable={true}
       autoCropArea={0.5}
       rotatable={false}
-      cropend={handleCrop}
+      // cropend={handleCrop}
+      cropend={() => {}} // hide for now
       zoomable={activeUnmute && params[0] === "crop"}
       wheelZoomRatio={0.1}
       zoom={handleZoom}

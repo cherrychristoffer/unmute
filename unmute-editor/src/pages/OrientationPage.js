@@ -16,16 +16,14 @@ export const OrientationPage = () => {
   const dispatch = useDispatch();
   const { activeUnmute } = useActiveUnmute();
 
-  const activeIndex = useSelector((state) => state.user.activeIndex);
-
   const handleClick = (orientation) => {
+    if (!activeUnmute) return;
     dispatch(
       updateUnmute({
         ...activeUnmute,
         properties: {
           ...activeUnmute.properties,
           _orientation: orientation,
-          _activeIndex: activeIndex,
         },
       })
     );
@@ -35,7 +33,6 @@ export const OrientationPage = () => {
       properties: {
         ...activeUnmute.properties,
         _orientation: orientation,
-        _activeIndex: activeIndex,
       },
     })
       .catch((err) => {
@@ -67,11 +64,7 @@ export const OrientationPage = () => {
               onClick={() => handleClick(item.value)}
               className={"relative"}
             >
-              <img
-                src={item.image}
-                className=""
-                alt={item.value}
-              />
+              <img src={item.image} className="" alt={item.value} />
               {activeUnmute?.properties?._orientation === item.value && (
                 <CheckIcon
                   color={"fill-rose-100"}

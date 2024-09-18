@@ -13,7 +13,7 @@ import { updateUnmuteInCart } from "../api/cart";
 import { updateUnmutes } from "../features/user/userSlice";
 
 import "cropperjs/dist/cropper.css";
-import "./custom-cropper.css";
+import "../assets/styles/custom-cropper.css";
 import { useParams } from "wouter";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -142,7 +142,7 @@ const CropperComponent = ({
       viewMode={3}
       dragMode="move"
       movable={true}
-      autoCropArea={1}
+      autoCropArea={0.5}
       rotatable={false}
       cropend={handleCrop}
       zoomable={activeUnmute && params[0] === "crop"}

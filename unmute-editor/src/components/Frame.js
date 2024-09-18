@@ -1,5 +1,4 @@
-import { React, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
+import { React, useEffect, useRef, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "wouter";
@@ -20,9 +19,12 @@ import { useDebouncedCallback } from "use-debounce";
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
 import frame_image from "../assets/images/frame.png";
-import { useActiveUnmute } from "../api/useUnmutes";
-
 import Unmute from "./Unmute";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "../assets/styles/swiperCustom.css";
+import { Scrollbar } from "swiper/modules";
 
 export const Frame = () => {
   const cacheBust = Date.now();
@@ -41,6 +43,7 @@ export const Frame = () => {
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
   );
+  console.log("unmutes", unmutes);
   useEffect(() => {
     if (unmutes?.length > 0 && !isAllready.current) {
       isAllready.current = true;
@@ -81,47 +84,47 @@ export const Frame = () => {
     dispatch(setActiveUnmuteIndex(snapIndex));
   }, 200);
 
-  useLayoutEffect(() => {
-    if (scrollRef.current) {
-      function scrollHandler() {
-        const fixedWith = 600;
-        const fixedScrolled = 115;
-        const { scrollLeft, offsetWidth } = scrollRef.current;
-        const calculatedContainer = fixedWith - offsetWidth;
-        const halfContainerWith = calculatedContainer / 2;
+  // useLayoutEffect(() => {
+  //   if (scrollRef.current) {
+  //     function scrollHandler() {
+  //       const fixedWith = 600;
+  //       const fixedScrolled = 115;
+  //       const { scrollLeft, offsetWidth } = scrollRef.current;
+  //       const calculatedContainer = fixedWith - offsetWidth;
+  //       const halfContainerWith = calculatedContainer / 2;
 
-        const diff = Math.ceil(scrollLeft - halfContainerWith);
-        if (diff < fixedScrolled) {
-          dispatch(setActiveIndexScroll(1));
-          dispatch(setActiveUnmuteIndex(0));
-        } else if (diff >= fixedScrolled && diff < 2 * fixedScrolled) {
-          dispatch(setActiveIndexScroll(2));
-          dispatch(setActiveUnmuteIndex(1));
-        } else if (diff >= 2 * fixedScrolled && diff < 4.5 * fixedScrolled) {
-          dispatch(setActiveIndexScroll(3));
-          dispatch(setActiveUnmuteIndex(2));
-        } else if (diff >= 4.5 * fixedScrolled && diff < 6 * fixedScrolled) {
-          dispatch(setActiveIndexScroll(4));
-          dispatch(setActiveUnmuteIndex(3));
-        }
-      }
-      scrollRef?.current?.addEventListener("scroll", scrollHandler);
-    }
-  }, [scrollRef.current]);
+  //       const diff = Math.ceil(scrollLeft - halfContainerWith);
+  //       if (diff < fixedScrolled) {
+  //         dispatch(setActiveIndexScroll(1));
+  //         dispatch(setActiveUnmuteIndex(0));
+  //       } else if (diff >= fixedScrolled && diff < 2 * fixedScrolled) {
+  //         dispatch(setActiveIndexScroll(2));
+  //         dispatch(setActiveUnmuteIndex(1));
+  //       } else if (diff >= 2 * fixedScrolled && diff < 4.5 * fixedScrolled) {
+  //         dispatch(setActiveIndexScroll(3));
+  //         dispatch(setActiveUnmuteIndex(2));
+  //       } else if (diff >= 4.5 * fixedScrolled && diff < 6 * fixedScrolled) {
+  //         dispatch(setActiveIndexScroll(4));
+  //         dispatch(setActiveUnmuteIndex(3));
+  //       }
+  //     }
+  //     scrollRef?.current?.addEventListener("scroll", scrollHandler);
+  //   }
+  // }, [scrollRef.current]);
 
-  useEffect(() => {
-    if (scrollRef.current && unmutes.length >= 3 && !isRendered.current) {
-      dispatch(setActiveUnmuteIndex(1));
-      isRendered.current = true;
-      const secondItem = scrollRef.current.children[1];
-      const containerCenter = scrollRef.current.offsetWidth / 2;
-      const itemCenter = secondItem.offsetLeft + secondItem.offsetWidth / 2;
-      scrollRef.current.scrollTo({
-        left: itemCenter - containerCenter,
-        behavior: "smooth",
-      });
-    }
-  }, [unmutes]);
+  // useEffect(() => {
+  //   if (scrollRef.current && unmutes.length >= 3 && !isRendered.current) {
+  //     dispatch(setActiveUnmuteIndex(1));
+  //     isRendered.current = true;
+  //     const secondItem = scrollRef.current.children[1];
+  //     const containerCenter = scrollRef.current.offsetWidth / 2;
+  //     const itemCenter = secondItem.offsetLeft + secondItem.offsetWidth / 2;
+  //     scrollRef.current.scrollTo({
+  //       left: itemCenter - containerCenter,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }, [unmutes]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -140,6 +143,8 @@ export const Frame = () => {
   const handlePauseAudio = () => {
     setPlaying(false);
   };
+
+  useEffect(() => {}, []);
 
   const handleDelete = (key) => {
     const unmuteToUpdate = unmutes.find((unmute) => unmute.key === key);
@@ -172,23 +177,32 @@ export const Frame = () => {
       </div>
     );
   }
+
   return (
     <>
-      <div
-        ref={scrollRef}
-        className="relative w-full flex gap-4 snap-x snap-mandatory overflow-auto py-4"
+      <Swiper
+        slidesPerView={"auto"}
+        centeredSlides={true}
+        spaceBetween={20}
+        modules={[Scrollbar]}
+        // initialSlide={unmutes?.length > 2 ? 1 : 0}
+        onSlideChange={(event) => {
+          dispatch(setActiveIndexScroll(event.activeIndex + 1));
+          dispatch(setActiveUnmuteIndex(event.activeIndex));
+        }}
       >
         {unmutes.map((unmute, index) => (
-          <Unmute
-            key={index}
-            unmute={unmute}
-            onDelete={handleDelete}
-            length={unmutes?.length}
-            activeUnmute={activeUnmuteIndex === index}
-            index={index}
-          />
+          <SwiperSlide key={index}>
+            <Unmute
+              unmute={unmute}
+              onDelete={handleDelete}
+              length={unmutes?.length}
+              activeUnmute={activeUnmuteIndex === index}
+              index={index}
+            />
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
 
       <div className="flex flex-col items-center">
         {unmutes[activeUnmuteIndex]?.properties?._audios?.length > 0 ? (

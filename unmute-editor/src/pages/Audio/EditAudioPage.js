@@ -136,8 +136,8 @@ export const EditAudioPage = () => {
 
           .then(({ data }) => {
             const [minutes, seconds] = item.properties._countdown
-              .split(":")
-              .map(Number);
+              ?.split(":")
+              ?.map(Number);
             const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
 
             // Create a new object with blob and dataSeconds
@@ -209,11 +209,7 @@ export const EditAudioPage = () => {
               >
                 <div className="handle">
                   {range.end !== 0 && (
-                    <Range
-                      max={duration}
-                      range={range}
-                      setRange={setRange}
-                    />
+                    <Range max={duration} range={range} setRange={setRange} />
                   )}
 
                   <AudioVisualizer

@@ -63,7 +63,6 @@ export const StartRecordingPage = () => {
     },
     countDown > 0 ? 1000 : null
   );
-  console.log("countDown", countDown);
 
   useEffect(() => {
     if (!recordingBlob) return;

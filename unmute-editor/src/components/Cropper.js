@@ -49,6 +49,7 @@ const CropperComponent = ({
       dispatch(setImageRef(cropperRef.current));
       dispatch(setRatio(0));
       dispatch(updateZoomValue(0));
+      dispatch(setMinValue(0));
       min.current = null;
       max.current = null;
     }

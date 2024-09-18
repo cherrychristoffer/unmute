@@ -2,13 +2,15 @@ import { React, useEffect, useRef, useState } from "react";
 
 import axios from "axios";
 
+import Draggable from "react-draggable";
+
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import { updateUnmutes } from "../../features/user/userSlice";
+import { setAudioBlob, updateUnmutes } from "../../features/user/userSlice";
 
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
@@ -16,6 +18,7 @@ import { useActiveUnmute } from "../../api/useUnmutes";
 
 import { AudioVisualizer } from "react-audio-visualize";
 import { Loader } from "../../components/Loader";
+import Range from "./Range";
 
 export const EditAudioPage = () => {
   const {
@@ -31,9 +34,14 @@ export const EditAudioPage = () => {
   const [_location, navigate] = useLocation();
   const cacheBust = Date.now();
   const { activeUnmute, loading } = useActiveUnmute();
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(10);
   const [blobAudio, setBlobAudio] = useState([]);
+  const [range, setRange] = useState({
+    start: 0,
+    end: 10,
+  });
   const userAudio = useSelector((state) => state.user.unmutes);
+  const audioBlob = useSelector((state) => state.user.audioBlob);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
 
@@ -74,6 +82,7 @@ export const EditAudioPage = () => {
       audioRef.current.pause();
     }
   };
+
   useEffect(() => {
     const audioElement = audioRef.current;
 
@@ -124,12 +133,25 @@ export const EditAudioPage = () => {
           .get(`${item.properties?._audios[0]}?c=${cacheBust}`, {
             responseType: "blob",
           })
+
           .then(({ data }) => {
-            const arr = [];
-            arr.push(data);
-            setBlobAudio((prevBlobAudio) => [...prevBlobAudio, ...arr]);
-          }).catch(() => {
-        })
+            const [minutes, seconds] = item.properties._countdown
+              .split(":")
+              .map(Number);
+            const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
+
+            // Create a new object with blob and dataSeconds
+            const newData = {
+              blob: data,
+              seconds: dataSeconds,
+            };
+
+            // Push the new object to the array
+            const dataArray = [...audioBlob];
+            dataArray.push(newData);
+
+            dispatch(setAudioBlob(dataArray));
+          })
       );
     }
   }, [userAudio]);
@@ -141,6 +163,10 @@ export const EditAudioPage = () => {
   const goAdd = () => {
     navigate("start-recording");
   };
+  // eventLogger = (e, data) => {
+  //   console.log("Event: ", e);
+  //   console.log("Data: ", data);
+  // };
 
   return (
     <>
@@ -154,35 +180,61 @@ export const EditAudioPage = () => {
             src={`${audioFiles[0]}?c=${cacheBust}`}
           ></audio>
         )}
-        {userAudio?.map((item) => (
+        {/* {userAudio?.map((item) => (
           <audio
             ref={audioRef}
             className="hidden"
             controls="controls"
-            src={`${item.properties?._audios[0]}?c=${cacheBust}`}
-          />
-        ))}
+            src={`${item.properties?._audios}?c=${cacheBust}`}
+          ></audio>
+        ))} */}
         <div onClick={goAdd}> click</div>
         <div className="w-full flex flex-col items-center mt-24">
           {!blobAudio && <Loader size={"w-24 h-24"} />}
-          {blobAudio &&
-            blobAudio?.map((item) => (
-              <AudioVisualizer
-                blob={item}
-                width={300}
-                height={82}
-                barWidth={1}
-                gap={4}
-                backgroundColor="#F3F3F3"
-                barColor="#B0928C"
-                style={{
-                  borderRadius: 4,
-                  maxWidth: "100%",
-                  borderWidth: "1px",
-                  borderColor: "#B0928C",
+          {audioBlob?.map((item, index) => (
+            <div key={index}>
+              <Draggable
+                axis="y"
+                handle=".handle"
+                defaultPosition={{ x: 0, y: 0 }}
+                position={null}
+                grid={[25, 25]}
+                scale={1}
+                onStop={(e, data) => {
+                  // console.log("Dragged to:", data.x, data.y); // Track the final position
                 }}
-              />
-            ))}
+                // onStart={this.handleStart}
+                // onDrag={this.handleDrag}
+                // onStop={this.handleStop}
+              >
+                <div className="handle">
+                  {range.end !== 0 && (
+                    <Range
+                      max={duration}
+                      range={range}
+                      setRange={setRange}
+                    />
+                  )}
+
+                  <AudioVisualizer
+                    blob={item.blob}
+                    width={300}
+                    height={82}
+                    barWidth={1}
+                    gap={4}
+                    backgroundColor="#F3F3F3"
+                    barColor="#B0928C"
+                    style={{
+                      borderRadius: 4,
+                      maxWidth: "100%",
+                      borderWidth: "1px",
+                      borderColor: "#B0928C",
+                    }}
+                  />
+                </div>
+              </Draggable>
+            </div>
+          ))}
         </div>
       </div>
 

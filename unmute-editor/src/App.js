@@ -17,7 +17,7 @@ import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
 import { PassepartoutPage } from "./pages/PassepartoutPage";
-import {ReplacePage} from "./pages/ReplacePage";
+import { ReplacePage } from "./pages/ReplacePage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
 import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
@@ -26,8 +26,10 @@ import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
 
-import { addUnmute, setActiveUnmuteIndex } from "./features/user/userSlice";
+import { addUnmute } from "./features/user/userSlice";
 import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
+
+import "./assets/styles/global.css";
 
 function App() {
   const dispatch = useDispatch();
@@ -47,8 +49,6 @@ function App() {
 
   useEffect(() => {
     fetchCartData().then(({ data }) => {
-      // dispatch(setActiveUnmuteIndex(0));
-
       if (data.items.length === 0) {
         navigate("/");
       } else {
@@ -85,7 +85,10 @@ function App() {
         {/*<Route path="/" component={StartPage}></Route>*/}
         <Route path="/" component={OffersPage} />
         <Route path="/inspirations" component={InspirationsPage} />
-        <Route path="/inspiration-video/:id" component={InspirationsVideoPage} />
+        <Route
+          path="/inspiration-video/:id"
+          component={InspirationsVideoPage}
+        />
         <Route path="/upload-image" component={UploadImagePage} />
         <Route path="/collage" component={CollagePage} />
 

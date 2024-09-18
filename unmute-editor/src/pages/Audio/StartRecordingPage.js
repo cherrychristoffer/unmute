@@ -83,7 +83,8 @@ export const StartRecordingPage = () => {
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
-          _audios: [...activeUnmute.properties._audios, fileUrl],
+          _audios: [fileUrl],
+          _countdown: formatTime(time), // TODO: Add to existing list of audios
         },
       }).then(({ data }) => {
         dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
@@ -137,7 +138,10 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

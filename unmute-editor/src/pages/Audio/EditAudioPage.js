@@ -42,6 +42,8 @@ export const EditAudioPage = () => {
   });
   const userAudio = useSelector((state) => state.user.unmutes);
   const audioBlob = useSelector((state) => state.user.audioBlob);
+  const refAudio = useRef(false);
+  console.log("aut", audioBlob);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
 
@@ -125,17 +127,25 @@ export const EditAudioPage = () => {
       }
     }
   };
+  console.log("usera", userAudio);
 
   useEffect(() => {
-    if (userAudio.length > 0) {
-      userAudio?.map((item) =>
+    if (userAudio.length > 0 && !refAudio.current) {
+      refAudio.current = true;
+      const dataFind = userAudio?.find(
+        (item) => item.properties?._audios?.length > 0
+      );
+
+      if (dataFind) {
         axios
-          .get(`${item.properties?._audios}?c=${cacheBust}`, {
+          .get(`${dataFind.properties?._audios}?c=${cacheBust}`, {
             responseType: "blob",
           })
 
           .then(({ data }) => {
-            const [minutes, seconds] = item.properties._countdown
+            console.log("item.properties._countdown", dataFind.properties);
+
+            const [minutes, seconds] = dataFind.properties._countdown
               ?.split(":")
               ?.map(Number);
             const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
@@ -149,8 +159,8 @@ export const EditAudioPage = () => {
             dataArray.push(newData);
 
             dispatch(setAudioBlob(dataArray));
-          })
-      );
+          });
+      }
     }
   }, [userAudio]);
 
@@ -190,7 +200,10 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!blobAudio && <Loader size={"w-24 h-24"} />}
           {audioBlob?.map((item, index) => (
-            <div className={'audio-crop'} key={index}>
+            <div
+              className={"audio-crop"}
+              key={index}
+            >
               <Draggable
                 axis="y"
                 handle=".handle"

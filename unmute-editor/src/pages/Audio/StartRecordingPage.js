@@ -8,14 +8,17 @@ import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 import { v4 as uuid } from "uuid";
 
-import { addUnmute, updateUnmutes } from "../../features/user/userSlice";
+import {
+  addUnmute,
+  updateUnmute,
+  updateUnmutes,
+} from "../../features/user/userSlice";
 
 import { updateUnmuteInCart } from "../../api/cart";
 
 import { getFileUrl, uploadFile } from "../../api/aws";
 import { useActiveUnmute } from "../../api/useUnmutes";
 import { useInterval } from "../../hooks/useInterval";
-
 const formatTime = (time) => {
   let minutes = Math.floor(time / 60);
   let seconds = time % 60;
@@ -26,7 +29,6 @@ const formatTime = (time) => {
 
   return `${minutes}:${seconds}`;
 };
-
 export const StartRecordingPage = () => {
   const {
     startRecording,
@@ -40,6 +42,7 @@ export const StartRecordingPage = () => {
   const audioRef = useRef();
   const { activeUnmute } = useActiveUnmute();
   const [countDown, setCountDown] = useState(3);
+  const [minutesSeconds, setMinutesSeconds] = useState(null);
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
@@ -63,7 +66,6 @@ export const StartRecordingPage = () => {
     },
     countDown > 0 ? 1000 : null
   );
-  console.log("countDown", countDown);
 
   useEffect(() => {
     if (!recordingBlob) return;
@@ -79,16 +81,20 @@ export const StartRecordingPage = () => {
       const fileUrl = getFileUrl(
         `${activeUnmute.properties._uuid}/recorded.wav`
       );
+      console.log("time", time);
 
       updateUnmuteInCart({
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
           _audios: [fileUrl],
-          _countdown: formatTime(time), // TODO: Add to existing list of audios
+          _countdown: formatTime(time),
         },
       }).then(({ data }) => {
-        dispatch(addUnmute({ ...data.items?.[0], id: uuid }));
+        data?.items.map((item) =>
+          dispatch(updateUnmute({ ...item, id: uuid }))
+        );
+
         // dispatch(updateUnmutes(data.items));
         navigate("/edit-audio");
       });

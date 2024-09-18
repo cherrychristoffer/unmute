@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "./range.css";
 
 // const min = 0;
@@ -62,7 +62,7 @@ export const Range = ({ min = 0, max, range, setRange }) => {
           ref={endRef}
           type="range"
           name="end"
-          className="range-min"
+          className="range-max"
           min={min}
           max={max}
           value={range.end}

@@ -29,6 +29,7 @@ export const addUnmuteToCart = async ({ quantity }) => {
         _orientation: "portait",
         _passepartout: "small",
         _inspiration: null,
+        _countdown: 0,
       },
     };
   });

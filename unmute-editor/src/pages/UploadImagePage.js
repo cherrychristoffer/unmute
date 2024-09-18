@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "wouter";
 
 import { Loader } from "../components/Loader";
@@ -16,32 +16,52 @@ export const UploadImagePage = () => {
   const [_location, navigate] = useLocation();
   const { activeUnmute } = useActiveUnmute();
   const [loading, setLoading] = useState(false);
+  const unmutes = useSelector((state) => state.user.unmutes);
+
+  const url = new URL(window.location);
+  const type = url.searchParams.get("type");
+
+  const uploadImage = async (item, file) => {
+    try {
+      const uuid = item.properties._uuid;
+      await uploadFile({
+        path: uuid,
+        file,
+      });
+      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+
+      const cart = await updateUnmuteInCart({
+        key: item.key,
+        properties: {
+          ...item.properties,
+          _images: [fileUrl], // TODO: Add to existing list of images
+        },
+      });
+      dispatch(updateUnmutes(cart.data.items));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleChange = async (event) => {
     setLoading(true);
-    const uuid = activeUnmute.properties._uuid;
     const file = event.target.files[0];
+    await uploadImage(activeUnmute, file);
+    setLoading(false);
 
-    uploadFile({
-      path: uuid,
-      file,
-    }).then(() => {
-      const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+    navigate("/orientation");
+  };
 
-      updateUnmuteInCart({
-        key: activeUnmute.key,
-        properties: {
-          ...activeUnmute.properties,
-          _images: [fileUrl], // TODO: Add to existing list of images
-        },
-      }).then(({ data }) => {
-        setLoading(false);
-
-        dispatch(updateUnmutes(data.items));
-
-        navigate("/orientation");
-      });
-    });
+  const handleCollageChange = async (event) => {
+    setLoading(true);
+    const files = event.target.files;
+    for (var i = 0; i < unmutes.length; i++) {
+      if (files[i]) {
+        await uploadImage(unmutes[i], files[i]);
+      }
+    }
+    setLoading(false);
+    navigate("/orientation");
   };
 
   return (
@@ -65,36 +85,40 @@ export const UploadImagePage = () => {
 
           {!loading && (
             <div className={"mt-56"}>
-              <form>
-                <label
-                  htmlFor="image"
-                  className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
-                >
-                  Choose photo from Phone
-                </label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  className="hidden"
-                  id="image"
-                  onChange={handleChange}
-                />
-              </form>
-
-              <form className="mt-5">
-                <label
-                  htmlFor="image"
-                  className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
-                >
-                  Create Collage Choose photos
-                </label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  className="hidden"
-                  id="image"
-                />
-              </form>
+              {type !== "multiple" ? (
+                <form>
+                  <label
+                    htmlFor="image"
+                    className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+                  >
+                    Choose photo from Phone
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id="image"
+                    onChange={handleChange}
+                  />
+                </form>
+              ) : (
+                <form className="mt-5">
+                  <label
+                    htmlFor="image"
+                    className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+                  >
+                    Create Collage Choose photos
+                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleCollageChange}
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id="image"
+                  />
+                </form>
+              )}
             </div>
           )}
         </div>

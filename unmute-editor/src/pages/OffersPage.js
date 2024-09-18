@@ -22,12 +22,16 @@ export const OffersPage = () => {
       navigate("/upload-image");
     });
   };
+
+  const navigateToCollage = () => navigate("/collage");
+
   const UNMUTE = [
     {
       image: offer1,
       quantity: 1,
       title: "Unmute",
       price: "399",
+      onClick: handleClick,
     },
     {
       image: offer2,
@@ -35,12 +39,14 @@ export const OffersPage = () => {
       title: "Todays special",
       price: "699",
       saving: 100,
+      onClick: handleClick,
     },
     {
       image: offer3,
       quantity: 1,
       title: "Collage",
       price: "399",
+      onClick: navigateToCollage,
     },
     {
       image: offer4,
@@ -49,6 +55,7 @@ export const OffersPage = () => {
       price: "999",
       saving: 200,
       special: true,
+      onClick: handleClick,
     },
   ];
 
@@ -68,7 +75,7 @@ export const OffersPage = () => {
           {UNMUTE.map((item, index) => (
             <div
               key={index}
-              onClick={() => handleClick({ quantity: item.quantity })}
+              onClick={() => item.onClick({ quantity: item.quantity })}
               className="flex flex-col items-center my-2 cursor-pointer"
             >
               <img

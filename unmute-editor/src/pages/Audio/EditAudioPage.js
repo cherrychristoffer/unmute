@@ -190,7 +190,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!blobAudio && <Loader size={"w-24 h-24"} />}
           {audioBlob?.map((item, index) => (
-            <div key={index}>
+            <div className={'audio-crop'} key={index}>
               <Draggable
                 axis="y"
                 handle=".handle"

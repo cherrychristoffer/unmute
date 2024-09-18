@@ -3,6 +3,8 @@ import { React, useState } from "react";
 import clsx from "clsx";
 
 import { useDispatch } from "react-redux";
+import {CloseIcon} from "../assets/icons/icon_close";
+import {ExclamationIcon} from "../assets/icons/icon_exclamation";
 import { PlusIcon } from "../assets/icons/icon_plus";
 
 import { Loader } from "./Loader";
@@ -38,6 +40,7 @@ const Unmute = ({ unmute, onDelete, length, activeUnmute, index }) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+  const [smallImage, setSmallImage] = useState(false);
 
   const handleChange = async (event) => {
     setLoading(true);
@@ -78,64 +81,106 @@ const Unmute = ({ unmute, onDelete, length, activeUnmute, index }) => {
     ? "min-w-[300px] w-[55%]"
     : "min-w-[250px] w-1/2";
 
+
+  const handleImageLoad = (event) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    if (naturalWidth < 637 && naturalHeight < 850) {
+      setSmallImage(true)
+    }
+  };
+
   return (
-    <div className="snap-center flex items-center p-4">
-      <div
-        className={clsx(
-          "relative flex justify-center",
-          isLandscape ? "mt-0" : "mt-0"
-        )}
-      >
-        <img
-          src={frame}
-          alt="Frame"
+    <>
+      <div className="snap-center flex items-center p-4">
+        <div
           className={clsx(
-            frame_width,
-            "relative top-0 z-[1] pointer-events-none"
+            "relative flex justify-center",
+            isLandscape ? "mt-0" : "mt-0"
           )}
-        />
-        {images && images.length > 0 ? (
-          <>
-            <CropperComponent
-              images={images}
-              frame_padding={frame_padding}
-              scale={scale}
-              frame_width={frame_width}
-              isLandscape={isLandscape}
-              unmute={unmute}
-              activeUnmute={activeUnmute}
-              index={index}
-            />
+        >
+          <img
+            src={frame}
+            alt="Frame"
+            className={clsx(
+              frame_width,
+              "relative top-0 z-[1] pointer-events-none"
+            )}
+          />
+          <img
+            src={images}
+            alt="Frame"
+            onLoad={handleImageLoad}
+            className={'hidden'}
+          />
+          {images && images.length > 0 ? (
+            <>
+              <CropperComponent
+                images={images}
+                frame_padding={frame_padding}
+                scale={scale}
+                frame_width={frame_width}
+                isLandscape={isLandscape}
+                unmute={unmute}
+                activeUnmute={activeUnmute}
+                index={index}
+              />
+              {smallImage ?
+                <button
+                  onClick={() => onDelete(unmute.key)}
+                  className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
+                >
+                  <ExclamationIcon size={20}/>
+                </button> :
+                <button
+                  onClick={() => onDelete(unmute.key)}
+                  className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
+                >
+                  <CloseIcon/>
+                </button>
+              }
+            </>
+          ) : (
             <button
-              onClick={() => onDelete(unmute.key)}
-              className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
-            >
-              ✖
+              className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+              <label htmlFor={`mage-add-${unmute.key}`}>
+                {loading ? (
+                  <h2
+                    className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
+                    Uploading...
+                    <Loader size={"w-24 h-24"}/>
+                  </h2>
+                ) : (
+                  <PlusIcon size={20} className={"fill-white"}/>
+                )}
+              </label>
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/jpg"
+                className="hidden"
+                id={`mage-add-${unmute.key}`}
+                onChange={handleChange}
+              />
             </button>
-          </>
-        ) : (
-          <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-            <label htmlFor={`mage-add-${unmute.key}`}>
-              {loading ? (
-                <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                  Uploading...
-                  <Loader size={"w-24 h-24"} />
-                </h2>
-              ) : (
-                <PlusIcon size={20} className={"fill-white"} />
-              )}
-            </label>
-            <input
-              type="file"
-              accept="image/png, image/jpeg, image/jpg"
-              className="hidden"
-              id={`mage-add-${unmute.key}`}
-              onChange={handleChange}
-            />
-          </button>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+
+      {smallImage && <div className="flex justify-center pt-8">
+        <label
+          htmlFor={`mage-add-${unmute.key}`}
+          onClick={() => onDelete(unmute.key)}
+          className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+          Low resolution - Add new photo
+        </label>
+        <input
+          type="file"
+          accept="image/png, image/jpeg, image/jpg"
+          className="hidden"
+          id={`mage-add-${unmute.key}`}
+          onChange={handleChange}
+        />
+      </div>}
+    </>
   );
 };
 

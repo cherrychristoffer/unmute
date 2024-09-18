@@ -2,6 +2,8 @@ import { React, useEffect, useRef, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "wouter";
+import {PauseIcon} from "../assets/icons/icon_pause";
+import {PlayIcon} from "../assets/icons/icon_play";
 
 import { Loader } from "./Loader";
 
@@ -118,7 +120,7 @@ export const Frame = () => {
   }
 
   return (
-    <>
+    <div className={'pt-8'}>
       <Swiper
         key={editSlider}
         slidesPerView={"auto"}
@@ -170,7 +172,7 @@ export const Frame = () => {
               }}
               className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing ? <>⏸</> : <>▶️</>}
+              {playing ? <><PauseIcon/></> : <><PlayIcon/>️</>}
             </button>
 
             <audio
@@ -189,6 +191,6 @@ export const Frame = () => {
           </Link>
         )}
       </div>
-    </>
+    </div>
   );
 };

@@ -19,6 +19,15 @@ import "swiper/css";
 import "../assets/styles/swiperCustom.css";
 import { EmptyBox } from "./EmptyBox";
 
+const sliderSize = {
+  width: "50%",
+  minWidth: "250px",
+};
+const sliderLanscapedSize = {
+  minWidth: "300px",
+  width: "55%",
+};
+
 export const Frame = () => {
   const cacheBust = Date.now();
   const audioRef = useRef();
@@ -125,14 +134,8 @@ export const Frame = () => {
             key={index}
             style={
               unmute?.properties?._orientation === "landscape"
-                ? {
-                    minWidth: "300px",
-                    width: "55%",
-                  }
-                : {
-                    minWidth: "250px",
-                    width: "50%",
-                  }
+                ? sliderLanscapedSize
+                : sliderSize
             }
           >
             <Unmute
@@ -145,7 +148,7 @@ export const Frame = () => {
           </SwiperSlide>
         ))}
         {showExtra && (
-          <SwiperSlide style={{ width: "50%", minWidth: "250px" }}>
+          <SwiperSlide style={sliderSize}>
             <EmptyBox setShowExtra={setShowExtra} />
           </SwiperSlide>
         )}

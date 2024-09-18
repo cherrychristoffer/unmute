@@ -135,18 +135,22 @@ export const EditAudioPage = () => {
           })
 
           .then(({ data }) => {
-            const [minutes, seconds] = item.properties._countdown
-              .split(":")
-              .map(Number);
-            const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
+            console.log(
+              "item?.properties?._countdown",
+              item?.properties?._countdown
+            );
 
-            // Create a new object with blob and dataSeconds
+            const [minutes, seconds] = item?.properties?._countdown
+              ?.split(":")
+              ?.map(Number);
+            const dataSeconds = minutes * 60 + seconds;
+            console.log("data", dataSeconds);
+
             const newData = {
               blob: data,
               seconds: dataSeconds,
             };
 
-            // Push the new object to the array
             const dataArray = [...audioBlob];
             dataArray.push(newData);
 

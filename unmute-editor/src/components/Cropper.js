@@ -114,6 +114,26 @@ const CropperComponent = ({
         dispatch(setMinValue(minZoomRatio));
       }
 
+      const zommValuesArray = Object.entries(zoomValues.current);
+      for (let i = 0; i < zommValuesArray.length; i++) {
+        if (e.detail.ratio < zommValuesArray[0]?.[1]) {
+          zoomStep.current = 0;
+          break;
+        }
+        if (!zommValuesArray[i + 1]) {
+          zoomStep.current = 30;
+          break;
+        }
+        if (
+          e.detail.ratio >= zommValuesArray[i][1] &&
+          e.detail.ratio < zommValuesArray?.[i + 1]?.[1]
+        ) {
+          zoomStep.current = Number(zommValuesArray[i][0]);
+          break;
+        }
+      }
+      dispatch(updateZoomValue(zoomStep.current));
+
       if (
         (max.current && e.detail.ratio > max.current) ||
         (min.current &&
@@ -121,23 +141,7 @@ const CropperComponent = ({
       ) {
         e.preventDefault();
       } else {
-        const zommValuesArray = Object.entries(zoomValues.current);
-        for (let i = 0; i < zommValuesArray.length; i++) {
-          if (!zommValuesArray[i + 1]) {
-            zoomStep.current = 30;
-            break;
-          }
-          if (
-            e.detail.ratio >= zommValuesArray[i][1] &&
-            e.detail.ratio < zommValuesArray?.[i + 1]?.[1]
-          ) {
-            zoomStep.current = Number(zommValuesArray[i][0]);
-            break;
-          }
-        }
-
         dispatch(setRatio(e.detail.ratio));
-        dispatch(updateZoomValue(zoomStep.current));
       }
     }
   };

@@ -117,7 +117,7 @@ export const Frame = () => {
         key={editSlider}
         slidesPerView={"auto"}
         centeredSlides={true}
-        spaceBetween={20}
+        spaceBetween={10}
         initialSlide={unmutes?.length > 1 ? 1 : 0}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));

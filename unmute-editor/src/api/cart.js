@@ -27,7 +27,7 @@ export const addUnmuteToCart = async ({ quantity, extra = false }) => {
         _images: [],
         _audios: [],
         _frame: "oak",
-        _orientation: "portait",
+        _orientation: "portrait",
         _passepartout: "small",
         _inspiration: null,
         _countdown: 0,

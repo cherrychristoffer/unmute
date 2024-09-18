@@ -121,14 +121,15 @@ export const EditAudioPage = () => {
     if (userAudio.length > 0) {
       userAudio?.map((item) =>
         axios
-          .get(`${item.properties?._audios}?c=${cacheBust}`, {
+          .get(`${item.properties?._audios[0]}?c=${cacheBust}`, {
             responseType: "blob",
           })
           .then(({ data }) => {
             const arr = [];
             arr.push(data);
             setBlobAudio((prevBlobAudio) => [...prevBlobAudio, ...arr]);
-          })
+          }).catch(() => {
+        })
       );
     }
   }, [userAudio]);
@@ -158,7 +159,7 @@ export const EditAudioPage = () => {
             ref={audioRef}
             className="hidden"
             controls="controls"
-            src={`${item.properties?._audios}?c=${cacheBust}`}
+            src={`${item.properties?._audios[0]}?c=${cacheBust}`}
           ></audio>
         ))}
         <div onClick={goAdd}> click</div>

@@ -17,11 +17,17 @@ import "../assets/styles/custom-cropper.css";
 import { useParams } from "wouter";
 import { useDebouncedCallback } from "use-debounce";
 
-const estimateZoomCount = (value, count = 1) => {
-  if (count <= 30) {
-    return estimateZoomCount(1.1 * value, ++count);
+const estimateZoomCount = (value, count = 0, values = {}) => {
+  values[count] = value;
+  if (count < 30) {
+    return estimateZoomCount(1.1 * value, ++count, values);
   }
-  return value;
+  return { maxValue: value, values };
+};
+
+const returnZoomValues = (value) => {
+  const estimatedValues = estimateZoomCount(value);
+  return estimatedValues;
 };
 
 const CropperComponent = ({
@@ -44,6 +50,7 @@ const CropperComponent = ({
   const prevActive = useRef(null);
   const [update, setUpdate] = useState(0);
   const zoomStep = useRef(0);
+  const zoomValues = useRef({});
 
   useEffect(() => {
     if (cropperRef.current && activeUnmute) {
@@ -54,29 +61,17 @@ const CropperComponent = ({
       min.current = null;
       max.current = null;
       zoomStep.current = 0;
+      zoomValues.current = 0;
     }
   }, [update, activeUnmute]);
 
   useEffect(() => {
-    // if (
-    //   (params[0] === "crop" ||
-    //     (prevPage.current === "crop" && params[0] !== "crop")) &&
-    //   (activeUnmute || (!activeUnmute && prevActive.current))
-    // ) {
-    //   // setUpdate((prev) => prev + 1);
-    // }
     if (
       ((activeUnmute && prevPage.current === "crop" && params[0] !== "crop") ||
         (!activeUnmute && prevActive.current)) &&
       min.current
     ) {
       handleCrop();
-      // dispatch(setImageRef(null));
-      // dispatch(setRatio(0));
-      // dispatch(updateZoomValue(0));
-      // dispatch(setMinValue(0));
-      // min.current = null;
-      // max.current = null;
     }
     prevPage.current = params[0];
     prevActive.current = activeUnmute;
@@ -113,9 +108,12 @@ const CropperComponent = ({
         const canvasData = cropper.getCanvasData();
         const minZoomRatio = canvasData.width / canvasData.naturalWidth;
         min.current = minZoomRatio;
-        max.current = estimateZoomCount(min.current);
+        const estimatedValues = returnZoomValues(min.current);
+        max.current = estimatedValues.maxValue;
+        zoomValues.current = estimatedValues.values;
         dispatch(setMinValue(minZoomRatio));
       }
+
       if (
         (max.current && e.detail.ratio > max.current) ||
         (min.current &&
@@ -123,11 +121,21 @@ const CropperComponent = ({
       ) {
         e.preventDefault();
       } else {
-        if (e.detail.ratio > e.detail.oldRatio) {
-          zoomStep.current = zoomStep.current + 1;
-        } else {
-          zoomStep.current = zoomStep.current - 1;
+        const zommValuesArray = Object.entries(zoomValues.current);
+        for (let i = 0; i < zommValuesArray.length; i++) {
+          if (!zommValuesArray[i + 1]) {
+            zoomStep.current = 30;
+            break;
+          }
+          if (
+            e.detail.ratio >= zommValuesArray[i][1] &&
+            e.detail.ratio < zommValuesArray?.[i + 1]?.[1]
+          ) {
+            zoomStep.current = Number(zommValuesArray[i][0]);
+            break;
+          }
         }
+
         dispatch(setRatio(e.detail.ratio));
         dispatch(updateZoomValue(zoomStep.current));
       }

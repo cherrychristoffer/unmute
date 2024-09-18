@@ -75,13 +75,10 @@ export const userSlice = createSlice({
   },
   reducers: {
     addUnmute: (state, action) => {
-      console.log("Action", action.payload);
-
       const newUnmutes = uniqBy(
         [...state.unmutes, action.payload],
         "properties._uuid"
       );
-      console.log("newUnmutes", newUnmutes);
 
       return {
         ...state,

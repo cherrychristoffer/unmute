@@ -81,7 +81,6 @@ export const StartRecordingPage = () => {
       const fileUrl = getFileUrl(
         `${activeUnmute.properties._uuid}/recorded.wav`
       );
-      console.log("time", time);
 
       updateUnmuteInCart({
         key: activeUnmute.key,

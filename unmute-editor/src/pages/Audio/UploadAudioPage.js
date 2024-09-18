@@ -9,6 +9,7 @@ import {addUnmute, updateUnmutes} from "../../features/user/userSlice";
 import {v4 as uuid} from "uuid";
 import {useActiveUnmute} from "../../api/useUnmutes";
 import {useDispatch} from "react-redux";
+import {Loader} from "../../components/Loader";
 
 
 AWS.config.update({
@@ -24,6 +25,7 @@ const s3 = new AWS.S3({
 export const UploadAudioPage = () => {
   const [_location, navigate] = useLocation();
   const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { activeUnmute } = useActiveUnmute();
   const dispatch = useDispatch();
 
@@ -51,6 +53,7 @@ export const UploadAudioPage = () => {
     if (!file) return;
 
     try {
+      setLoading(true)
       const s3Path = "videos";
       await uploadFileToS3(file, s3Path);
 
@@ -74,6 +77,7 @@ export const UploadAudioPage = () => {
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
+          setLoading(false)
           navigate("/edit-audio");
         });
       });
@@ -91,6 +95,9 @@ export const UploadAudioPage = () => {
           Choose how
         </h2>
       </div>
+      {loading && (
+          <div><Loader size='w-16 h-16' /></div>
+      )}
       <div className={"mt-auto text-center"}>
         <Link to={'/inspiration'} className={'block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center'}>
           Record audio

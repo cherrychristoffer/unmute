@@ -160,7 +160,7 @@ export const EditAudioPage = () => {
             className="hidden"
             controls="controls"
             src={`${item.properties?._audios[0]}?c=${cacheBust}`}
-          ></audio>
+          />
         ))}
         <div onClick={goAdd}> click</div>
         <div className="w-full flex flex-col items-center mt-24">

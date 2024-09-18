@@ -140,13 +140,11 @@ export const EditAudioPage = () => {
               ?.map(Number);
             const dataSeconds = minutes * 60 + seconds; // Convert to total seconds
 
-            // Create a new object with blob and dataSeconds
             const newData = {
               blob: data,
               seconds: dataSeconds,
             };
 
-            // Push the new object to the array
             const dataArray = [...audioBlob];
             dataArray.push(newData);
 
@@ -209,7 +207,11 @@ export const EditAudioPage = () => {
               >
                 <div className="handle">
                   {range.end !== 0 && (
-                    <Range max={duration} range={range} setRange={setRange} />
+                    <Range
+                      max={duration}
+                      range={range}
+                      setRange={setRange}
+                    />
                   )}
 
                   <AudioVisualizer

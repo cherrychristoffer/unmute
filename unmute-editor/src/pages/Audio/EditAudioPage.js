@@ -42,10 +42,8 @@ export const EditAudioPage = () => {
   const userAudio = useSelector((state) => state.user.unmutes);
   const audioBlob = useSelector((state) => state.user.audioBlob);
   const refAudio = useRef(false);
-  console.log("aut", audioBlob);
 
   const audioFiles = activeUnmute?.properties?._audios || [];
-  console.log(audioFiles);
 
   const handlePlayAudio = () => {
     if (audioRef.current) {
@@ -127,7 +125,6 @@ export const EditAudioPage = () => {
       }
     }
   };
-  console.log("usera", userAudio);
 
   useEffect(() => {
     if (userAudio.length > 0 && !refAudio.current) {
@@ -143,8 +140,6 @@ export const EditAudioPage = () => {
           })
 
           .then(({ data }) => {
-            console.log("item.properties._countdown", dataFind.properties);
-
             const [minutes, seconds] = dataFind.properties._countdown
               ?.split(":")
               ?.map(Number);
@@ -170,10 +165,6 @@ export const EditAudioPage = () => {
   const goAdd = () => {
     navigate("start-recording");
   };
-  // eventLogger = (e, data) => {
-  //   console.log("Event: ", e);
-  //   console.log("Data: ", data);
-  // };
 
   return (
     <>
@@ -199,10 +190,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           {audioBlob?.map((item, index) => (
-            <div
-              className={"audio-crop"}
-              key={index}
-            >
+            <div className={"audio-crop"} key={index}>
               <Draggable
                 axis="y"
                 handle=".handle"
@@ -219,11 +207,7 @@ export const EditAudioPage = () => {
               >
                 <div className="handle">
                   {range.end !== 0 && (
-                    <Range
-                      max={duration}
-                      range={range}
-                      setRange={setRange}
-                    />
+                    <Range max={duration} range={range} setRange={setRange} />
                   )}
 
                   <AudioVisualizer

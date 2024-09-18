@@ -129,7 +129,7 @@ body {
   display: none;
 }
 
-input[type=range]::range-track {
+input[type="range"]::range-track {
   width: 100%;
   height: 20px;
   border-radius: 10px;
@@ -137,20 +137,20 @@ input[type=range]::range-track {
   border: 2px solid #ccc;
 }
 
-input[type=range]::range-thumb {
+input[type="range"]::range-thumb {
   width: 40px;
   height: 40px;
   border-radius: 100%;
   background-color: white;
-  border: 2px solid #1976D2;
+  border: 2px solid #1976d2;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
 }
 
-input[type=range]::range-progress {
+input[type="range"]::range-progress {
   height: 20px;
   border-radius: 10px 0 0 10px;
-  background-color: #2196F3;
-  border: 2px solid #1976D2;
+  background-color: #2196f3;
+  border: 2px solid #1976d2;
 }
 
 .audio-crop {
@@ -214,7 +214,8 @@ input[type=range]::range-progress {
 }
 
 .audio-crop .wrapper [type="range"]::-webkit-slider-thumb {
-  background: #A48179 url("./assets/images/range-dots.png") no-repeat center center;
+  background: #a48179 url("./assets/images/range-dots.png") no-repeat center
+    center;
   height: 84px;
   width: 13px;
   border-radius: 3px;
@@ -228,7 +229,8 @@ input[type=range]::range-progress {
 }
 
 .audio-crop .wrapper [type="range"]::-moz-range-thumb {
-  background: #A48179 url("./assets/images/range-dots.png") no-repeat center center;
+  background: #a48179 url("./assets/images/range-dots.png") no-repeat center
+    center;
   height: 84px;
   width: 13px;
   border-radius: 3px;
@@ -246,7 +248,8 @@ input[type=range]::range-progress {
 }
 
 .audio-crop .wrapper [type="range"]::-ms-thumb {
-  background: #A48179 url("./assets/images/range-dots.png") no-repeat center center;
+  background: #a48179 url("./assets/images/range-dots.png") no-repeat center
+    center;
   height: 84px;
   width: 13px;
   border-radius: 3px;

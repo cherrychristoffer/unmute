@@ -7,7 +7,6 @@ export const CropPage = () => {
   const { zoomValue, imageRef, minValue, ratio } = useSelector(
     (state) => state.image
   );
-
   const handleIncrease = () => {
     if (zoomValue < 30) {
       const cropper = imageRef.cropper;

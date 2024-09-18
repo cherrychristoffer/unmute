@@ -145,10 +145,7 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

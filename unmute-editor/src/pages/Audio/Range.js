@@ -6,8 +6,6 @@ import "./range.css";
 const priceGap = 1;
 
 export const Range = ({ min = 0, max, range, setRange }) => {
-  console.log("mtavv");
-
   const progressRef = useRef(null);
   const startRef = useRef(null);
   const endRef = useRef(null);
@@ -42,10 +40,7 @@ export const Range = ({ min = 0, max, range, setRange }) => {
   return (
     <div className="wrapper">
       <div className="slider">
-        <div
-          className="progress"
-          ref={progressRef}
-        ></div>
+        <div className="progress" ref={progressRef}></div>
       </div>
       <div className="range-input">
         <input

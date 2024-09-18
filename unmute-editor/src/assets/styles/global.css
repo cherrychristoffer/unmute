@@ -4,3 +4,13 @@
   left: 14%;
   color: #b49e85;
 }
+
+.disable-zoom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 320px;
+  width: 100%;
+  z-index: 10000000;
+  color: transparent;
+}

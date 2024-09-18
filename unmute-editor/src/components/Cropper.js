@@ -33,6 +33,7 @@ const CropperComponent = ({
   unmute,
   activeUnmute,
   index,
+  swiperRef,
 }) => {
   const dispatch = useDispatch();
   const cropperRef = useRef(null);
@@ -42,7 +43,7 @@ const CropperComponent = ({
   const prevPage = useRef(null);
   const prevActive = useRef(null);
   const [update, setUpdate] = useState(0);
-  let zoomStep = 0;
+  const zoomStep = useRef(0);
 
   useEffect(() => {
     if (cropperRef.current && activeUnmute) {
@@ -52,22 +53,30 @@ const CropperComponent = ({
       dispatch(setMinValue(0));
       min.current = null;
       max.current = null;
+      zoomStep.current = 0;
     }
   }, [update, activeUnmute]);
 
   useEffect(() => {
+    // if (
+    //   (params[0] === "crop" ||
+    //     (prevPage.current === "crop" && params[0] !== "crop")) &&
+    //   (activeUnmute || (!activeUnmute && prevActive.current))
+    // ) {
+    //   // setUpdate((prev) => prev + 1);
+    // }
     if (
-      (params[0] === "crop" ||
-        (prevPage.current === "crop" && params[0] !== "crop")) &&
-      (activeUnmute || (!activeUnmute && prevActive.current))
-    ) {
-      setUpdate((prev) => prev + 1);
-    }
-    if (
-      (activeUnmute || (!activeUnmute && prevActive.current)) &&
+      ((activeUnmute && prevPage.current === "crop" && params[0] !== "crop") ||
+        (!activeUnmute && prevActive.current)) &&
       min.current
     ) {
       handleCrop();
+      // dispatch(setImageRef(null));
+      // dispatch(setRatio(0));
+      // dispatch(updateZoomValue(0));
+      // dispatch(setMinValue(0));
+      // min.current = null;
+      // max.current = null;
     }
     prevPage.current = params[0];
     prevActive.current = activeUnmute;
@@ -115,71 +124,60 @@ const CropperComponent = ({
         e.preventDefault();
       } else {
         if (e.detail.ratio > e.detail.oldRatio) {
-          ++zoomStep;
+          zoomStep.current = zoomStep.current + 1;
         } else {
-          --zoomStep;
+          zoomStep.current = zoomStep.current - 1;
         }
         dispatch(setRatio(e.detail.ratio));
-        dispatch(updateZoomValue(zoomStep));
+        dispatch(updateZoomValue(zoomStep.current));
       }
-
-      // const cropper = cropperRef.current?.cropper;
-
-      // cropper.getCroppedCanvas().toBlob((blob) => {
-      //   const file = new File([blob], "cropped.png", { type: "image/png" });
-      //   uploadFile({
-      //     path: unmute.properties._uuid,
-      //     file,
-      //   }).then(() => {
-      //     const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`);
-      //     updateUnmuteInCart({
-      //       key: unmute.key,
-      //       properties: {
-      //         ...unmute.properties,
-      //         _images: [fileUrl], // TODO: Add to existing list of images
-      //       },
-      //     }).then(({ data }) => {
-      //       dispatch(updateUnmutes(data.items));
-      //       setUpdate((prev) => prev + 1);
-      //     });
-      //   });
-      // });
     }
   };
   return (
-    <Cropper
-      key={String(index) + update}
-      ref={cropperRef}
-      src={images[images.length - 1]}
+    <div
       className={clsx(
         frame_width,
         "absolute h-full object-cover overflow-hidden"
       )}
-      style={frame_padding(scale, isLandscape)}
-      crossOrigin="anonymous"
-      checkCrossOrigin={true}
-      checkOrientation={false}
-      modal={false}
-      highlight={false}
-      background={false}
-      guides={false}
-      cropBoxResizable={false}
-      center={false}
-      // guides={activeUnmute && params[0] === "crop"}
-      // cropBoxResizable={activeUnmute && params[0] === "crop"}
-      // center={activeUnmute && params[0] === "crop"}
-      cropBoxMovable={true}
-      viewMode={3}
-      dragMode="move"
-      movable={true}
-      autoCropArea={0.5}
-      rotatable={false}
-      // cropend={handleCrop}
-      cropend={() => {}} // hide for now
-      zoomable={activeUnmute && params[0] === "crop"}
-      wheelZoomRatio={0.1}
-      zoom={handleZoom}
-    />
+      onTouchMoveCapture={() => {
+        if (params[0] === "crop")
+          swiperRef.current.swiper.allowTouchMove = false;
+      }}
+    >
+      {!(activeUnmute && params[0] === "crop") && (
+        // transparent box for disabling zoom without rendering
+        <div className="disable-zoom">Empty Box</div>
+      )}
+      <Cropper
+        key={String(index) + update}
+        ref={cropperRef}
+        src={images[images.length - 1]}
+        className={clsx(
+          frame_width,
+          "absolute h-full object-cover overflow-hidden"
+        )}
+        style={frame_padding(scale, isLandscape)}
+        crossOrigin="anonymous"
+        checkCrossOrigin={true}
+        checkOrientation={false}
+        modal={false}
+        highlight={false}
+        background={false}
+        guides={false}
+        cropBoxResizable={false}
+        center={false}
+        cropBoxMovable={true}
+        viewMode={3}
+        dragMode="move"
+        movable={true}
+        autoCropArea={1}
+        rotatable={false}
+        cropend={() => {}}
+        zoomable={true}
+        wheelZoomRatio={0.1}
+        zoom={handleZoom}
+      />
+    </div>
   );
 };
 

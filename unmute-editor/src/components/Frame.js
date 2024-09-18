@@ -2,8 +2,8 @@ import { React, useEffect, useRef, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "wouter";
-import {PauseIcon} from "../assets/icons/icon_pause";
-import {PlayIcon} from "../assets/icons/icon_play";
+import { PauseIcon } from "../assets/icons/icon_pause";
+import { PlayIcon } from "../assets/icons/icon_play";
 
 import { Loader } from "./Loader";
 
@@ -33,6 +33,7 @@ const sliderLanscapedSize = {
 export const Frame = () => {
   const cacheBust = Date.now();
   const audioRef = useRef();
+  const swiperRef = useRef(null);
   const isAlreadyRendered = useRef();
   const dispatch = useDispatch();
 
@@ -120,9 +121,15 @@ export const Frame = () => {
   }
 
   return (
-    <div className={'pt-8'}>
+    <div
+      className={"pt-8"}
+      onTouchMoveCapture={(e) => {
+        swiperRef.current.swiper.allowTouchMove = true;
+      }}
+    >
       <Swiper
         key={editSlider}
+        ref={swiperRef}
         slidesPerView={"auto"}
         centeredSlides={true}
         spaceBetween={30}
@@ -146,6 +153,7 @@ export const Frame = () => {
               length={unmutes?.length}
               activeUnmute={activeUnmuteIndex === index}
               index={index}
+              swiperRef={swiperRef}
             />
           </SwiperSlide>
         ))}
@@ -172,7 +180,15 @@ export const Frame = () => {
               }}
               className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing ? <><PauseIcon/></> : <><PlayIcon/>️</>}
+              {playing ? (
+                <>
+                  <PauseIcon />
+                </>
+              ) : (
+                <>
+                  <PlayIcon />️
+                </>
+              )}
             </button>
 
             <audio

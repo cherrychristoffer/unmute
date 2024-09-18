@@ -9,8 +9,6 @@ import { deleteFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
 import { updateUnmutes, updateAllUnmutes } from "../features/user/userSlice";
 
-import { useDebouncedCallback } from "use-debounce";
-
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
 import frame_image from "../assets/images/frame.png";
@@ -19,7 +17,6 @@ import Unmute from "./Unmute";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "../assets/styles/swiperCustom.css";
-import { Scrollbar } from "swiper/modules";
 import { EmptyBox } from "./EmptyBox";
 
 export const Frame = () => {
@@ -117,14 +114,27 @@ export const Frame = () => {
         key={editSlider}
         slidesPerView={"auto"}
         centeredSlides={true}
-        spaceBetween={10}
+        spaceBetween={30}
         initialSlide={unmutes?.length > 1 ? 1 : 0}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));
         }}
       >
         {unmutes.map((unmute, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide
+            key={index}
+            style={
+              unmute?.properties?._orientation === "landscape"
+                ? {
+                    minWidth: "300px",
+                    width: "55%",
+                  }
+                : {
+                    minWidth: "250px",
+                    width: "50%",
+                  }
+            }
+          >
             <Unmute
               unmute={unmute}
               onDelete={handleDelete}
@@ -135,7 +145,7 @@ export const Frame = () => {
           </SwiperSlide>
         ))}
         {showExtra && (
-          <SwiperSlide>
+          <SwiperSlide style={{ width: "50%", minWidth: "250px" }}>
             <EmptyBox setShowExtra={setShowExtra} />
           </SwiperSlide>
         )}

@@ -1,8 +1,3 @@
-.swiper-slide {
-  width: 50%;
-  min-width: 300px;
-}
-
 .swiper {
-  overflow: unset;
+  padding-bottom: 15px;
 }

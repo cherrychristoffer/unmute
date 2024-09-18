@@ -60,6 +60,7 @@ export const InspirationPage = () => {
 
         <div className="flex flex-row justify-center gap-4 mt-16">
           <Link
+              to={'/inspirations'}
               className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
             Get inspiration
           </Link>

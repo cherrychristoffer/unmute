@@ -47,7 +47,9 @@ export const Frame = () => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
       setEditSlider((prev) => prev + 1);
       isAlreadyRendered.current = true;
-      const isExtraExists = unmutes.find((item) => item.properties._extra);
+      const isExtraExists = unmutes.find(
+        (item) => item.properties._extra || item.properties._collage
+      );
       if (!isExtraExists) setShowExtra(true);
 
       if (unmutes?.length !== 1) {

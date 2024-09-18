@@ -33,7 +33,7 @@ export const CollagePage = () => {
   ];
 
   const handleClick = ({ quantity }) => {
-    addUnmuteToCart({ quantity }).then(({ data }) => {
+    addUnmuteToCart({ quantity, collage: true }).then(({ data }) => {
       data.items.forEach((unmute) => {
         dispatch(addUnmute(unmute));
       });

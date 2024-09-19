@@ -35,6 +35,7 @@ export const UploadImagePage = () => {
         properties: {
           ...item.properties,
           _images: [fileUrl], // TODO: Add to existing list of images
+          _original_images: [fileUrl], // TODO: Add to existing list of images
         },
       });
       dispatch(updateUnmutes(cart.data.items));

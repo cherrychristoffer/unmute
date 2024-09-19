@@ -11,6 +11,7 @@ import { useActiveUnmute } from "../api/useUnmutes";
 
 import landscape from "../assets/images/orientation/landscape.png";
 import portrait from "../assets/images/orientation/portrait.png";
+import { setMustCrop } from "../features/image/imageSlice";
 
 export const OrientationPage = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export const OrientationPage = () => {
         console.error(err);
       })
       .then(({ data }) => {
+        dispatch(setMustCrop());
         dispatch(updateUnmutes(data.items));
       });
   };

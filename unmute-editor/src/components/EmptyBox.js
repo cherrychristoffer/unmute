@@ -40,6 +40,7 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
           properties: {
             ...unmute.properties,
             _images: [fileUrl],
+            _original_images: [fileUrl],
           },
         }).then(({ data }) => {
           setLoading(false);

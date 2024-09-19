@@ -5,5 +5,6 @@ export const photosEnhance = async (key) => {
     const response = await axios.post(`${BASE_API_URL}/photos/enhance`, {
         key
     });
-    return response.data.file
+    const base64String = response.data.file
+    return base64String
 }

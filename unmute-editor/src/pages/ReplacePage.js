@@ -6,6 +6,25 @@ import { photosEnhance } from '../api/image'
 import {useActiveUnmute} from "../api/useUnmutes";
 import {updateUnmuteInCart} from "../api/cart";
 import {updateUnmutes} from "../features/user/userSlice";
+import {getFileUrl, uploadFile} from "../api/aws";
+
+function base64ToFile(base64String, filename) {
+    const byteString = atob(base64String.split(',')[1]); // Remove the 'data:image/png;base64,' part
+    const mimeType = base64String.split(',')[0].split(':')[1].split(';')[0]; // Extract mime type
+
+    const byteNumbers = new Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+        byteNumbers[i] = byteString.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+
+    const file = new File([blob], filename, { type: mimeType });
+
+    return file;
+}
+
 
 export const ReplacePage = () => {
     const dispatch = useDispatch();
@@ -16,7 +35,7 @@ export const ReplacePage = () => {
     const afterImage = useSelector(state => state.replace.afterImage)
 
     useEffect(() => {
-        if (activeUnmute && replaceIndex !== activeUnmuteIndex && replaceMode) {
+        if (activeUnmute && replaceIndex !== activeUnmuteIndex && replaceMode && !activeUnmute.properties._enhanced) {
             handleEnhance()
         }
     }, [activeUnmute, replaceIndex, activeUnmuteIndex, replaceMode])
@@ -38,10 +57,10 @@ export const ReplacePage = () => {
             dispatch(setReplaceIndex(activeUnmuteIndex))
             const img = activeUnmute.properties._images[0]
             const key = img.split('/').slice(-2).join('/')
-            const file = await photosEnhance(key)
+            const afterImage = await photosEnhance(key)
             dispatch(setImages({
                 beforeImage: img,
-                afterImage: 'https://unmute-stage.s3.eu-north-1.amazonaws.com/undefined/923_1708442366.png', // TODO set real response images
+                afterImage
             }))
         }
     };
@@ -51,12 +70,21 @@ export const ReplacePage = () => {
         dispatch(setReplaceIndex(-1))
     }
 
-    const onYes = () => {
+    const onYes = async () => {
+        const file = base64ToFile(afterImage, 'image-enhance.png')
+        const uuid = activeUnmute.properties._uuid
+        await uploadFile({
+            file,
+            path: uuid,
+        })
+        const imgUrl = getFileUrl(
+            `${uuid}/image-enhance.png`
+        );
         updateUnmuteInCart({
             key: activeUnmute.key,
             properties: {
                 ...activeUnmute.properties,
-                _images: [afterImage],
+                _images: [imgUrl],
                 _enhanced: true,
             },
         }).then((data) => {

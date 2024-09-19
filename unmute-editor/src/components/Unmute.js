@@ -2,7 +2,7 @@ import { React, useState } from "react";
 
 import clsx from "clsx";
 
-import { useDispatch } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { CloseIcon } from "../assets/icons/icon_close";
 import { ExclamationIcon } from "../assets/icons/icon_exclamation";
 import { PlusIcon } from "../assets/icons/icon_plus";
@@ -17,6 +17,7 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 
 import CropperComponent from "./Cropper";
+import {ImgComparisonSlider} from "@img-comparison-slider/react";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -48,6 +49,10 @@ const Unmute = ({
 
   const [loading, setLoading] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
+  const replaceIndex = useSelector((state) => state.replace.replaceIndex);
+  const replaceMode = useSelector((state) => state.replace.replaceMode);
+  const beforeImage = useSelector((state) => state.replace.beforeImage);
+  const afterImage = useSelector((state) => state.replace.afterImage);
 
   const handleChange = async (event) => {
     setLoading(true);
@@ -120,17 +125,34 @@ const Unmute = ({
           />
           {images && images.length > 0 ? (
             <>
-              <CropperComponent
-                images={images}
-                frame_padding={frame_padding}
-                scale={scale}
-                frame_width={frame_width}
-                isLandscape={isLandscape}
-                unmute={unmute}
-                activeUnmute={activeUnmute}
-                index={index}
-                swiperRef={swiperRef}
-              />
+              {
+                (replaceIndex === index &&  activeUnmute && afterImage && beforeImage) && (
+                    <div
+                        className={clsx(
+                        frame_width,
+                        "absolute h-full object-cover overflow-hidden"
+                    )}>
+                      <ImgComparisonSlider>
+                        <img slot="first" src={beforeImage} />
+                        <img slot="second" src={afterImage} />
+                      </ImgComparisonSlider>
+                    </div>
+                )
+              }
+
+              {
+                (replaceIndex !== index || !replaceMode) && <CropperComponent
+                    images={images}
+                    frame_padding={frame_padding}
+                    scale={scale}
+                    frame_width={frame_width}
+                    isLandscape={isLandscape}
+                    unmute={unmute}
+                    activeUnmute={activeUnmute}
+                    index={index}
+                    swiperRef={swiperRef}
+                />
+              }
               {smallImage ? (
                 <button
                   onClick={() => onDelete(unmute.key)}

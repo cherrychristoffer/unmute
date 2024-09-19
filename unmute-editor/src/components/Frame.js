@@ -100,6 +100,7 @@ export const Frame = () => {
         properties: {
           ...unmuteToUpdate.properties,
           _images: [],
+          _enhanced: false,
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items));

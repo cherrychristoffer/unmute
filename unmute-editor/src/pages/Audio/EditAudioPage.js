@@ -92,17 +92,76 @@ export const EditAudioPage = () => {
       audioRef.current.pause();
     }
   };
+  function convertToTimeFormat(seconds) {
+    // Round down the seconds to the nearest whole number
+    const roundedSeconds = Math.floor(seconds);
+
+    // Calculate minutes and remaining seconds
+    const minutes = Math.floor(roundedSeconds / 60);
+    const remainingSeconds = roundedSeconds % 60;
+
+    // Format the minutes and seconds with leading zeroes if necessary
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+  }
 
   const mergeAudioData = async () => {
     const result = audioFiles.map((item) => {
       const fileParts = item.file.split("/");
-      return fileParts[fileParts.length - 1];
+
+      const folder = fileParts[fileParts.length - 2];
+      const fileName = fileParts[fileParts.length - 1];
+      return `${folder}/${fileName}`;
     });
 
     try {
-      const response = await mergeAudio(result);
+      const responseData = await mergeAudio(result);
+
+      axios
+        .get(`${responseData.url}?c=${cacheBust}`, {
+          responseType: "blob",
+        })
+        .then(({ data }) => {
+          const minuteData = convertToTimeFormat(responseData.duration);
+          const [minutes, seconds] = minuteData?.split(":")?.map(Number);
+          const dataSeconds = minutes * 60 + seconds;
+
+          setRangeMap({
+            start: 0,
+            end: String(dataSeconds),
+          });
+          const newData = {
+            blob: data,
+            seconds: dataSeconds,
+          };
+          const dataArray = [];
+          dataArray.push(newData);
+          setAudioBlob(dataArray);
+          const audio = {
+            file: responseData.url,
+            countdown: convertToTimeFormat(responseData.duration),
+          };
+
+          updateUnmuteInCart({
+            key: activeUnmute.key,
+            properties: {
+              ...activeUnmute.properties,
+              _audios: [audio],
+            },
+          }).then(({ data }) => {
+            dispatch(updateUnmutes(data.items));
+          });
+        })
+
+        .catch((error) => {
+          console.error("Error fetching audio:", error);
+        });
+
+      // const dataAudio = response
     } catch (e) {
-      console.log("e", e);
+      // console.log("e", e?.response?.data);
     }
   };
 
@@ -247,9 +306,6 @@ export const EditAudioPage = () => {
 
   useEffect(() => {
     if (audioFiles.length > 0 && !updateRef.current) {
-      // console.log("mtav", unmuteKey);
-      // const dataKey = userAudio?.find((item) => console.log("item", item.key));
-      // console.log("datalEY", dataKey);
       getMyUserAudio();
     }
   }, [audioFiles, updateRef]);
@@ -299,11 +355,6 @@ export const EditAudioPage = () => {
           );
 
           const dataFind = findActive.properties._audios?.map((item) => {
-            // const regex = /\/([0-9a-fA-F\-]{36})\.wav$/;
-            // const match = item.file.match(regex);
-            // const identifier_one = match ? match[1] : null;
-            // console.log("rangeMap.end", rangeMap[index].end);
-
             if (myAudioData.file === item.file) {
               return {
                 file: fileUrl,
@@ -410,14 +461,14 @@ export const EditAudioPage = () => {
           ></audio>
         ))} */}
         <div className="w-full flex flex-col items-center mt-24">
-          {!audioBlob && <Loader size={"w-24 h-24"}/>}
+          {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  style={{padding: "10px"}}
+                  style={{ padding: "10px" }}
                 >
                   {audioBlob.map((item, index) => (
                     <Draggable
@@ -456,7 +507,9 @@ export const EditAudioPage = () => {
                               <Range
                                 min={0}
                                 max={item.seconds}
-                                range={rangeMap[index] || {start: 0, end: 100}}
+                                range={
+                                  rangeMap[index] || { start: 0, end: 100 }
+                                }
                                 handleChange={(e) => handleChange(e, index)}
                                 startRef={(ref) =>
                                   (startRefs.current[index] = ref)
@@ -504,7 +557,8 @@ export const EditAudioPage = () => {
           </button>
           <button
             onClick={mergeAudioData}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+          >
             Merge
           </button>
         </div>
@@ -513,8 +567,7 @@ export const EditAudioPage = () => {
       <AudioBottomNavigation
         isRecording={startRecording}
         isPaused={false}
-        togglePauseResume={() => {
-        }}
+        togglePauseResume={() => {}}
         // stopRecording={() => {}}
         stopRecording={stopRecording}
         playAudio={handlePlayAudio}

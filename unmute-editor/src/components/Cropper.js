@@ -101,9 +101,10 @@ const CropperComponent = ({
   }, [activeUnmute, params[0]]);
 
   const handleCrop = ({ key, refresh = false }) => {
+    if (!cropperRef.current) return;
     const cropper = cropperRef.current?.cropper;
 
-    cropper.getCroppedCanvas().toBlob((blob) => {
+    cropper?.getCroppedCanvas()?.toBlob((blob) => {
       const file = new File([blob], "cropped.png", { type: "image/png" });
       uploadFile({
         path: unmute.properties._uuid,

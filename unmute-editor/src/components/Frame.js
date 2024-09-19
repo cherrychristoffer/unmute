@@ -20,6 +20,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "../assets/styles/swiperCustom.css";
 import { EmptyBox } from "./EmptyBox";
+import { useActiveUnmute } from "../api/useUnmutes";
 
 const sliderSize = {
   width: "50%",
@@ -42,7 +43,9 @@ export const Frame = () => {
   const [playing, setPlaying] = useState(false);
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
+  const { activeUnmute } = useActiveUnmute();
 
+  console.log("activeUnmute", activeUnmute);
   const { unmutes } = useSelector((state) => state.user);
   const { scrollToExtra, disableAllExtions } = useSelector(
     (state) => state.image
@@ -108,6 +111,7 @@ export const Frame = () => {
     setPlaying(false);
   };
 
+  console.log("unmutes", unmutes);
   const handleDelete = (key) => {
     const unmuteToUpdate = unmutes.find((unmute) => unmute.key === key);
     deleteFile({
@@ -131,11 +135,7 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img
-            src={frame_image}
-            alt="Frame"
-            className="relative top-0 w-1/2"
-          />
+          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -224,7 +224,7 @@ export const Frame = () => {
           </div>
         ) : (
           <Link
-            to={`/audio/index=${activeUnmuteIndex}`}
+            to={`/audio/${activeUnmute?.properties?._uuid}`}
             className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
             style={{
               opacity: disableAllExtions ? "0.5" : "1",

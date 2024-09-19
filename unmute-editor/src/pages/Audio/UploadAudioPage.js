@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import AWS from "aws-sdk";
 import {
   AWS_KEY_ID,
@@ -32,8 +32,7 @@ export const UploadAudioPage = () => {
   const [loading, setLoading] = useState(false);
   const { activeUnmute } = useActiveUnmute();
   const dispatch = useDispatch();
-
-  const unmuteIndex = _location.split("index=")[1];
+  const { id } = useParams();
 
   const uploadFileToS3 = (file, path) => {
     const progressBar = document.querySelector("#progress-bar");
@@ -109,7 +108,7 @@ export const UploadAudioPage = () => {
       )}
       <div className={"mt-auto text-center"}>
         <Link
-          to={`/inspiration/index=${unmuteIndex}`}
+          to={`/inspiration/${id}`}
           className={
             "block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           }

@@ -1,8 +1,8 @@
 import { React, useRef } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 
 import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { updateUnmuteInCart } from "../../api/cart";
 
@@ -15,7 +15,8 @@ export const InspirationPage = () => {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
   const { activeUnmute } = useActiveUnmute();
-  const unmuteIndex = _location.split("index=")[1];
+  const { id } = useParams();
+
   const handleClick = () => {
     const inspiration = inspirationRef.current.value;
 
@@ -34,7 +35,7 @@ export const InspirationPage = () => {
       },
     }).then(({ data }) => {
       dispatch(updateUnmutes(data.items));
-      navigate(`/start-recording/index=${unmuteIndex}`);
+      navigate(`/start-recording/${id}`);
     });
   };
 

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { React } from "react";
 
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 
 import { useActiveUnmute } from "../../api/useUnmutes";
 import { NavCloseIcon } from "../../assets/icons/icon_nav_close";
@@ -15,10 +15,10 @@ import DeleteIcon from "../../assets/images/buttons/delete.png";
 export const AudioPage = () => {
   const { activeUnmute } = useActiveUnmute();
   const [_location, navigate] = useLocation();
+  const { id } = useParams();
 
-  const unmuteIndex = _location.split("index=")[1];
   if (activeUnmute?.properties?._audios?.length > 0) {
-    navigate(`/edit-audio/index=${unmuteIndex}`);
+    navigate(`/edit-audio/${id}}`);
     return;
   }
 
@@ -40,15 +40,8 @@ export const AudioPage = () => {
   return (
     <div className={"pb-[80px]"}>
       {ONBOARDING.map((item, index) => (
-        <div
-          key={index}
-          className="text-center mt-8 max-w-sm mx-auto"
-        >
-          <img
-            src={item.image}
-            alt="No headphones"
-            className="w-full"
-          />
+        <div key={index} className="text-center mt-8 max-w-sm mx-auto">
+          <img src={item.image} alt="No headphones" className="w-full" />
           <div className="font-serif text-white text-center text-2xl -mt-11 leading-tight">
             {item.label}
           </div>
@@ -64,7 +57,7 @@ export const AudioPage = () => {
         </Link>
 
         <Link
-          to={`/audio-upload/index=${unmuteIndex}`}
+          to={`/audio-upload/${id}`}
           className="text-white bg-rose-500 border border-rose transition duration-200 ease-out focus:outline-none hover:bg-rose-900 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
         >
           Start recording

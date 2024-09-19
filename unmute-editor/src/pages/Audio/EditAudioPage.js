@@ -7,14 +7,11 @@ import { CheckIcon } from "../../assets/icons/icon_check";
 import { CloseIcon } from "../../assets/icons/icon_close";
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import {
-  setActiveUnmuteIndex,
-  updateUnmutes,
-} from "../../features/user/userSlice";
+import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
@@ -44,19 +41,17 @@ export const EditAudioPage = () => {
   const progressRefs = useRef([]);
   const updateRef = useRef(false);
   const cacheBust = Date.now();
-  const { activeUnmute, loading } = useActiveUnmute();
+  const { loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
   const [duration, setDuration] = useState(10);
-
-  const unmuteIndex = _location.split("index=")[1];
+  const { id } = useParams();
+  const { unmutes } = useSelector((state) => state.user);
 
   const [rangeMap, setRangeMap] = useState({});
 
   const userAudio = useSelector((state) => state.user.unmutes);
 
-  // const audioBlob = useSelector((state) => state.user.audioBlob);
-  const refAudio = useRef(false);
-
+  const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
   const audioFiles = activeUnmute?.properties?._audios || [];
 
   const handlePlayAudio = () => {
@@ -252,9 +247,7 @@ export const EditAudioPage = () => {
         });
     });
   };
-  useEffect(() => {
-    dispatch(setActiveUnmuteIndex(unmuteIndex));
-  }, []);
+
   useEffect(() => {
     if (audioFiles.length > 0 && !updateRef.current) {
       // console.log("mtav", unmuteKey);
@@ -344,7 +337,7 @@ export const EditAudioPage = () => {
     }
   };
   const goAdd = () => {
-    navigate(`start-recording/index=${unmuteIndex}`);
+    navigate(`start-recording/${id}`);
   };
 
   const onDragEnd = (result) => {

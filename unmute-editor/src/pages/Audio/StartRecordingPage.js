@@ -1,8 +1,8 @@
 import { React, useEffect, useRef, useState } from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TextareaAutosize from "react-textarea-autosize";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 import { useAudioRecorder } from "react-audio-voice-recorder";
@@ -48,6 +48,10 @@ export const StartRecordingPage = () => {
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
+  const { unmutes } = useSelector((state) => state.user);
+  const { id } = useParams();
+
+  console.log("a   a  aa unmutes", unmutes);
   const unmuteIndex = _location.split("index=")[1];
   useInterval(
     () => {
@@ -106,7 +110,7 @@ export const StartRecordingPage = () => {
         // );
         // dispatch(addAudioUnmute(data.items));
         dispatch(updateUnmutes(data.items));
-        navigate(`/edit-audio/index=${unmuteIndex}`);
+        navigate(`/edit-audio/${id}`);
       });
     });
   }, [recordingBlob]);
@@ -155,10 +159,7 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

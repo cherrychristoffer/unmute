@@ -148,25 +148,25 @@ const Unmute = ({
               )}
             </>
           ) : (
-            <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <label htmlFor={`mage-add-${unmute.key}`}>
-                {loading ? (
-                  <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                    Uploading...
-                    <Loader size={"w-24 h-24"} />
-                  </h2>
-                ) : (
-                  <PlusIcon size={20} className={"fill-white"} />
-                )}
-              </label>
-              <input
-                type="file"
-                accept="image/png, image/jpeg, image/jpg"
-                className="hidden"
-                id={`mage-add-${unmute.key}`}
-                onChange={handleChange}
-              />
-            </button>
+            loading ? (
+              <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+                <Loader size={"w-24 h-24"} />
+              </div>
+              ) : (
+                <button
+                  className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+                  <label htmlFor={`mage-add-${unmute.key}`}>
+                    <PlusIcon size={20} className={"fill-white"}/>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id={`mage-add-${unmute.key}`}
+                    onChange={handleChange}
+                  />
+                </button>
+              )
           )}
         </div>
       </div>

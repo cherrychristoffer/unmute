@@ -127,16 +127,21 @@ const Unmute = ({
             <>
               {
                 (replaceIndex === index &&  activeUnmute && afterImage && beforeImage) && (
-                    <div
-                        className={clsx(
-                        frame_width,
-                        "absolute h-full object-cover overflow-hidden"
+                  <div
+                    className={clsx(
+                      frame_width,
+                      "absolute h-full object-cover overflow-hidden"
                     )}>
-                      <ImgComparisonSlider>
-                        <img slot="first" src={beforeImage} />
-                        <img slot="second" src={afterImage} />
-                      </ImgComparisonSlider>
+                    <ImgComparisonSlider className="slider-example-split-line">
+                      <img slot="first" src={beforeImage}/>
+                      <img slot="second" src={afterImage}/>
+                    </ImgComparisonSlider>
+
+                    <div className="img-info flex justify-between absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-serif" style={{width: 'calc(100% - 34px)'}}>
+                      <span className={'w-1/2 text-center'}>Before</span>
+                      <span className={'w-1/2 text-center'}>After</span>
                     </div>
+                  </div>
                 )
               }
 

@@ -256,3 +256,7 @@ input[type="range"]::range-progress {
   pointer-events: auto;
   appearance: none;
 }
+
+.slider-example-split-line {
+  --default-handle-opacity: 0;
+}

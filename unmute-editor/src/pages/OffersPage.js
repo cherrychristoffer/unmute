@@ -1,18 +1,20 @@
-import { React } from "react";
+import { React, useEffect } from "react";
 import { useLocation } from "wouter";
 
 import { addUnmute } from "../features/user/userSlice";
 import { addUnmuteToCart } from "../api/cart";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import offer1 from "../assets/images/offers/offer1.jpg";
 import offer2 from "../assets/images/offers/offer2.jpg";
 import offer3 from "../assets/images/offers/offer3.jpg";
 import offer4 from "../assets/images/offers/offer4.jpg";
+import { Loader } from "../components/Loader";
 
 export const OffersPage = () => {
   const [_location, navigate] = useLocation();
   const dispatch = useDispatch();
+  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
 
   const handleClick = ({ quantity }) => {
     addUnmuteToCart({ quantity }).then(({ data }) => {
@@ -23,7 +25,20 @@ export const OffersPage = () => {
     });
   };
 
+  useEffect(() => {
+    if (unmutes?.length > 0) {
+      navigate("/orientation");
+    }
+  }, [unmutes]);
+
   const navigateToCollage = () => navigate("/collage");
+
+  if (isLoadingUnmutes || unmutes?.length !== 0)
+    return (
+      <div className="flex justify-center">
+        <Loader />
+      </div>
+    );
 
   const UNMUTE = [
     {

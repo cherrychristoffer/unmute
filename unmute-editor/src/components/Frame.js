@@ -100,6 +100,7 @@ export const Frame = () => {
         properties: {
           ...unmuteToUpdate.properties,
           _images: [],
+          _original_images: [],
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items));
@@ -121,7 +122,6 @@ export const Frame = () => {
       </div>
     );
   }
-
   return (
     <div
       className={"pt-8"}

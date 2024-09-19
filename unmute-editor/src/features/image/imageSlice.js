@@ -7,6 +7,7 @@ export const userSlice = createSlice({
     imageRef: null,
     minValue: 0,
     ratio: 0,
+    mustCropAsNumber: 0,
   },
   reducers: {
     updateZoomValue: (state, action) => {
@@ -21,11 +22,19 @@ export const userSlice = createSlice({
     setRatio: (state, action) => {
       state.ratio = action.payload;
     },
+    setMustCrop: (state) => {
+      state.mustCropAsNumber = state.mustCropAsNumber + 1;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { updateZoomValue, setImageRef, setRatio, setMinValue } =
-  userSlice.actions;
+export const {
+  updateZoomValue,
+  setMustCrop,
+  setImageRef,
+  setRatio,
+  setMinValue,
+} = userSlice.actions;
 
 export default userSlice.reducer;

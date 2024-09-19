@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 
 import { addUnmute } from "../features/user/userSlice";
@@ -15,9 +15,11 @@ export const OffersPage = () => {
   const [_location, navigate] = useLocation();
   const dispatch = useDispatch();
   const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
+  const dontRedirect = useRef(false);
 
   const handleClick = ({ quantity }) => {
     addUnmuteToCart({ quantity }).then(({ data }) => {
+      dontRedirect.current = true;
       data.items.forEach((unmute) => {
         dispatch(addUnmute(unmute));
       });
@@ -26,7 +28,7 @@ export const OffersPage = () => {
   };
 
   useEffect(() => {
-    if (unmutes?.length > 0) {
+    if (unmutes?.length > 0 && !dontRedirect.current) {
       navigate("/orientation");
     }
   }, [unmutes]);

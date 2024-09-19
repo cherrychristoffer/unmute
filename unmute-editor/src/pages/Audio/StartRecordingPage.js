@@ -9,6 +9,7 @@ import { useAudioRecorder } from "react-audio-voice-recorder";
 import { v4 as uuid } from "uuid";
 
 import {
+  addAudioUnmute,
   addUnmute,
   updateUnmute,
   updateUnmutes,
@@ -41,6 +42,7 @@ export const StartRecordingPage = () => {
 
   const audioRef = useRef();
   const { activeUnmute } = useActiveUnmute();
+
   const [countDown, setCountDown] = useState(3);
   const [minutesSeconds, setMinutesSeconds] = useState(null);
   const [time, setTime] = useState(0);
@@ -69,8 +71,9 @@ export const StartRecordingPage = () => {
 
   useEffect(() => {
     if (!recordingBlob) return;
-
-    const file = new File([recordingBlob], "recorded.wav", {
+    //"recorded.wav"
+    const newUuid = uuid();
+    const file = new File([recordingBlob], `${newUuid}.wav`, {
       type: "audio/wav",
     });
 
@@ -79,22 +82,30 @@ export const StartRecordingPage = () => {
       path: activeUnmute.properties._uuid,
     }).then(() => {
       const fileUrl = getFileUrl(
-        `${activeUnmute.properties._uuid}/recorded.wav`
+        `${activeUnmute.properties._uuid}/${newUuid}.wav`
       );
+
+      const audio = {
+        file: fileUrl,
+        countdown: formatTime(time),
+      };
 
       updateUnmuteInCart({
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
-          _audios: [fileUrl],
-          _countdown: formatTime(time),
+          _audios: [...activeUnmute.properties._audios, audio],
         },
       }).then(({ data }) => {
-        data?.items.map((item) =>
-          dispatch(updateUnmute({ ...item, id: uuid }))
-        );
+        console.log("data.items", data.items);
 
         // dispatch(updateUnmutes(data.items));
+        // data?.items.map((item) =>
+        //   // dispatch(updateUnmute({ ...item, id: uuid }))
+        //   dispatch(updateUnmutes(item.items))
+        // );
+        // dispatch(addAudioUnmute(data.items));
+        dispatch(updateUnmutes(data.items));
         navigate("/edit-audio");
       });
     });
@@ -144,7 +155,10 @@ export const StartRecordingPage = () => {
         />
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

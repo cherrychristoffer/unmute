@@ -144,6 +144,29 @@ export const userSlice = createSlice({
         audioBlob: action.payload,
       };
     },
+    addAudioUnmute: (state, action) => {
+      console.log("Act", action.payload);
+
+      return {
+        ...state,
+        unmutes: state.unmutes.map((item) => {
+          const updatedUnmute = action.payload.find(
+            (state) => state.properties._uuid === item.properties._uuid
+          );
+          console.log("actionnn", updatedUnmute);
+
+          if (updatedUnmute) {
+            console.log("stexxxx");
+            const dataUnmute = updateUnmute.properties.audios;
+            return updatedUnmute;
+          } else {
+            console.log("Te stex");
+
+            return item;
+          }
+        }),
+      };
+    },
   },
 });
 
@@ -157,6 +180,7 @@ export const {
   setRecording,
   setActiveUnmuteIndex,
   setAudioBlob,
+  addAudioUnmute,
 } = userSlice.actions;
 
 export default userSlice.reducer;

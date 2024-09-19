@@ -421,9 +421,9 @@ export const EditAudioPage = () => {
                           {...provided.dragHandleProps}
                           className="audio-crop"
                         >
-                          <div onClick={() => handleCropAudio(item, index)}>
+                          {/* <div onClick={() => handleCropAudio(item, index)}>
                             Save{item.seconds}
-                          </div>
+                          </div> */}
                           <CheckIcon
                             color={"fill-rose-100"}
                             size={16}

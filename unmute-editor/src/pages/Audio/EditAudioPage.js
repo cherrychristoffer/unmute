@@ -447,26 +447,28 @@ export const EditAudioPage = () => {
                           <div onClick={() => handleCropAudio(item, index)}>
                             Save{item.seconds}
                           </div>
-                          <CheckIcon
-                            color={"fill-rose-100"}
-                            size={16}
-                            className={
-                              "absolute top-40 bottom-0 left-20 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                            }
-                          />
-                          <CloseIcon
-                            color={"fill-rose-100"}
-                            size={16}
-                            className={
-                              "absolute top-40 bottom-0 left-0 right-10 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                            }
-                          />
+                          <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
+                            <CheckIcon
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                            />
+                            <CloseIcon
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                            />
+                          </div>
                           <div className="handle">
                             {item.seconds !== undefined && (
                               <Range
                                 min={0}
                                 max={item.seconds}
-                                range={rangeMap[index] || { start: 0, end: 0 }}
+                                range={rangeMap[index] || { start: 0, end: 100 }}
                                 handleChange={(e) => handleChange(e, index)}
                                 startRef={(ref) =>
                                   (startRefs.current[index] = ref)

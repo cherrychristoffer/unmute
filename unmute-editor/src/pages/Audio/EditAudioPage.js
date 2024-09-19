@@ -419,17 +419,15 @@ export const EditAudioPage = () => {
             src={`${item.properties?._audios}?c=${cacheBust}`}
           ></audio>
         ))} */}
-        <div onClick={goAdd}> click</div>
-        <div onClick={mergeAudioData}>merge</div>
         <div className="w-full flex flex-col items-center mt-24">
-          {!audioBlob && <Loader size={"w-24 h-24"} />}
+          {!audioBlob && <Loader size={"w-24 h-24"}/>}
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  style={{ padding: "10px" }}
+                  style={{padding: "10px"}}
                 >
                   {audioBlob.map((item, index) => (
                     <Draggable
@@ -442,7 +440,7 @@ export const EditAudioPage = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="audio-crop"
+                          className="audio-crop mb-5"
                         >
                           <div onClick={() => handleCropAudio(item, index)}>
                             Save{item.seconds}
@@ -468,7 +466,7 @@ export const EditAudioPage = () => {
                               <Range
                                 min={0}
                                 max={item.seconds}
-                                range={rangeMap[index] || { start: 0, end: 100 }}
+                                range={rangeMap[index] || {start: 0, end: 100}}
                                 handleChange={(e) => handleChange(e, index)}
                                 startRef={(ref) =>
                                   (startRefs.current[index] = ref)
@@ -506,12 +504,27 @@ export const EditAudioPage = () => {
             </Droppable>
           </DragDropContext>
         </div>
+
+        <div className="mt-16 flex flex-row justify-center items-center gap-4">
+          <button
+            className="font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer"
+            onClick={goAdd}
+          >
+            Add new recording
+          </button>
+          <button
+            onClick={mergeAudioData}
+            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+            Merge
+          </button>
+        </div>
       </div>
 
       <AudioBottomNavigation
         isRecording={startRecording}
         isPaused={false}
-        togglePauseResume={() => {}}
+        togglePauseResume={() => {
+        }}
         // stopRecording={() => {}}
         stopRecording={stopRecording}
         playAudio={handlePlayAudio}

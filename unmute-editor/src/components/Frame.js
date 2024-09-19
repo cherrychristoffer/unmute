@@ -51,8 +51,6 @@ export const Frame = () => {
 
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
-      setEditSlider((prev) => prev + 1);
-      setInitialSlide(unmutes?.length > 1 ? 1 : 0);
       isAlreadyRendered.current = true;
       const isExtraExists = unmutes.find(
         (item) => item.properties._extra || item.properties._collage
@@ -63,12 +61,13 @@ export const Frame = () => {
         const itemsWithImage = unmutes.filter(
           (item) => item.properties._images?.length > 0
         );
+        setEditSlider((prev) => prev + 1);
+        setInitialSlide(itemsWithImage.length - 1);
         const itemsWithoutImages = unmutes.filter(
           (item) => !item.properties._images?.length
         );
 
-        itemsWithoutImages.splice(1, 0, ...itemsWithImage);
-        dispatch(updateAllUnmutes(itemsWithoutImages));
+        dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
       }
     }
   }, [unmutes]);

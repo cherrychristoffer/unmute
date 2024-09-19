@@ -45,7 +45,6 @@ export const Frame = () => {
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
 
-  console.log("activeUnmute", activeUnmute);
   const { unmutes } = useSelector((state) => state.user);
   const { scrollToExtra, disableAllExtions } = useSelector(
     (state) => state.image
@@ -111,7 +110,6 @@ export const Frame = () => {
     setPlaying(false);
   };
 
-  console.log("unmutes", unmutes);
   const handleDelete = (key) => {
     const unmuteToUpdate = unmutes.find((unmute) => unmute.key === key);
     deleteFile({

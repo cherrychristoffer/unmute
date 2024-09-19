@@ -94,16 +94,13 @@ export const EditAudioPage = () => {
   };
 
   const mergeAudioData = async () => {
-    console.log("auid", audioFiles);
     const result = audioFiles.map((item) => {
       const fileParts = item.file.split("/");
       return fileParts[fileParts.length - 1];
     });
-    console.log("Result", result);
 
     try {
       const response = await mergeAudio(result);
-      console.log("response", response);
     } catch (e) {
       console.log("e", e);
     }

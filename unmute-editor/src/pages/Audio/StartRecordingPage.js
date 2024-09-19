@@ -44,15 +44,11 @@ export const StartRecordingPage = () => {
   const { activeUnmute } = useActiveUnmute();
 
   const [countDown, setCountDown] = useState(3);
-  const [minutesSeconds, setMinutesSeconds] = useState(null);
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const { unmutes } = useSelector((state) => state.user);
   const { id } = useParams();
 
-  console.log("a   a  aa unmutes", unmutes);
-  const unmuteIndex = _location.split("index=")[1];
   useInterval(
     () => {
       setTime((prevTime) => prevTime + 1);
@@ -101,8 +97,6 @@ export const StartRecordingPage = () => {
           _audios: [...activeUnmute.properties._audios, audio],
         },
       }).then(({ data }) => {
-        console.log("data.items", data.items);
-        console.log("active", activeUnmute.key);
         // dispatch(updateUnmutes(data.items));
         // data?.items.map((item) =>
         //   // dispatch(updateUnmute({ ...item, id: uuid }))

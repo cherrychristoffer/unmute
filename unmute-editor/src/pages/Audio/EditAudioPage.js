@@ -3,18 +3,15 @@ import { React, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
+import { CheckIcon } from "../../assets/icons/icon_check";
+import { CloseIcon } from "../../assets/icons/icon_close";
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import {
-  setAudioBlob,
-  updateUnmute,
-  updateUnmutes,
-} from "../../features/user/userSlice";
+import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
@@ -35,17 +32,22 @@ export const EditAudioPage = () => {
     isPaused,
   } = useAudioRecorder();
   const audioRef = useRef();
+  const priceGap = 1;
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
+  const startRefs = useRef([]);
+  const endRefs = useRef([]);
+  const progressRefs = useRef([]);
+  const updateRef = useRef(false);
   const cacheBust = Date.now();
   const { activeUnmute, loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
   const [duration, setDuration] = useState(10);
-  const [range, setRange] = useState({
-    start: 0,
-    end: 0,
-  });
+
+  const [rangeMap, setRangeMap] = useState({});
   const userAudio = useSelector((state) => state.user.unmutes);
+  console.log("user", userAudio);
+
   // const audioBlob = useSelector((state) => state.user.audioBlob);
   const refAudio = useRef(false);
 
@@ -131,6 +133,7 @@ export const EditAudioPage = () => {
       }
     }
   };
+
   const cropAudio = async (blob, start, end) => {
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -186,103 +189,194 @@ export const EditAudioPage = () => {
     const wavBuffer = audioBufferToWav(buffer); // You'll need an external utility function to convert audio buffer to WAV format
     return new Blob([wavBuffer], { type: "audio/wav" });
   };
+  const formatTime = (time) => {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+
+    if (seconds < 10) {
+      seconds = `0${seconds}`;
+    }
+
+    return `${minutes}:${seconds}`;
+  };
+  const getMyUserAudio = () => {
+    userAudio?.map((item) => {
+      if (item.properties._audios?.length > 0) {
+        item.properties._audios.map((state) =>
+          axios
+            .get(`${state.file}?c=${cacheBust}`, {
+              responseType: "blob",
+            })
+            .then(({ data }) => {
+              const [minutes, seconds] = state.countdown
+                ?.split(":")
+                ?.map(Number);
+              const dataSeconds = minutes * 60 + seconds;
+
+              setRangeMap({
+                start: 0,
+                end: String(dataSeconds),
+              });
+              const newData = {
+                blob: data,
+                seconds: dataSeconds,
+              };
+
+              const dataArray = [...audioBlob];
+
+              dataArray.push(newData);
+              setAudioBlob(dataArray);
+              // dispatch((prevState) => setAudioBlob(...prevState, dataArray));
+              updateRef.current = true;
+            })
+            .catch((error) => {
+              console.error("Error fetching audio:", error);
+            })
+        );
+      }
+    });
+  };
 
   useEffect(() => {
     if (userAudio.length > 0) {
-      userAudio?.map((item) => {
-        if (item.properties._audios?.length > 0) {
-          item.properties._audios.map((state) =>
-            axios
-              .get(`${state.file}?c=${cacheBust}`, {
-                responseType: "blob",
-              })
-              .then(({ data }) => {
-                console.log("data", data);
-
-                const [minutes, seconds] = state.countdown
-                  ?.split(":")
-                  ?.map(Number);
-                const dataSeconds = minutes * 60 + seconds;
-
-                setRange({
-                  start: 0,
-                  end: String(dataSeconds),
-                });
-                const newData = {
-                  blob: data,
-                  seconds: dataSeconds,
-                };
-
-                const dataArray = [...audioBlob];
-
-                dataArray.push(newData);
-                setAudioBlob(dataArray);
-                // dispatch((prevState) => setAudioBlob(...prevState, dataArray));
-              })
-              .catch((error) => {
-                console.error("Error fetching audio:", error);
-              })
-          );
-        }
-      });
+      getMyUserAudio();
     }
   }, [userAudio]);
-  console.log("auti", audioBlob);
 
   if (loading) {
     return <div>Loading audio...</div>;
   }
-  const handleCropAudio = async () => {
-    if (audioBlob && range.start < range.end) {
+  const handleCropAudio = async (item, index) => {
+    // const myAudio = userAudio.map(state)find((item, index) => item.index == index);
+    const myAudio = userAudio.map((state) =>
+      state.properties._audios.find(
+        (stateIndex, indexData) => index === indexData
+      )
+    );
+    const findActive = userAudio.find(
+      (item) => item.properties?._audios?.length > 0
+    );
+
+    const myAudioData = myAudio.find((item) => item !== undefined);
+
+    if (myAudioData && Number(rangeMap.start) < Number(rangeMap.end)) {
       const croppedAudioBlob = await cropAudio(
-        audioBlob[0].blob,
-        range.start,
-        range.end
+        item.blob,
+        rangeMap[index].start,
+        rangeMap[index].end
       );
 
-      // Now you have the cropped audio blob, and you can upload it or play it
-      uploadFile({
-        file: new File([croppedAudioBlob], "cropped-recording.wav", {
-          type: "audio/wav",
-        }),
-        path: activeUnmute.properties._uuid,
-      }).then(() => {
-        const fileUrl = getFileUrl(
-          `${activeUnmute.properties._uuid}/cropped-recording.wav`
-        );
+      const regex = /\/([a-f0-9\-]{36})\.wav$/;
 
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: [fileUrl],
-          },
-        }).then(({ data }) => {
-          dispatch(updateUnmute({ ...data, id: uuid }));
+      const match = myAudioData.file.match(regex);
+
+      if (match) {
+        const identifier = match[1];
+
+        const fileData = new File([croppedAudioBlob], `${identifier}.wav`, {
+          type: "audio/wav",
         });
-      });
+
+        uploadFile({
+          file: new File([croppedAudioBlob], `${identifier}.wav`, {
+            type: "audio/wav",
+          }),
+          path: findActive.properties._uuid,
+        }).then(() => {
+          const fileUrl = getFileUrl(
+            `${findActive.properties._uuid}/${identifier}.wav`
+          );
+
+          const dataFind = findActive.properties._audios?.map((item) => {
+            console.log("item", item);
+            console.log("myAudioData", myAudioData);
+            // const regex = /\/([0-9a-fA-F\-]{36})\.wav$/;
+            // const match = item.file.match(regex);
+            // const identifier_one = match ? match[1] : null;
+            // console.log("rangeMap.end", rangeMap[index].end);
+
+            if (myAudioData.file === item.file) {
+              return {
+                file: fileUrl,
+                countdown: formatTime(rangeMap[index].end),
+              };
+            }
+            return item;
+          });
+
+          updateUnmuteInCart({
+            key: activeUnmute.key,
+            properties: {
+              ...activeUnmute.properties,
+              _audios: dataFind,
+            },
+          }).then(({ data }) => {
+            setAudioBlob([]);
+
+            setTimeout(() => {
+              dispatch(updateUnmutes(data.items));
+            }, 500);
+          });
+        });
+      } else {
+        console.log("Identifier not found.");
+      }
     }
   };
-  const dataDrag = [
-    { id: 1, text: "fewfwefewfwe" },
-    { id: 2, text: "fewftttttwefewfwe" },
-    { id: 3, text: "fewfweffeggggewfwe" },
-  ];
   const goAdd = () => {
     navigate("start-recording");
   };
   const onDragEnd = (result) => {
-    console.log("result", result);
-
     const { destination, source } = result;
     if (!destination) return;
 
-    const reorderedItems = Array.from(audioBlob);
+    const reorderedItems = Array.from(items);
     const [removed] = reorderedItems.splice(source.index, 1);
     reorderedItems.splice(destination.index, 0, removed);
 
     setAudioBlob(reorderedItems);
   };
+  function calculateValues(startValue, endValue, max, index) {
+    const progressElement = progressRefs.current[index];
+    if (progressElement) {
+      progressElement.style.left = (startValue / max) * 100 + "%";
+      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
+    }
+  }
+  const handleChange = (e, index) => {
+    const { name, value } = e.target;
+    const startValue = parseInt(startRefs.current[index].value);
+    const endValue = parseInt(endRefs.current[index].value);
+
+    let updatedStartValue = startValue;
+    let updatedEndValue = endValue;
+
+    if (endValue - startValue < priceGap) {
+      if (name === "start") {
+        updatedStartValue = endValue - priceGap;
+      } else {
+        updatedEndValue = startValue + priceGap;
+      }
+    }
+
+    setRangeMap((prev) => ({
+      ...prev,
+      [index]: {
+        start: name === "start" ? updatedStartValue : startValue,
+        end: name === "end" ? updatedEndValue : endValue,
+      },
+    }));
+
+    if (progressRefs.current[index]) {
+      calculateValues(
+        updatedStartValue,
+        updatedEndValue,
+        audioBlob[index]?.seconds,
+        index
+      );
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col items-center">
@@ -306,14 +400,13 @@ export const EditAudioPage = () => {
         <div onClick={goAdd}> click</div>
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
-
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
-                  ref={provided.innerRef} // Important to pass the ref
-                  style={{ padding: "10px" }} // Optional: Add any styling you want
+                  ref={provided.innerRef}
+                  style={{ padding: "10px" }}
                 >
                   {audioBlob.map((item, index) => (
                     <Draggable
@@ -323,21 +416,44 @@ export const EditAudioPage = () => {
                     >
                       {(provided) => (
                         <div
-                          ref={provided.innerRef} // Important to pass the ref
+                          ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className="audio-crop"
                         >
-                          <div onClick={handleCropAudio}>Save{index}</div>
+                          <div onClick={() => handleCropAudio(item, index)}>
+                            Save{item.seconds}
+                          </div>
+                          <CheckIcon
+                            color={"fill-rose-100"}
+                            size={16}
+                            className={
+                              "absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                            }
+                          />
+                          <CloseIcon
+                            color={"fill-rose-100"}
+                            size={16}
+                            className={
+                              "absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                            }
+                          />
                           <div className="handle">
-                            {range.end !== 0 && (
+                            {item.seconds !== undefined && (
                               <Range
-                                max={duration}
-                                range={range}
-                                setRange={setRange}
+                                min={0}
+                                max={item.seconds}
+                                range={rangeMap[index] || { start: 0, end: 0 }}
+                                handleChange={(e) => handleChange(e, index)}
+                                startRef={(ref) =>
+                                  (startRefs.current[index] = ref)
+                                }
+                                endRef={(ref) => (endRefs.current[index] = ref)}
+                                progressRef={(ref) =>
+                                  (progressRefs.current[index] = ref)
+                                }
                               />
                             )}
-
                             <AudioVisualizer
                               blob={item.blob}
                               width={300}

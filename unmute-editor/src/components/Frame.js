@@ -23,11 +23,13 @@ import { EmptyBox } from "./EmptyBox";
 
 const sliderSize = {
   width: "50%",
-  minWidth: "250px",
+  minWidth: "290px",
+  padding: '0 20px',
 };
 const sliderLanscapedSize = {
-  minWidth: "300px",
+  minWidth: "340px",
   width: "55%",
+  padding: '0 20px',
 };
 
 export const Frame = () => {
@@ -134,7 +136,6 @@ export const Frame = () => {
         ref={swiperRef}
         slidesPerView={"auto"}
         centeredSlides={true}
-        spaceBetween={30}
         initialSlide={unmutes?.length > 1 ? 1 : 0}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));

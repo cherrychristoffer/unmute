@@ -51,7 +51,7 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
 
   return (
     <>
-      <div className="snap-center flex items-center p-4">
+      <div className="snap-center flex items-center py-4">
         <div
           className={clsx(
             "relative flex justify-center",
@@ -87,7 +87,7 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
           </button>
         </div>
       </div>
-      <div className="extra-box"> Add extra photo and save money</div>
+      <div className="extra-box text-rose-500 text-center">Add extra photo and save money</div>
     </>
   );
 };

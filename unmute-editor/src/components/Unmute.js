@@ -97,7 +97,7 @@ const Unmute = ({
 
   return (
     <>
-      <div className="snap-center flex items-center p-4">
+      <div className="snap-center flex items-center py-4">
         <div
           className={clsx(
             "relative flex justify-center",

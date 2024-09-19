@@ -83,28 +83,73 @@ function App() {
       <Switch>
         {/* Starting page */}
         {/*<Route path="/" component={StartPage}></Route>*/}
-        <Route path="/" component={OffersPage} />
-        <Route path="/inspirations" component={InspirationsPage} />
+        <Route
+          path="/"
+          component={OffersPage}
+        />
+        <Route
+          path="/inspirations"
+          component={InspirationsPage}
+        />
         <Route
           path="/inspiration-video/:id"
           component={InspirationsVideoPage}
         />
-        <Route path="/upload-image" component={UploadImagePage} />
-        <Route path="/collage" component={CollagePage} />
+        <Route
+          path="/upload-image"
+          component={UploadImagePage}
+        />
+        <Route
+          path="/collage"
+          component={CollagePage}
+        />
 
-        <Route path="/audio" component={AudioPage} />
-        <Route path="/audio-approach" component={AudioApproachPage} />
-        <Route path="/audio-upload" component={UploadAudioPage} />
-        <Route path="/start-recording" component={StartRecordingPage} />
-        <Route path="/inspiration" component={InspirationPage} />
-        <Route path="/edit-audio" component={EditAudioPage} />
+        <Route
+          path="/audio/:id"
+          component={AudioPage}
+        />
+        <Route
+          path="/audio-approach"
+          component={AudioApproachPage}
+        />
+        <Route
+          path="/audio-upload/:id"
+          component={UploadAudioPage}
+        />
+        <Route
+          path="/start-recording/:id"
+          component={StartRecordingPage}
+        />
+        <Route
+          path="/inspiration/:id"
+          component={InspirationPage}
+        />
+        <Route
+          path="/edit-audio/:id"
+          component={EditAudioPage}
+        />
 
         {/* UnmuteBottomNavigation */}
-        <Route path="/orientation" component={OrientationPage} />
-        <Route path="/frame" component={FramePage} />
-        <Route path="/passepartout" component={PassepartoutPage} />
-        <Route path="/crop" component={CropPage} />
-        <Route path="/replace" component={ReplacePage} />
+        <Route
+          path="/orientation"
+          component={OrientationPage}
+        />
+        <Route
+          path="/frame"
+          component={FramePage}
+        />
+        <Route
+          path="/passepartout"
+          component={PassepartoutPage}
+        />
+        <Route
+          path="/crop"
+          component={CropPage}
+        />
+        <Route
+          path="/replace"
+          component={ReplacePage}
+        />
         <Route path="/add">ADD</Route>
       </Switch>
 

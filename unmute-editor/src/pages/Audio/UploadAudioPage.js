@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import AWS from "aws-sdk";
-import { AWS_KEY_ID, AWS_KEY_SECRET, S3_BUCKET, S3_REGION } from "../../app/const";
+import {
+  AWS_KEY_ID,
+  AWS_KEY_SECRET,
+  S3_BUCKET,
+  S3_REGION,
+} from "../../app/const";
 import { convertVideoToAudio } from "../../api/video";
-import {getFileUrl, uploadFile} from "../../api/aws";
-import {updateUnmuteInCart} from "../../api/cart";
-import {addUnmute, updateUnmutes} from "../../features/user/userSlice";
-import {v4 as uuid} from "uuid";
-import {useActiveUnmute} from "../../api/useUnmutes";
-import {useDispatch} from "react-redux";
-import {Loader} from "../../components/Loader";
-
+import { getFileUrl, uploadFile } from "../../api/aws";
+import { updateUnmuteInCart } from "../../api/cart";
+import { addUnmute, updateUnmutes } from "../../features/user/userSlice";
+import { v4 as uuid } from "uuid";
+import { useActiveUnmute } from "../../api/useUnmutes";
+import { useDispatch } from "react-redux";
+import { Loader } from "../../components/Loader";
 
 AWS.config.update({
   accessKeyId: AWS_KEY_ID,
@@ -29,23 +33,25 @@ export const UploadAudioPage = () => {
   const { activeUnmute } = useActiveUnmute();
   const dispatch = useDispatch();
 
+  const unmuteIndex = _location.split("index=")[1];
+
   const uploadFileToS3 = (file, path) => {
     const progressBar = document.querySelector("#progress-bar");
 
     return s3
-        .putObject({
-          Bucket: S3_BUCKET,
-          Key: `${path}/${file.name}`,
-          Body: file,
-        })
-        .on("httpUploadProgress", (evt) => {
-          const progress = Math.round((evt.loaded * 100) / evt.total);
-          setProgress(progress);
-          if (progress === 100) {
-            progressBar.style.display = "none";
-          }
-        })
-        .promise();
+      .putObject({
+        Bucket: S3_BUCKET,
+        Key: `${path}/${file.name}`,
+        Body: file,
+      })
+      .on("httpUploadProgress", (evt) => {
+        const progress = Math.round((evt.loaded * 100) / evt.total);
+        setProgress(progress);
+        if (progress === 100) {
+          progressBar.style.display = "none";
+        }
+      })
+      .promise();
   };
 
   const handleVideoUpload = async (event) => {
@@ -53,7 +59,7 @@ export const UploadAudioPage = () => {
     if (!file) return;
 
     try {
-      setLoading(true)
+      setLoading(true);
       const s3Path = "videos";
       await uploadFileToS3(file, s3Path);
 
@@ -66,7 +72,7 @@ export const UploadAudioPage = () => {
         path: activeUnmute.properties._uuid,
       }).then(() => {
         const fileUrl = getFileUrl(
-            `${activeUnmute.properties._uuid}/video-to-audio.mp3`
+          `${activeUnmute.properties._uuid}/video-to-audio.mp3`
         );
 
         updateUnmuteInCart({
@@ -77,11 +83,10 @@ export const UploadAudioPage = () => {
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
-          setLoading(false)
+          setLoading(false);
           navigate("/edit-audio");
         });
       });
-
     } catch (error) {
       console.error("Error uploading video or converting:", error);
     }
@@ -90,19 +95,28 @@ export const UploadAudioPage = () => {
   return (
     <div className="content flex flex-col items-center justify-center h-full py-20">
       <div className="text-center">
-        <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Add audio</h1>
+        <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
+          Add audio
+        </h1>
         <h2 className="font-serif text-muld-1000 text-[17px] text-center leading-tight">
           Choose how
         </h2>
       </div>
       {loading && (
-          <div><Loader size='w-16 h-16' /></div>
+        <div>
+          <Loader size="w-16 h-16" />
+        </div>
       )}
       <div className={"mt-auto text-center"}>
-        <Link to={'/inspiration'} className={'block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center'}>
+        <Link
+          to={`/inspiration/index=${unmuteIndex}`}
+          className={
+            "block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+          }
+        >
           Record audio
         </Link>
-        <form className={'mt-5'}>
+        <form className={"mt-5"}>
           <label
             htmlFor="image"
             className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
@@ -118,17 +132,24 @@ export const UploadAudioPage = () => {
         </form>
 
         <form className="mt-5">
-          <label htmlFor="videoUpload" className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center">
+          <label
+            htmlFor="videoUpload"
+            className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+          >
             Video to Audio
           </label>
           <input
-              type="file"
-              accept="video/mp4"
-              onChange={handleVideoUpload}
-              className="hidden"
-              id="videoUpload"
+            type="file"
+            accept="video/mp4"
+            onChange={handleVideoUpload}
+            className="hidden"
+            id="videoUpload"
           />
-          <div id="progress-bar" className="progress-bar" style={{ width: `${progress}%` }}></div>
+          <div
+            id="progress-bar"
+            className="progress-bar"
+            style={{ width: `${progress}%` }}
+          ></div>
         </form>
       </div>
     </div>

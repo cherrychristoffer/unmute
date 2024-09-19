@@ -16,8 +16,9 @@ export const AudioPage = () => {
   const { activeUnmute } = useActiveUnmute();
   const [_location, navigate] = useLocation();
 
+  const unmuteIndex = _location.split("index=")[1];
   if (activeUnmute?.properties?._audios?.length > 0) {
-    navigate("/edit-audio");
+    navigate(`/edit-audio/index=${unmuteIndex}`);
     return;
   }
 
@@ -55,12 +56,15 @@ export const AudioPage = () => {
       ))}
 
       <div className="flex flex-row justify-center gap-4 mt-16">
-        <Link to={'/inspirations'} className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+        <Link
+          to={"/inspirations"}
+          className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+        >
           Get inspiration
         </Link>
 
         <Link
-          to="/audio-upload"
+          to={`/audio-upload/index=${unmuteIndex}`}
           className="text-white bg-rose-500 border border-rose transition duration-200 ease-out focus:outline-none hover:bg-rose-900 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
         >
           Start recording

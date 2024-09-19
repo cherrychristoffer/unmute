@@ -23,11 +23,13 @@ import { EmptyBox } from "./EmptyBox";
 
 const sliderSize = {
   width: "50%",
-  minWidth: "250px",
+  minWidth: "290px",
+  padding: "0 20px",
 };
 const sliderLanscapedSize = {
-  minWidth: "300px",
+  minWidth: "340px",
   width: "55%",
+  padding: "0 20px",
 };
 
 export const Frame = () => {
@@ -41,11 +43,14 @@ export const Frame = () => {
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
 
-  const unmutes = useSelector((state) => state.user.unmutes);
+  const { unmutes } = useSelector((state) => state.user);
+  const { scrollToExtra, disableAllExtions } = useSelector(
+    (state) => state.image
+  );
+  const [initialSlide, setInitialSlide] = useState(0);
 
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
-      setEditSlider((prev) => prev + 1);
       isAlreadyRendered.current = true;
       const isExtraExists = unmutes.find(
         (item) => item.properties._extra || item.properties._collage
@@ -56,15 +61,28 @@ export const Frame = () => {
         const itemsWithImage = unmutes.filter(
           (item) => item.properties._images?.length > 0
         );
+        setEditSlider((prev) => prev + 1);
+        setInitialSlide(itemsWithImage.length - 1);
         const itemsWithoutImages = unmutes.filter(
           (item) => !item.properties._images?.length
         );
 
-        itemsWithoutImages.splice(1, 0, ...itemsWithImage);
-        dispatch(updateAllUnmutes(itemsWithoutImages));
+        dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
       }
     }
   }, [unmutes]);
+
+  useEffect(() => {
+    if (scrollToExtra > 0) {
+      const isExtraExists = unmutes?.find(
+        (item) => item.properties._extra || item.properties._collage
+      );
+      if (!isExtraExists) {
+        setEditSlider((prev) => prev + 1);
+        setInitialSlide(unmutes?.length);
+      }
+    }
+  }, [scrollToExtra]);
 
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
@@ -101,6 +119,7 @@ export const Frame = () => {
           ...unmuteToUpdate.properties,
           _images: [],
           _enhanced: false,
+          _original_images: [],
         },
       }).then((data) => {
         dispatch(updateUnmutes(data.data.items));
@@ -122,7 +141,6 @@ export const Frame = () => {
       </div>
     );
   }
-
   return (
     <div
       className={"pt-8"}
@@ -135,8 +153,7 @@ export const Frame = () => {
         ref={swiperRef}
         slidesPerView={"auto"}
         centeredSlides={true}
-        spaceBetween={30}
-        initialSlide={unmutes?.length > 1 ? 1 : 0}
+        initialSlide={initialSlide}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));
         }}
@@ -203,8 +220,15 @@ export const Frame = () => {
           </div>
         ) : (
           <Link
+            style={{
+              opacity: disableAllExtions ? "0.5" : "1",
+              pointerEvents: disableAllExtions ? "none" : "unset",
+            }}
             to="/audio"
-            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
+            className={
+              "audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer" +
+              ``
+            }
           >
             Add your audio
           </Link>

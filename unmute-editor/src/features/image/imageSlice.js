@@ -8,6 +8,7 @@ export const userSlice = createSlice({
     minValue: 0,
     ratio: 0,
     mustCropAsNumber: 0,
+    scrollToExtra: 0,
   },
   reducers: {
     updateZoomValue: (state, action) => {
@@ -25,6 +26,9 @@ export const userSlice = createSlice({
     setMustCrop: (state) => {
       state.mustCropAsNumber = state.mustCropAsNumber + 1;
     },
+    setScrolltoExtra: (state) => {
+      state.scrollToExtra = state.scrollToExtra + 1;
+    },
   },
 });
 
@@ -35,6 +39,7 @@ export const {
   setImageRef,
   setRatio,
   setMinValue,
+  setScrolltoExtra,
 } = userSlice.actions;
 
 export default userSlice.reducer;

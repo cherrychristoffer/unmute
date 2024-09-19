@@ -24,12 +24,12 @@ import { EmptyBox } from "./EmptyBox";
 const sliderSize = {
   width: "50%",
   minWidth: "290px",
-  padding: '0 20px',
+  padding: "0 20px",
 };
 const sliderLanscapedSize = {
   minWidth: "340px",
   width: "55%",
-  padding: '0 20px',
+  padding: "0 20px",
 };
 
 export const Frame = () => {
@@ -43,11 +43,14 @@ export const Frame = () => {
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
 
-  const unmutes = useSelector((state) => state.user.unmutes);
+  const { unmutes } = useSelector((state) => state.user);
+  const { scrollToExtra } = useSelector((state) => state.image);
+  const [initialSlide, setInitialSlide] = useState(0);
 
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
       setEditSlider((prev) => prev + 1);
+      setInitialSlide(unmutes?.length > 1 ? 1 : 0);
       isAlreadyRendered.current = true;
       const isExtraExists = unmutes.find(
         (item) => item.properties._extra || item.properties._collage
@@ -67,6 +70,18 @@ export const Frame = () => {
       }
     }
   }, [unmutes]);
+
+  useEffect(() => {
+    if (scrollToExtra > 0) {
+      const isExtraExists = unmutes?.find(
+        (item) => item.properties._extra || item.properties._collage
+      );
+      if (!isExtraExists) {
+        setEditSlider((prev) => prev + 1);
+        setInitialSlide(unmutes?.length);
+      }
+    }
+  }, [scrollToExtra]);
 
   const activeUnmuteIndex = useSelector(
     (state) => state.user.activeUnmuteIndex
@@ -136,7 +151,7 @@ export const Frame = () => {
         ref={swiperRef}
         slidesPerView={"auto"}
         centeredSlides={true}
-        initialSlide={unmutes?.length > 1 ? 1 : 0}
+        initialSlide={initialSlide}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));
         }}

@@ -7,3 +7,10 @@
   z-index: 10000000;
   color: transparent;
 }
+
+.bottom-nav-add-btn {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}

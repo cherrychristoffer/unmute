@@ -67,7 +67,8 @@ export const OrientationPage = () => {
               className={"relative"}
             >
               <img src={item.image} className="" alt={item.value} />
-              {activeUnmute?.properties?._orientation === item.value && (
+              {(activeUnmute?.properties?._orientation === item.value ||
+                (!activeUnmute && item.value === "portrait")) && (
                 <CheckIcon
                   color={"fill-rose-100"}
                   size={16}

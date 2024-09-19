@@ -44,7 +44,9 @@ export const Frame = () => {
   const [editSlider, setEditSlider] = useState(0);
 
   const { unmutes } = useSelector((state) => state.user);
-  const { scrollToExtra } = useSelector((state) => state.image);
+  const { scrollToExtra, disableAllExtions } = useSelector(
+    (state) => state.image
+  );
   const [initialSlide, setInitialSlide] = useState(0);
 
   useEffect(() => {
@@ -218,8 +220,15 @@ export const Frame = () => {
           </div>
         ) : (
           <Link
+            style={{
+              opacity: disableAllExtions ? "0.5" : "1",
+              pointerEvents: disableAllExtions ? "none" : "unset",
+            }}
             to="/audio"
-            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
+            className={
+              "audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer" +
+              ``
+            }
           >
             Add your audio
           </Link>

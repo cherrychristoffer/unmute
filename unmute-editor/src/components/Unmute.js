@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 
 import clsx from "clsx";
 
@@ -17,6 +17,7 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 
 import CropperComponent from "./Cropper";
+import { setDisableAllActions } from "../features/image/imageSlice";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -68,6 +69,7 @@ const Unmute = ({
         },
       }).then(({ data }) => {
         setLoading(false);
+        setSmallImage(false);
         dispatch(updateUnmutes(data.items));
       });
     });
@@ -77,7 +79,7 @@ const Unmute = ({
     properties: {
       _passepartout: passepartout,
       _orientation: orientation,
-      _images: images,
+      _original_images: images,
     },
   } = unmute;
 
@@ -88,6 +90,12 @@ const Unmute = ({
   const frame_width = isLandscape
     ? "min-w-[300px] w-[55%]"
     : "min-w-[250px] w-1/2";
+
+  useEffect(() => {
+    if (activeUnmute) {
+      dispatch(setDisableAllActions(smallImage));
+    }
+  }, [activeUnmute, smallImage]);
 
   const handleImageLoad = (event) => {
     const { naturalWidth, naturalHeight } = event.target;
@@ -174,7 +182,7 @@ const Unmute = ({
           <label
             htmlFor={`mage-add-${unmute.key}`}
             onClick={() => onDelete(unmute.key)}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
           >
             Low resolution - Add new photo
           </label>

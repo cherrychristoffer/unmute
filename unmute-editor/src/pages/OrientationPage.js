@@ -16,6 +16,7 @@ import { setMustCrop } from "../features/image/imageSlice";
 export const OrientationPage = () => {
   const dispatch = useDispatch();
   const { activeUnmute } = useActiveUnmute();
+  const { disableAllExtions } = useSelector((state) => state.image);
 
   const handleClick = (orientation) => {
     if (!activeUnmute) return;
@@ -63,10 +64,16 @@ export const OrientationPage = () => {
           {ORIENTATION.map((item, index) => (
             <button
               key={index}
+              disabled={disableAllExtions}
               onClick={() => handleClick(item.value)}
               className={"relative"}
             >
-              <img src={item.image} className="" alt={item.value} />
+              <img
+                src={item.image}
+                style={{ opacity: disableAllExtions ? "0.5" : "1" }}
+                className=""
+                alt={item.value}
+              />
               {(activeUnmute?.properties?._orientation === item.value ||
                 (!activeUnmute && item.value === "portrait")) && (
                 <CheckIcon

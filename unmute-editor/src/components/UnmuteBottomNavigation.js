@@ -10,11 +10,13 @@ import { NavFrameIcon } from "../assets/icons/icon_nav_frame";
 import { NavOrientationIcon } from "../assets/icons/icon_nav_orientation";
 import { NavPassepartoutIcon } from "../assets/icons/icon_nav_passepartout";
 import { NavReplaceIcon } from "../assets/icons/icon_nav_replace";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setScrolltoExtra } from "../features/image/imageSlice";
 
 export const UnmuteBottomNavigation = () => {
   const dispatch = useDispatch();
+
+  const { disableAllExtions } = useSelector((state) => state.image);
   const NAVIGATION = [
     {
       to: "/orientation",
@@ -48,6 +50,10 @@ export const UnmuteBottomNavigation = () => {
         {NAVIGATION.map((item, index) => (
           <Link
             key={index}
+            style={{
+              opacity: disableAllExtions ? "0.5" : "1",
+              pointerEvents: disableAllExtions ? "none" : "unset",
+            }}
             to={item.to}
             className={(active) =>
               clsx(

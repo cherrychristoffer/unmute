@@ -1,8 +1,8 @@
-import { React, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 
 import clsx from "clsx";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CloseIcon } from "../assets/icons/icon_close";
 import { ExclamationIcon } from "../assets/icons/icon_exclamation";
 import { PlusIcon } from "../assets/icons/icon_plus";
@@ -17,6 +17,8 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 
 import CropperComponent from "./Cropper";
+import { ImgComparisonSlider } from "@img-comparison-slider/react";
+import { setDisableAllActions } from "../features/image/imageSlice";
 
 const frame_padding = (scale, landscape) => {
   if (landscape) {
@@ -48,6 +50,13 @@ const Unmute = ({
 
   const [loading, setLoading] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
+  const replaceIndex = useSelector((state) => state.replace.replaceIndex);
+  const replaceMode = useSelector((state) => state.replace.replaceMode);
+  const beforeImage = useSelector((state) => state.replace.beforeImage);
+  const afterImage = useSelector((state) => state.replace.afterImage);
+
+  const [frameWidth, setFrameWidth] = useState();
+  const frameRef = useRef();
 
   const handleChange = async (event) => {
     setLoading(true);
@@ -64,9 +73,11 @@ const Unmute = ({
         properties: {
           ...unmute.properties,
           _images: [fileUrl],
+          _original_images: [fileUrl],
         },
       }).then(({ data }) => {
         setLoading(false);
+        setSmallImage(false);
         dispatch(updateUnmutes(data.items));
       });
     });
@@ -76,7 +87,7 @@ const Unmute = ({
     properties: {
       _passepartout: passepartout,
       _orientation: orientation,
-      _images: images,
+      _original_images: images,
     },
   } = unmute;
 
@@ -88,6 +99,12 @@ const Unmute = ({
     ? "min-w-[300px] w-[55%]"
     : "min-w-[250px] w-1/2";
 
+  useEffect(() => {
+    if (activeUnmute) {
+      dispatch(setDisableAllActions(smallImage));
+    }
+  }, [activeUnmute, smallImage]);
+
   const handleImageLoad = (event) => {
     const { naturalWidth, naturalHeight } = event.target;
     if (naturalWidth < 637 && naturalHeight < 850) {
@@ -95,9 +112,13 @@ const Unmute = ({
     }
   };
 
+  useEffect(() => {
+    setFrameWidth(frameRef.current.offsetWidth);
+  }, [frame]);
+
   return (
     <>
-      <div className="snap-center flex items-center p-4">
+      <div className="snap-center flex items-center py-4">
         <div
           className={clsx(
             "relative flex justify-center",
@@ -105,11 +126,12 @@ const Unmute = ({
           )}
         >
           <img
+            ref={frameRef}
             src={frame}
             alt="Frame"
             className={clsx(
               frame_width,
-              "relative top-0 z-[1] pointer-events-none"
+              "relative top-0 z-[2] pointer-events-none"
             )}
           />
           <img
@@ -120,17 +142,57 @@ const Unmute = ({
           />
           {images && images.length > 0 ? (
             <>
-              <CropperComponent
-                images={images}
-                frame_padding={frame_padding}
-                scale={scale}
-                frame_width={frame_width}
-                isLandscape={isLandscape}
-                unmute={unmute}
-                activeUnmute={activeUnmute}
-                index={index}
-                swiperRef={swiperRef}
-              />
+              {replaceIndex === index &&
+                activeUnmute &&
+                afterImage &&
+                beforeImage && (
+                  <div
+                    className={clsx(
+                      frame_width,
+                      "absolute h-full object-cover overflow-hidden"
+                    )}
+                  >
+                    {/*<ImgComparisonSlider className="slider-example-split-line">
+                      <img slot="first" src={beforeImage}/>
+                      <img slot="second" src={afterImage}/>
+                    </ImgComparisonSlider>*/}
+
+                    <div className="image-compare">
+                      <div className="before-wrapper">
+                        <div
+                          className={"before"}
+                          style={{
+                            backgroundImage: `url(${beforeImage})`,
+                            width: frameWidth,
+                          }}
+                        />
+                      </div>
+                      <img src={afterImage} className={"after-image"} alt="" />
+                    </div>
+
+                    <div
+                      className="img-info flex justify-between absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-serif z-[2]"
+                      style={{ width: "calc(100% - 34px)" }}
+                    >
+                      <span className={"w-1/2 text-center"}>Before</span>
+                      <span className={"w-1/2 text-center"}>After</span>
+                    </div>
+                  </div>
+                )}
+
+              {(replaceIndex !== index || !replaceMode) && (
+                <CropperComponent
+                  images={images}
+                  frame_padding={frame_padding}
+                  scale={scale}
+                  frame_width={frame_width}
+                  isLandscape={isLandscape}
+                  unmute={unmute}
+                  activeUnmute={activeUnmute}
+                  index={index}
+                  swiperRef={swiperRef}
+                />
+              )}
               {smallImage ? (
                 <button
                   onClick={() => onDelete(unmute.key)}
@@ -147,17 +209,14 @@ const Unmute = ({
                 </button>
               )}
             </>
+          ) : loading ? (
+            <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+              <Loader size={"w-24 h-24"} />
+            </div>
           ) : (
             <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
               <label htmlFor={`mage-add-${unmute.key}`}>
-                {loading ? (
-                  <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                    Uploading...
-                    <Loader size={"w-24 h-24"} />
-                  </h2>
-                ) : (
-                  <PlusIcon size={20} className={"fill-white"} />
-                )}
+                <PlusIcon size={20} className={"fill-white"} />
               </label>
               <input
                 type="file"
@@ -176,7 +235,7 @@ const Unmute = ({
           <label
             htmlFor={`mage-add-${unmute.key}`}
             onClick={() => onDelete(unmute.key)}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
           >
             Low resolution - Add new photo
           </label>

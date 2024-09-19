@@ -1,5 +1,5 @@
 import { Cropper } from "react-cropper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setImageRef,
   setMinValue,
@@ -31,7 +31,6 @@ const returnZoomValues = (value) => {
 };
 
 const CropperComponent = ({
-  images,
   frame_width,
   isLandscape,
   frame_padding,
@@ -51,6 +50,30 @@ const CropperComponent = ({
   const [update, setUpdate] = useState(0);
   const zoomStep = useRef(0);
   const zoomValues = useRef({});
+  const [isImageLoaded, setIsEmageLoaded] = useState(false);
+  const { mustCropAsNumber } = useSelector((state) => state.image);
+
+  useEffect(() => {
+    if (
+      !unmute?.properties?._default_cropped &&
+      unmute?.properties?._images?.length &&
+      isImageLoaded
+    ) {
+      setTimeout(() => {
+        handleCrop({ key: "_default_cropped" });
+      }, 100);
+    }
+  }, [unmute, isImageLoaded]);
+
+  useEffect(() => {
+    if (
+      activeUnmute &&
+      mustCropAsNumber > 0 &&
+      unmute?.properties?._images?.length
+    ) {
+      handleCrop({ key: "_default_cropped" });
+    }
+  }, [mustCropAsNumber]);
 
   useEffect(() => {
     if (cropperRef.current && activeUnmute) {
@@ -71,32 +94,40 @@ const CropperComponent = ({
         (!activeUnmute && prevActive.current)) &&
       min.current
     ) {
-      handleCrop();
+      handleCrop({ key: "_cropped", refresh: true });
     }
     prevPage.current = params[0];
     prevActive.current = activeUnmute;
   }, [activeUnmute, params[0]]);
 
-  const handleCrop = () => {
+  const handleCrop = ({ key, refresh = false }) => {
+    if (!cropperRef.current) return;
     const cropper = cropperRef.current?.cropper;
 
-    cropper.getCroppedCanvas().toBlob((blob) => {
+    cropper?.getCroppedCanvas()?.toBlob((blob) => {
       const file = new File([blob], "cropped.png", { type: "image/png" });
       uploadFile({
         path: unmute.properties._uuid,
         file,
       }).then(() => {
         const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`);
+        const properties = {
+          ...unmute.properties,
+          _images: [fileUrl],
+          [key]: true, // key = _cropped or key = _default_cropped
+        };
+
+        if (key === "_cropped") properties._original_images = [fileUrl];
+
         updateUnmuteInCart({
           key: unmute.key,
-          properties: {
-            ...unmute.properties,
-            _images: [fileUrl], // TODO: Add to existing list of images
-          },
-        }).then(({ data }) => {
-          dispatch(updateUnmutes(data.items));
-          setUpdate((prev) => prev + 1);
-        });
+          properties,
+        })
+          .then(({ data }) => {
+            dispatch(updateUnmutes(data.items));
+            if (refresh) setUpdate((prev) => prev + 1);
+          })
+          .catch((err) => console.log(err));
       });
     });
   };
@@ -145,6 +176,13 @@ const CropperComponent = ({
       }
     }
   };
+
+  const showImage = () => {
+    if (!unmute?.properties) return null;
+
+    const { _original_images } = unmute?.properties;
+    return _original_images[_original_images?.length - 1];
+  };
   return (
     <div
       className={clsx(
@@ -163,7 +201,7 @@ const CropperComponent = ({
       <Cropper
         key={String(index) + update}
         ref={cropperRef}
-        src={images[images.length - 1]}
+        src={showImage()}
         className={clsx(
           frame_width,
           "absolute h-full object-cover overflow-hidden"
@@ -188,6 +226,7 @@ const CropperComponent = ({
         zoomable={true}
         wheelZoomRatio={0.1}
         zoom={handleZoom}
+        onLoad={(e) => setIsEmageLoaded(true)}
       />
     </div>
   );

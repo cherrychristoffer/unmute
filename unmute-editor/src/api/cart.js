@@ -33,7 +33,7 @@ export const addUnmuteToCart = async ({
         _audios: [],
         _frame: "oak",
         _orientation: "portrait",
-        _passepartout: "small",
+        _passepartout: "none",
         _inspiration: null,
         _countdown: "",
       },

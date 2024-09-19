@@ -1,9 +1,9 @@
 import { React } from "react";
 
-import {CheckIcon} from "../assets/icons/icon_check";
+import { CheckIcon } from "../assets/icons/icon_check";
 
 import { updateUnmute, updateUnmutes } from "../features/user/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { updateUnmuteInCart } from "../api/cart";
 
@@ -17,6 +17,7 @@ import small from "../assets/images/passepartout/small.png";
 export const PassepartoutPage = () => {
   const dispatch = useDispatch();
   const { activeUnmute } = useActiveUnmute();
+  const { disableAllExtions } = useSelector((state) => state.image);
 
   const handleClick = (passepartout) => {
     dispatch(
@@ -39,32 +40,49 @@ export const PassepartoutPage = () => {
 
   const PASSEPARTOUT = [
     {
-      value: 'none',
-      image: none
+      value: "none",
+      image: none,
     },
     {
-      value: 'small',
-      image: small
+      value: "small",
+      image: small,
     },
     {
-      value: 'medium',
-      image: medium
+      value: "medium",
+      image: medium,
     },
     {
-      value: 'large',
-      image: large
+      value: "large",
+      image: large,
     },
   ];
 
   return (
-    <div className={'pb-[80px] flex justify-center'}>
+    <div className={"pb-[80px] flex justify-center"}>
       <div className="mt-16 mx-6 flex flex-row justify-center items-center gap-6 max-w-sm">
-        {PASSEPARTOUT.map((item, index) =>
-          <button key={index} onClick={() => handleClick(item.value)} className={`relative`}>
-            <img src={item.image} alt="Small passepartout"/>
-            {activeUnmute?.properties?._passepartout === item.value && <CheckIcon color={'fill-rose-100'} size={16} className={'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'}/>}
+        {PASSEPARTOUT.map((item, index) => (
+          <button
+            key={index}
+            disabled={disableAllExtions}
+            onClick={() => handleClick(item.value)}
+            className={`relative`}
+          >
+            <img
+              style={{ opacity: disableAllExtions ? "0.5" : "1" }}
+              src={item.image}
+              alt="Small passepartout"
+            />
+            {activeUnmute?.properties?._passepartout === item.value && (
+              <CheckIcon
+                color={"fill-rose-100"}
+                size={16}
+                className={
+                  "absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                }
+              />
+            )}
           </button>
-        )}
+        ))}
       </div>
     </div>
   );

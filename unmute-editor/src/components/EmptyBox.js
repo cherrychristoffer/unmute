@@ -40,6 +40,7 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
           properties: {
             ...unmute.properties,
             _images: [fileUrl],
+            _original_images: [fileUrl],
           },
         }).then(({ data }) => {
           setLoading(false);
@@ -51,7 +52,7 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
 
   return (
     <>
-      <div className="snap-center flex items-center p-4">
+      <div className="snap-center flex items-center py-4">
         <div
           className={clsx(
             "relative flex justify-center",
@@ -69,10 +70,9 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
           <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
             <label htmlFor={`mage-add-key`}>
               {loading ? (
-                <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-                  Uploading...
+                <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
                   <Loader size={"w-24 h-24"} />
-                </h2>
+                </div>
               ) : (
                 <PlusIcon size={20} className={"fill-white"} />
               )}
@@ -87,7 +87,9 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
           </button>
         </div>
       </div>
-      <div className="extra-box"> Add extra photo and save money</div>
+      <div className="extra-box text-rose-500 text-center">
+        Add extra photo and save money
+      </div>
     </>
   );
 };

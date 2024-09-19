@@ -11,10 +11,12 @@ import { useActiveUnmute } from "../api/useUnmutes";
 
 import landscape from "../assets/images/orientation/landscape.png";
 import portrait from "../assets/images/orientation/portrait.png";
+import { setMustCrop } from "../features/image/imageSlice";
 
 export const OrientationPage = () => {
   const dispatch = useDispatch();
   const { activeUnmute } = useActiveUnmute();
+  const { disableAllExtions } = useSelector((state) => state.image);
 
   const handleClick = (orientation) => {
     if (!activeUnmute) return;
@@ -39,6 +41,7 @@ export const OrientationPage = () => {
         console.error(err);
       })
       .then(({ data }) => {
+        dispatch(setMustCrop());
         dispatch(updateUnmutes(data.items));
       });
   };
@@ -61,11 +64,18 @@ export const OrientationPage = () => {
           {ORIENTATION.map((item, index) => (
             <button
               key={index}
+              disabled={disableAllExtions}
               onClick={() => handleClick(item.value)}
               className={"relative"}
             >
-              <img src={item.image} className="" alt={item.value} />
-              {activeUnmute?.properties?._orientation === item.value && (
+              <img
+                src={item.image}
+                style={{ opacity: disableAllExtions ? "0.5" : "1" }}
+                className=""
+                alt={item.value}
+              />
+              {(activeUnmute?.properties?._orientation === item.value ||
+                (!activeUnmute && item.value === "portrait")) && (
                 <CheckIcon
                   color={"fill-rose-100"}
                   size={16}

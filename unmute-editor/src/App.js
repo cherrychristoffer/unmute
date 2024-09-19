@@ -26,7 +26,7 @@ import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
 
-import { addUnmute } from "./features/user/userSlice";
+import { addUnmute, setIsLoadingUnmutes } from "./features/user/userSlice";
 import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
 
 import "./assets/styles/global.css";
@@ -48,6 +48,7 @@ function App() {
   useEffect(appHeight, []);
 
   useEffect(() => {
+    dispatch(setIsLoadingUnmutes(true));
     fetchCartData().then(({ data }) => {
       if (data.items.length === 0) {
         navigate("/");
@@ -60,6 +61,7 @@ function App() {
             dispatch(addUnmute(unmute));
           });
       }
+      dispatch(setIsLoadingUnmutes(false));
     });
   }, [dispatch]);
 

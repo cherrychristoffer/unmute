@@ -70,10 +70,14 @@ export const userSlice = createSlice({
   name: "user",
   initialState: {
     unmutes: [],
+    isLoadingUnmutes: true,
     activeUnmuteIndex: 0,
     audioBlob: [],
   },
   reducers: {
+    setIsLoadingUnmutes: (state, action) => {
+      state.isLoadingUnmutes = action.payload;
+    },
     addUnmute: (state, action) => {
       const newUnmutes = uniqBy(
         [...state.unmutes, action.payload],
@@ -175,6 +179,7 @@ export const {
   setActiveUnmuteIndex,
   setAudioBlob,
   addAudioUnmute,
+  setIsLoadingUnmutes,
 } = userSlice.actions;
 
 export default userSlice.reducer;

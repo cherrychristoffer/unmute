@@ -256,3 +256,43 @@ input[type="range"]::range-progress {
   pointer-events: auto;
   appearance: none;
 }
+
+.slider-example-split-line {
+  --default-handle-opacity: 0;
+}
+
+.image-compare {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.image-compare .before, .image-compare .after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.image-compare .before-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.after-image {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  max-width: none;
+}

@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import {React, useEffect, useRef, useState} from "react";
 
 import clsx from "clsx";
 
@@ -54,6 +54,9 @@ const Unmute = ({
   const beforeImage = useSelector((state) => state.replace.beforeImage);
   const afterImage = useSelector((state) => state.replace.afterImage);
 
+  const [frameWidth, setFrameWidth] = useState();
+  const frameRef = useRef();
+
   const handleChange = async (event) => {
     setLoading(true);
     const uuid = unmute._uuid;
@@ -100,6 +103,10 @@ const Unmute = ({
     }
   };
 
+  useEffect(() => {
+    setFrameWidth(frameRef.current.offsetWidth)
+  }, [frame]);
+
   return (
     <>
       <div className="snap-center flex items-center p-4">
@@ -110,11 +117,12 @@ const Unmute = ({
           )}
         >
           <img
+            ref={frameRef}
             src={frame}
             alt="Frame"
             className={clsx(
               frame_width,
-              "relative top-0 z-[1] pointer-events-none"
+              "relative top-0 z-[2] pointer-events-none"
             )}
           />
           <img
@@ -132,12 +140,21 @@ const Unmute = ({
                       frame_width,
                       "absolute h-full object-cover overflow-hidden"
                     )}>
-                    <ImgComparisonSlider className="slider-example-split-line">
+                    {/*<ImgComparisonSlider className="slider-example-split-line">
                       <img slot="first" src={beforeImage}/>
                       <img slot="second" src={afterImage}/>
-                    </ImgComparisonSlider>
+                    </ImgComparisonSlider>*/}
 
-                    <div className="img-info flex justify-between absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-serif" style={{width: 'calc(100% - 34px)'}}>
+                    <div className="image-compare">
+                      <div className="before-wrapper">
+                        <div className={'before'}
+                             style={{backgroundImage: `url(${beforeImage})`, width: frameWidth}}/>
+                      </div>
+                      <img src={afterImage} className={'after-image'} alt=""/>
+                    </div>
+
+                    <div
+                      className="img-info flex justify-between absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-serif z-[2]" style={{width: 'calc(100% - 34px)'}}>
                       <span className={'w-1/2 text-center'}>Before</span>
                       <span className={'w-1/2 text-center'}>After</span>
                     </div>

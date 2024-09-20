@@ -585,7 +585,7 @@ export const EditAudioPage = () => {
                             )}
                             <AudioVisualizer
                               blob={item.blob}
-                              width={300}
+                              width={250}
                               height={82}
                               barWidth={1}
                               gap={4}
@@ -593,7 +593,7 @@ export const EditAudioPage = () => {
                               barColor="#B0928C"
                               style={{
                                 borderRadius: 4,
-                                maxWidth: "100%",
+                                maxWidth: "300px",
                                 borderWidth: "1px",
                                 borderColor: "#B0928C",
                               }}

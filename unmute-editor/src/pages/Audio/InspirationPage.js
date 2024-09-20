@@ -9,6 +9,7 @@ import { updateUnmuteInCart } from "../../api/cart";
 import { useActiveUnmute } from "../../api/useUnmutes";
 
 import TextareaAutosize from "react-textarea-autosize";
+import { AudioIllustrations } from "../../components/AudioIllustrations";
 
 export const InspirationPage = () => {
   const inspirationRef = useRef();
@@ -61,13 +62,17 @@ export const InspirationPage = () => {
         />
       </div>
 
-      <div className="flex flex-row justify-center gap-4 mt-16">
-        <Link
-          to={"/inspirations"}
-          className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
-        >
-          Get inspiration
-        </Link>
+      <div className="flex flex-row justify-center gap-4 mt-6">
+        <AudioIllustrations />
+      </div>
+
+      <div className="flex flex-row justify-center gap-4 mt-6">
+        {/*<Link*/}
+        {/*  to={"/inspirations"}*/}
+        {/*  className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"*/}
+        {/*>*/}
+        {/*  Get inspiration*/}
+        {/*</Link>*/}
 
         <button
           onClick={handleClick}

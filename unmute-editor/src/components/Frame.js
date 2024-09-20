@@ -190,7 +190,7 @@ export const Frame = () => {
         {unmutes[activeUnmuteIndex]?.properties?._audios?.length > 0 ? (
           <div className="flex flex-row items-center mt-12">
             <Link
-              to="/edit-audio"
+              to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
               className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
             >
               Edit audio

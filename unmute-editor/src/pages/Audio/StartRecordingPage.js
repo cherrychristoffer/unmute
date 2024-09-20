@@ -7,7 +7,6 @@ import { useLocation, useParams } from "wouter";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 import { v4 as uuid } from "uuid";
-
 import {
   addAudioUnmute,
   addUnmute,
@@ -20,6 +19,8 @@ import { updateUnmuteInCart } from "../../api/cart";
 import { getFileUrl, uploadFile } from "../../api/aws";
 import { useActiveUnmute } from "../../api/useUnmutes";
 import { useInterval } from "../../hooks/useInterval";
+import { convertToWav } from "./convertToWav";
+import { convertMp4ToWav } from "./convertMp4ToWav";
 const formatTime = (time) => {
   let minutes = Math.floor(time / 60);
   let seconds = time % 60;
@@ -38,7 +39,7 @@ export const StartRecordingPage = () => {
     recordingBlob,
     isRecording,
     isPaused,
-  } = useAudioRecorder();
+  } = useAudioRecorder({ downloadFileExtension: "wav" });
 
   const audioRef = useRef();
   const { activeUnmute } = useActiveUnmute();
@@ -71,42 +72,53 @@ export const StartRecordingPage = () => {
 
   useEffect(() => {
     if (!recordingBlob) return;
-    //"recorded.wav"
-    const newUuid = uuid();
-    const file = new File([recordingBlob], `${newUuid}.wav`, {
-      type: "audio/wav",
-    });
+    async function add() {
+      let wavBlob = null;
+      if (recordingBlob.type === "audio/mp4") {
+        wavBlob = await convertMp4ToWav(recordingBlob);
+      } else {
+        wavBlob = await convertToWav(recordingBlob);
+      }
 
-    uploadFile({
-      file,
-      path: activeUnmute.properties._uuid,
-    }).then(() => {
-      const fileUrl = getFileUrl(
-        `${activeUnmute.properties._uuid}/${newUuid}.wav`
-      );
-
-      const audio = {
-        file: fileUrl,
-        countdown: formatTime(time),
-      };
-
-      updateUnmuteInCart({
-        key: activeUnmute.key,
-        properties: {
-          ...activeUnmute.properties,
-          _audios: [...activeUnmute.properties._audios, audio],
-        },
-      }).then(({ data }) => {
-        // dispatch(updateUnmutes(data.items));
-        // data?.items.map((item) =>
-        //   // dispatch(updateUnmute({ ...item, id: uuid }))
-        //   dispatch(updateUnmutes(item.items))
-        // );
-        // dispatch(addAudioUnmute(data.items));
-        dispatch(updateUnmutes(data.items));
-        navigate(`/edit-audio/${id}`);
+      //"recorded.wav"
+      const newUuid = uuid();
+      const file = new File([wavBlob], `${newUuid}.wav`, {
+        type: "audio/wav",
       });
-    });
+
+      uploadFile({
+        file,
+        path: activeUnmute.properties._uuid,
+      }).then(() => {
+        const fileUrl = getFileUrl(
+          `${activeUnmute.properties._uuid}/${newUuid}.wav`
+        );
+
+        const audio = {
+          file: fileUrl,
+          countdown: formatTime(time),
+        };
+
+        updateUnmuteInCart({
+          key: activeUnmute.key,
+          properties: {
+            ...activeUnmute.properties,
+            _audios: [...activeUnmute.properties._audios, audio],
+          },
+        }).then(({ data }) => {
+          // dispatch(updateUnmutes(data.items));
+          // data?.items.map((item) =>
+          //   // dispatch(updateUnmute({ ...item, id: uuid }))
+          //   dispatch(updateUnmutes(item.items))
+          // );
+          // dispatch(addAudioUnmute(data.items));
+          dispatch(updateUnmutes(data.items));
+          navigate(`/edit-audio/${id}`);
+        });
+      });
+    }
+
+    add();
   }, [recordingBlob]);
 
   return (
@@ -161,7 +173,7 @@ export const StartRecordingPage = () => {
       </div>
 
       <audio ref={audioRef} className="hidden">
-        <source/>
+        <source />
       </audio>
 
       <AudioBottomNavigation

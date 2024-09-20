@@ -81,11 +81,9 @@ export const UploadAudioPage = () => {
     if (!recordingBlob) return;
 
     const duration = await getBlobDuration(recordingBlob);
-    console.log("duration", duration);
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
     const dataSeconds = minutes * 60 + seconds;
-    console.log("data", minuteData);
 
     const newUuid = uuid();
     const file = new File([recordingBlob], `${newUuid}.wav`, {
@@ -97,7 +95,6 @@ export const UploadAudioPage = () => {
       path: id,
     }).then(() => {
       const fileUrl = getFileUrl(`${id}/${newUuid}.wav`);
-      console.log("fileUrl", fileUrl);
 
       const audio = {
         file: fileUrl,
@@ -141,7 +138,6 @@ export const UploadAudioPage = () => {
           file: fileUrl,
           countdown: minuteData,
         };
-        console.log("audio", audio);
 
         updateUnmuteInCart({
           key: activeUnmute.key,

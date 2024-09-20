@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from "react";
+import { Fragment, React, useEffect, useRef, useState } from "react";
 
 import axios from "axios";
 
@@ -34,7 +34,7 @@ export const EditAudioPage = () => {
     isRecording,
     isPaused,
   } = useAudioRecorder();
-  const audioRef = useRef([]);
+  const audioRef = useRef({});
   const priceGap = 1;
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
@@ -46,21 +46,42 @@ export const EditAudioPage = () => {
   const { loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
   const [duration, setDuration] = useState(10);
-  const { id } = useParams();
+  const { id: unmuteId } = useParams();
   const { unmutes } = useSelector((state) => state.user);
-  const [activeIndex, setActiveIndex] = useState(false);
+  const [activeAudio, setActiveAudio] = useState(null);
 
   const [rangeMap, setRangeMap] = useState({});
 
-  const userAudio = useSelector((state) => state.user.unmutes);
-
-  const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
+  const activeUnmute = unmutes?.find(
+    (item) => item.properties?._uuid === unmuteId
+  );
   const audioFiles = activeUnmute?.properties?._audios || [];
 
-  const handlePlayAudio = (index) => {
-    if (audioRef.current[index]) {
-      audioRef.current[index].play();
-      setActiveIndex(index);
+  const handlePlayAudio = (id) => {
+    if (!audioRef.current) return;
+    const audios = { ...audioRef.current };
+    for (let key in audios) {
+      if (key === id) {
+        setActiveAudio(id);
+        // we need setTimeout for playing audio
+        setTimeout(() => {
+          audioRef.current[key].play();
+        }, 0);
+      } else {
+        audioRef.current[key].pause();
+      }
+    }
+  };
+  const handlePauseAudio = (id) => {
+    if (audioRef.current[id]) {
+      audioRef.current[id].pause();
+      setActiveAudio(null);
+    }
+  };
+
+  const handleAudioEnded = (id) => {
+    if (activeAudio === id) {
+      setActiveAudio(null);
     }
   };
 
@@ -91,11 +112,7 @@ export const EditAudioPage = () => {
       });
     });
   }, [recordingBlob]);
-  const handlePauseAudio = (index) => {
-    if (audioRef.current[index]) {
-      audioRef.current[index].pause();
-    }
-  };
+
   function convertToTimeFormat(seconds) {
     // Round down the seconds to the nearest whole number
     const roundedSeconds = Math.floor(seconds);
@@ -169,72 +186,27 @@ export const EditAudioPage = () => {
       // console.log("e", e?.response?.data);
     }
   };
-  // useEffect(() => {
-  //   audioRef.current = audioRef.current || [];
 
-  //   // Set up event listeners for each audio element
-  //   audioRef.current.forEach((audioElement, index) => {
-  //     const handleLoadedMetadata = () => {
-  //       setDurations((prevDurations) => {
-  //         const newDurations = [...prevDurations];
-  //         newDurations[index] = audioElement.duration;
-  //         return newDurations;
-  //       });
-  //     };
-
-  //     if (audioElement) {
-  //       audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
-  //     }
-
-  //     return () => {
-  //       if (audioElement) {
-  //         audioElement.removeEventListener(
-  //           "loadedmetadata",
-  //           handleLoadedMetadata
-  //         );
-  //       }
-  //     };
-  //   });
-  // }, [audioFiles]);
-
-  // useEffect(() => {
-  //   const audioElement = audioRef.current;
-
-  //   const handleLoadedMetadata = () => {
-  //     setDuration(audioElement.duration);
-  //   };
-
-  //   if (audioElement) {
-  //     audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
-  //   }
-
-  //   return () => {
-  //     if (audioElement) {
-  //       audioElement.removeEventListener(
-  //         "loadedmetadata",
-  //         handleLoadedMetadata
-  //       );
-  //     }
-  //   };
-  // }, [audioFiles]);
-  const handleDeleteRecording = () => {
-    if (audioFiles.length > 0) {
-      if (confirm("Are you sure you want to delete this recording?")) {
-        deleteFile({
-          path: audioFiles[0],
-        }).then(() => {
-          updateUnmuteInCart({
-            key: activeUnmute.key,
-            properties: {
-              ...activeUnmute.properties,
-              _audios: [],
-            },
-          }).then(({ data }) => {
-            dispatch(updateUnmutes(data.items));
-            navigate("/orientation");
-          });
+  const handleDeleteRecording = (item) => {
+    if (confirm("Are you sure you want to delete this recording?")) {
+      deleteFile({
+        path: item?.fileData?.file,
+      }).then(() => {
+        updateUnmuteInCart({
+          key: activeUnmute.key,
+          properties: {
+            ...activeUnmute.properties,
+            _audios: activeUnmute.properties?._audios.filter(
+              (audio) => audio.file !== item.fileData.file
+            ),
+          },
+        }).then(({ data }) => {
+          dispatch(updateUnmutes(data.items));
+          setAudioBlob((prev) =>
+            prev.filter((audio) => audio.uuid !== item.uuid)
+          );
         });
-      }
+      });
     }
   };
 
@@ -320,6 +292,7 @@ export const EditAudioPage = () => {
           });
           const newData = {
             blob: data,
+            fileData: item,
             seconds: dataSeconds,
             uuid: uuid(),
           };
@@ -344,62 +317,43 @@ export const EditAudioPage = () => {
   if (loading) {
     return <div>Loading audio...</div>;
   }
-  const handleCropAudio = async (item, index) => {
-    // const myAudio = userAudio.map(state)find((item, index) => item.index == index);
-    const myAudio = userAudio.map((state) =>
-      state.properties._audios.find(
-        (stateIndex, indexData) => index === indexData
-      )
-    );
-    const findActive = userAudio.find(
-      (item) => item.properties?._audios?.length > 0
-    );
-
-    const myAudioData = myAudio.find((item) => item !== undefined);
-
-    if (myAudioData && Number(rangeMap.start) < Number(rangeMap.end)) {
+  const handleCropAudio = async (item, id) => {
+    if (Number(rangeMap.start) < Number(rangeMap.end)) {
       const croppedAudioBlob = await cropAudio(
         item.blob,
-        rangeMap[index].start,
-        rangeMap[index].end
+        rangeMap[id].start,
+        rangeMap[id].end
       );
 
       const regex = /\/([a-f0-9\-]{36})\.wav$/;
 
-      const match = myAudioData.file.match(regex);
+      const match = item.fileData.file.match(regex);
 
       if (match) {
         const identifier = match[1];
-
-        const fileData = new File([croppedAudioBlob], `${identifier}.wav`, {
-          type: "audio/wav",
-        });
 
         uploadFile({
           file: new File([croppedAudioBlob], `${identifier}.wav`, {
             type: "audio/wav",
           }),
-          path: findActive.properties._uuid,
+          path: unmuteId,
         }).then(() => {
-          const fileUrl = getFileUrl(
-            `${findActive.properties._uuid}/${identifier}.wav`
-          );
+          const fileUrl = getFileUrl(`${unmuteId}/${identifier}.wav`);
 
-          const dataFind = findActive.properties._audios?.map((item) => {
-            if (myAudioData.file === item.file) {
+          const audios = activeUnmute.properties._audios?.map((state) => {
+            if (item.fileData.file === state.file) {
               return {
                 file: fileUrl,
-                countdown: formatTime(rangeMap[index].end),
+                countdown: formatTime(rangeMap[id].end),
               };
             }
-            return item;
+            return state;
           });
-
           updateUnmuteInCart({
             key: activeUnmute.key,
             properties: {
               ...activeUnmute.properties,
-              _audios: dataFind,
+              _audios: audios,
             },
           }).then(({ data }) => {
             setAudioBlob([]);
@@ -416,7 +370,7 @@ export const EditAudioPage = () => {
     }
   };
   const goAdd = () => {
-    navigate(`start-recording/${id}`);
+    navigate(`start-recording/${unmuteId}`);
   };
 
   const onDragEnd = (result) => {
@@ -429,18 +383,18 @@ export const EditAudioPage = () => {
 
     setAudioBlob(reorderedItems);
   };
-  function calculateValues(startValue, endValue, max, index) {
-    const progressElement = progressRefs.current[index];
+  function calculateValues(startValue, endValue, max, id) {
+    const progressElement = progressRefs.current[id];
 
     if (progressElement) {
       progressElement.style.left = (startValue / max) * 100 + "%";
       progressElement.style.right = 100 - (endValue / max) * 100 + "%";
     }
   }
-  const handleChange = (e, index) => {
+  const handleChange = (e, id) => {
     const { name, value } = e.target;
-    const startValue = parseInt(startRefs.current[index].value);
-    const endValue = parseInt(endRefs.current[index].value);
+    const startValue = parseInt(startRefs.current[id].value);
+    const endValue = parseInt(endRefs.current[id].value);
 
     let updatedStartValue = startValue;
     let updatedEndValue = endValue;
@@ -455,18 +409,18 @@ export const EditAudioPage = () => {
 
     setRangeMap((prev) => ({
       ...prev,
-      [index]: {
+      [id]: {
         start: name === "start" ? updatedStartValue : startValue,
         end: name === "end" ? updatedEndValue : endValue,
       },
     }));
 
-    if (progressRefs.current[index]) {
+    if (progressRefs.current[id]) {
       calculateValues(
         updatedStartValue,
         updatedEndValue,
-        audioBlob[index]?.seconds,
-        index
+        audioBlob[id]?.seconds,
+        id
       );
     }
   };
@@ -475,36 +429,6 @@ export const EditAudioPage = () => {
     <>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
-        {/* {audioFiles.length > 0 && (
-          <audio
-            ref={audioRef}
-            className="hidden"
-            controls="controls"
-            src={`${audioFiles[0].file}?c=${cacheBust}`}
-          ></audio>
-        )} */}
-
-        {audioFiles?.map((item, index) => (
-          <audio
-            ref={(el) => (audioRef.current[index] = el)}
-            className="hidden"
-            controls="controls"
-            src={`${item.file}?c=${cacheBust}`}
-          ></audio>
-        ))}
-        {audioFiles?.map((item, index) => (
-          <div onClick={() => handlePlayAudio(index)}>
-            {activeIndex === index ? "pause" : "play"}{" "}
-          </div>
-        ))}
-        {/* {userAudio?.map((item) => (
-          <audio
-            ref={audioRef}
-            className="hidden"
-            controls="controls"
-            src={`${item.properties?._audios}?c=${cacheBust}`}
-          ></audio>
-        ))} */}
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
@@ -516,93 +440,126 @@ export const EditAudioPage = () => {
                   style={{ padding: "10px" }}
                 >
                   {audioBlob.map((item, index) => (
-                    <Draggable
-                      key={item.uuid}
-                      draggableId={item.uuid}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="audio-crop mb-5"
-                        >
-                          <div onClick={() => handleCropAudio(item, index)}>
-                            Save{item.seconds}
-                          </div>
-                          <div className="absolute top-0 bottom-0 -left-[40px] h-full">
-                            <PlayIcon
-                              onClick={() => handlePlayAudio(index)}
-                              color={"fill-rose-100"}
-                              size={16}
-                              className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                              }
-                              // style={{ cursor: "pointer" }}
-                            />
-                            <PauseIcon
-                              onClick={() => handlePlayAudio(index)}
-                              color={"fill-rose-100"}
-                              size={16}
-                              className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                              }
-                            />
-                          </div>
-                          <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
-                            <CheckIcon
-                              color={"fill-rose-100"}
-                              size={16}
-                              className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                              }
-                            />
-                            <CloseIcon
-                              color={"fill-rose-100"}
-                              size={16}
-                              className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                              }
-                            />
-                          </div>
-                          <div className="handle">
-                            {item.seconds !== undefined && (
-                              <Range
-                                min={0}
-                                max={item.seconds}
-                                range={
-                                  rangeMap[index] || { start: 0, end: 100 }
-                                }
-                                handleChange={(e) => handleChange(e, index)}
-                                startRef={(ref) =>
-                                  (startRefs.current[index] = ref)
-                                }
-                                endRef={(ref) => (endRefs.current[index] = ref)}
-                                progressRef={(ref) =>
-                                  (progressRefs.current[index] = ref)
-                                }
+                    <Fragment key={item.uuid}>
+                      <audio
+                        ref={(el) => (audioRef.current[item.uuid] = el)}
+                        className="hidden"
+                        controls="controls"
+                        onEnded={() => handleAudioEnded(item.uuid)}
+                        src={`${item.fileData.file}?c=${cacheBust}`}
+                      ></audio>
+                      <Draggable
+                        key={item.uuid}
+                        draggableId={item.uuid}
+                        index={index}
+                        filter="input"
+                        preventOnFilter="false"
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="audio-crop mb-5"
+                          >
+                            <div>Time {item.seconds}</div>
+                            <div className="absolute top-0 bottom-0 -left-[40px] h-full">
+                              {activeAudio !== item.uuid ? (
+                                <button
+                                  onClick={() => handlePlayAudio(item.uuid)}
+                                >
+                                  <PlayIcon
+                                    color={"fill-rose-100"}
+                                    size={16}
+                                    className={
+                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                    }
+                                    // style={{ cursor: "pointer" }}
+                                  />
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handlePauseAudio(item.uuid)}
+                                >
+                                  <PauseIcon
+                                    color={"fill-rose-100"}
+                                    size={16}
+                                    className={
+                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                    }
+                                  />
+                                </button>
+                              )}
+                            </div>
+                            <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
+                              <button
+                                onClick={() => handleCropAudio(item, item.uuid)}
+                              >
+                                <CheckIcon
+                                  color={"fill-rose-100"}
+                                  size={16}
+                                  className={
+                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                  }
+                                />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRecording(item)}
+                              >
+                                <CloseIcon
+                                  color={"fill-rose-100"}
+                                  size={16}
+                                  className={
+                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                  }
+                                />
+                              </button>
+                            </div>
+                            <div className="handle">
+                              {item.seconds !== undefined && (
+                                <Range
+                                  min={0}
+                                  max={item.seconds}
+                                  range={
+                                    rangeMap[item.uuid] || {
+                                      start: 0,
+                                      end: 100,
+                                    }
+                                  }
+                                  handleChange={(e) =>
+                                    handleChange(e, item.uuid)
+                                  }
+                                  startRef={(ref) =>
+                                    (startRefs.current[item.uuid] = ref)
+                                  }
+                                  endRef={(ref) =>
+                                    (endRefs.current[item.uuid] = ref)
+                                  }
+                                  progressRef={(ref) =>
+                                    (progressRefs.current[item.uuid] = ref)
+                                  }
+                                />
+                              )}
+                              <AudioVisualizer
+                                blob={item.blob}
+                                width={300}
+                                height={82}
+                                barWidth={1}
+                                gap={4}
+                                backgroundColor="#F3F3F3"
+                                barColor="#B0928C"
+                                style={{
+                                  borderRadius: 4,
+                                  maxWidth: "100%",
+                                  borderWidth: "1px",
+                                  borderColor: "#B0928C",
+                                }}
                               />
-                            )}
-                            <AudioVisualizer
-                              blob={item.blob}
-                              width={300}
-                              height={82}
-                              barWidth={1}
-                              gap={4}
-                              backgroundColor="#F3F3F3"
-                              barColor="#B0928C"
-                              style={{
-                                borderRadius: 4,
-                                maxWidth: "100%",
-                                borderWidth: "1px",
-                                borderColor: "#B0928C",
-                              }}
-                            />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </Draggable>
+                        )}
+                      </Draggable>
+                    </Fragment>
                   ))}
                   {provided.placeholder}{" "}
                   {/* Ensures space is reserved when dragging */}
@@ -636,7 +593,7 @@ export const EditAudioPage = () => {
         stopRecording={stopRecording}
         playAudio={handlePlayAudio}
         pauseAudio={handlePauseAudio}
-        deleteRecording={handleDeleteRecording}
+        // deleteRecording={handleDeleteRecording}
       />
     </>
   );

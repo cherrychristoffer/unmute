@@ -1,8 +1,4 @@
 import React, { useRef, useState } from "react";
-import "./range.css";
-
-// const min = 0;
-// const max = 10000;
 
 export const Range = ({
   min = 0,
@@ -16,10 +12,7 @@ export const Range = ({
   return (
     <div className="wrapper">
       <div className="slider">
-        <div
-          className="progress"
-          ref={progressRef}
-        ></div>
+        <div className="progress" ref={progressRef}></div>
       </div>
       <div className="range-input">
         <input

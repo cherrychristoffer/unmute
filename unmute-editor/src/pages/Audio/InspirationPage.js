@@ -62,11 +62,7 @@ export const InspirationPage = () => {
         />
       </div>
 
-      <div className="flex flex-row justify-center gap-4 mt-6">
-        <AudioIllustrations />
-      </div>
-
-      <div className="flex flex-row justify-center gap-4 mt-6">
+      <div className="flex flex-row justify-center gap-4 mt-16">
         {/*<Link*/}
         {/*  to={"/inspirations"}*/}
         {/*  className="text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"*/}
@@ -80,6 +76,18 @@ export const InspirationPage = () => {
         >
           Start recording
         </button>
+      </div>
+
+      <div>
+        <div className="mx-auto flex flex-col items-center">
+          <h4 className="font-serif text-muld-1000 text-[32px] mt-16">
+            Tips
+          </h4>
+        </div>
+
+        <div className="flex flex-row justify-center gap-4 mt-6">
+          <AudioIllustrations />
+        </div>
       </div>
     </div>
   );

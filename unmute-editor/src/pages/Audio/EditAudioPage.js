@@ -11,8 +11,8 @@ import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import {PauseIcon} from "../../assets/icons/icon_pause";
-import {PlayIcon} from "../../assets/icons/icon_play";
+import { PauseIcon } from "../../assets/icons/icon_pause";
+import { PlayIcon } from "../../assets/icons/icon_play";
 import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
@@ -48,6 +48,7 @@ export const EditAudioPage = () => {
   const [duration, setDuration] = useState(10);
   const { id } = useParams();
   const { unmutes } = useSelector((state) => state.user);
+  const [activeIndex, setActiveIndex] = useState(false);
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -59,6 +60,7 @@ export const EditAudioPage = () => {
   const handlePlayAudio = (index) => {
     if (audioRef.current[index]) {
       audioRef.current[index].play();
+      setActiveIndex(index);
     }
   };
 
@@ -89,9 +91,9 @@ export const EditAudioPage = () => {
       });
     });
   }, [recordingBlob]);
-  const handlePauseAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
+  const handlePauseAudio = (index) => {
+    if (audioRef.current[index]) {
+      audioRef.current[index].pause();
     }
   };
   function convertToTimeFormat(seconds) {
@@ -491,7 +493,9 @@ export const EditAudioPage = () => {
           ></audio>
         ))}
         {audioFiles?.map((item, index) => (
-          <div onClick={() => handlePlayAudio(index)}>play</div>
+          <div onClick={() => handlePlayAudio(index)}>
+            {activeIndex === index ? "pause" : "play"}{" "}
+          </div>
         ))}
         {/* {userAudio?.map((item) => (
           <audio
@@ -535,6 +539,7 @@ export const EditAudioPage = () => {
                               className={
                                 "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
                               }
+                              // style={{ cursor: "pointer" }}
                             />
                             <PauseIcon
                               onClick={() => handlePlayAudio(index)}
@@ -567,7 +572,7 @@ export const EditAudioPage = () => {
                                 min={0}
                                 max={item.seconds}
                                 range={
-                                  rangeMap[index] || {start: 0, end: 100}
+                                  rangeMap[index] || { start: 0, end: 100 }
                                 }
                                 handleChange={(e) => handleChange(e, index)}
                                 startRef={(ref) =>

@@ -21,14 +21,7 @@ import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { setDisableAllActions } from "../features/image/imageSlice";
 
 const frame_padding = (scale, landscape) => {
-  if (landscape) {
-    return {
-      paddingTop: `${17 * scale}px`,
-      paddingRight: `${17 * scale}px`,
-      paddingBottom: `${17 * scale}px`,
-      paddingLeft: `${17 * scale}px`,
-    };
-  }
+  // for landscape it was 17
 
   return {
     paddingTop: `${13 * scale}px`,

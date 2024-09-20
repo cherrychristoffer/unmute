@@ -40,14 +40,14 @@ export const FramePage = () => {
       value: 'oak',
       image: oak
     },
-    {
-      value: 'black',
-      image: black
-    },
-    {
-      value: 'white',
-      image: white
-    }
+    // {
+    //   value: 'black',
+    //   image: black
+    // },
+    // {
+    //   value: 'white',
+    //   image: white
+    // }
   ];
 
   return (

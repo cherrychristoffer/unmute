@@ -12,7 +12,7 @@ import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
 import { UploadAudioPage } from "./pages/Audio/UploadAudioPage";
 
 import { FramePage } from "./pages/FramePage";
-import { InspirationsPage } from "./pages/InspirationsPage";
+// import { InspirationsPage } from "./pages/InspirationsPage";
 import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
@@ -21,7 +21,7 @@ import { ReplacePage } from "./pages/ReplacePage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
 import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
-import { AudioPage } from "./pages/Audio/AudioPage";
+// import { AudioPage } from "./pages/Audio/AudioPage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
@@ -89,10 +89,10 @@ function App() {
           path="/"
           component={OffersPage}
         />
-        <Route
-          path="/inspirations"
-          component={InspirationsPage}
-        />
+        {/*<Route*/}
+        {/*  path="/inspirations"*/}
+        {/*  component={InspirationsPage}*/}
+        {/*/>*/}
         <Route
           path="/inspiration-video/:id"
           component={InspirationsVideoPage}
@@ -106,10 +106,10 @@ function App() {
           component={CollagePage}
         />
 
-        <Route
-          path="/audio/:id"
-          component={AudioPage}
-        />
+        {/*<Route*/}
+        {/*  path="/audio/:id"*/}
+        {/*  component={AudioPage}*/}
+        {/*/>*/}
         <Route
           path="/audio-approach"
           component={AudioApproachPage}

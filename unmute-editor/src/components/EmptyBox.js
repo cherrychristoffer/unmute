@@ -67,24 +67,24 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
               "relative top-0 z-[1] pointer-events-none"
             )}
           />
-          <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-            <label htmlFor={`mage-add-key`}>
-              {loading ? (
-                <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                  <Loader size={"w-24 h-24"} />
-                </div>
-              ) : (
+          {!loading ? (
+            <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+              <Loader size={"w-24 h-24"} />
+            </div>
+          ) : (
+            <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+              <label htmlFor={`mage-add-key`}>
                 <PlusIcon size={20} className={"fill-white"} />
-              )}
-            </label>
-            <input
-              type="file"
-              accept="image/png, image/jpeg, image/jpg"
-              className="hidden"
-              id={`mage-add-key`}
-              onChange={handleChange}
-            />
-          </button>
+              </label>
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/jpg"
+                className="hidden"
+                id={`mage-add-key`}
+                onChange={handleChange}
+              />
+            </button>
+          )}
         </div>
       </div>
       <div className="extra-box text-rose-500 text-center">

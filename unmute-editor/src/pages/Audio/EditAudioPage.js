@@ -547,7 +547,7 @@ export const EditAudioPage = () => {
                               )}
                               <AudioVisualizer
                                 blob={item.blob}
-                                width={300}
+                                width={250}
                                 height={82}
                                 barWidth={1}
                                 gap={4}

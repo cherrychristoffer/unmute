@@ -49,6 +49,7 @@ export const EditAudioPage = () => {
   const { id: unmuteId } = useParams();
   const { unmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
+  console.log("activeAudio", unmutes);
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -127,6 +128,7 @@ export const EditAudioPage = () => {
 
     return `${formattedMinutes}:${formattedSeconds}`;
   }
+  console.log("auid", audioBlob);
 
   const mergeAudioData = async () => {
     const result = audioFiles.map((item) => {
@@ -432,7 +434,10 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
+            <Droppable
+              type="group"
+              droppableId="audioList"
+            >
               {(provided) => (
                 <div
                   {...provided.droppableProps}

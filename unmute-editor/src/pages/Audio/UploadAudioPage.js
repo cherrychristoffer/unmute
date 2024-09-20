@@ -7,6 +7,7 @@ import {
   S3_BUCKET,
   S3_REGION,
 } from "../../app/const";
+import getBlobDuration from "get-blob-duration";
 import { convertVideoToAudio } from "../../api/video";
 import { getFileUrl, uploadFile } from "../../api/aws";
 import { updateUnmuteInCart } from "../../api/cart";
@@ -52,7 +53,69 @@ export const UploadAudioPage = () => {
       })
       .promise();
   };
+  const formatTime = (time) => {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
 
+    if (seconds < 10) {
+      seconds = `0${seconds}`;
+    }
+
+    return `${minutes}:${seconds}`;
+  };
+  function convertToTimeFormat(seconds) {
+    const roundedSeconds = Math.floor(seconds);
+
+    const minutes = Math.floor(roundedSeconds / 60);
+    const remainingSeconds = roundedSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+  }
+
+  const handleChange = async (event) => {
+    const recordingBlob = event.target.files[0];
+
+    if (!recordingBlob) return;
+
+    const duration = await getBlobDuration(recordingBlob);
+    console.log("duration", duration);
+    const minuteData = convertToTimeFormat(duration);
+    const [minutes, seconds] = minuteData?.split(":")?.map(Number);
+    const dataSeconds = minutes * 60 + seconds;
+    console.log("data", minuteData);
+
+    const newUuid = uuid();
+    const file = new File([recordingBlob], `${newUuid}.wav`, {
+      type: "audio/wav",
+    });
+
+    uploadFile({
+      file,
+      path: id,
+    }).then(() => {
+      const fileUrl = getFileUrl(`${id}/${newUuid}.wav`);
+      console.log("fileUrl", fileUrl);
+
+      const audio = {
+        file: fileUrl,
+        countdown: minuteData,
+      };
+
+      updateUnmuteInCart({
+        key: activeUnmute.key,
+        properties: {
+          ...activeUnmute.properties,
+          _audios: [audio],
+        },
+      }).then(({ data }) => {
+        dispatch(updateUnmutes(data.items));
+        navigate(`/edit-audio/${id}`);
+      });
+    });
+  };
   const handleVideoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -65,25 +128,32 @@ export const UploadAudioPage = () => {
       const videoKey = `${s3Path}/${file.name}`;
 
       const audio = await convertVideoToAudio(videoKey);
+      const duration = await getBlobDuration(audio);
 
+      const minuteData = convertToTimeFormat(duration);
       uploadFile({
         file: audio,
-        path: activeUnmute.properties._uuid,
+        path: id,
       }).then(() => {
-        const fileUrl = getFileUrl(
-          `${activeUnmute.properties._uuid}/video-to-audio.mp3`
-        );
+        const fileUrl = getFileUrl(`${id}/video-to-audio.mp3`);
+
+        const audio = {
+          file: fileUrl,
+          countdown: minuteData,
+        };
+        console.log("audio", audio);
 
         updateUnmuteInCart({
           key: activeUnmute.key,
           properties: {
             ...activeUnmute.properties,
-            _audios: [fileUrl],
+            _audios: [audio],
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
+
           setLoading(false);
-          navigate("/edit-audio");
+          navigate(`/edit-audio/${id}`);
         });
       });
     } catch (error) {
@@ -124,8 +194,9 @@ export const UploadAudioPage = () => {
           </label>
           <input
             type="file"
-            accept="image/png, image/jpeg, image/jpg"
+            accept="audio/wav"
             className="hidden"
+            onChange={handleChange}
             id="image"
           />
         </form>

@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "cropperjs": "^1.6.2",
     "css-loader": "^7.1.2",
+    "get-blob-duration": "^1.2.0",
     "lodash": "^4.17.21",
     "postcss": "^8.4.41",
     "postcss-loader": "^8.1.1",

@@ -222,7 +222,7 @@ export const Frame = () => {
           </div>
         ) : (
           <Link
-            to={`/audio/${activeUnmute?.properties?._uuid}`}
+            to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
             className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
             style={{
               opacity: disableAllExtions ? "0.5" : "1",

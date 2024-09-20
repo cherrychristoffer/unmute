@@ -11,6 +11,8 @@ import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
+import { PauseIcon } from "../../assets/icons/icon_pause";
+import { PlayIcon } from "../../assets/icons/icon_play";
 import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
@@ -32,7 +34,7 @@ export const EditAudioPage = () => {
     isRecording,
     isPaused,
   } = useAudioRecorder();
-  const audioRef = useRef();
+  const audioRef = useRef([]);
   const priceGap = 1;
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
@@ -46,6 +48,7 @@ export const EditAudioPage = () => {
   const [duration, setDuration] = useState(10);
   const { id } = useParams();
   const { unmutes } = useSelector((state) => state.user);
+  const [activeIndex, setActiveIndex] = useState(false);
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -54,9 +57,10 @@ export const EditAudioPage = () => {
   const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
   const audioFiles = activeUnmute?.properties?._audios || [];
 
-  const handlePlayAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
+  const handlePlayAudio = (index) => {
+    if (audioRef.current[index]) {
+      audioRef.current[index].play();
+      setActiveIndex(index);
     }
   };
 
@@ -87,9 +91,9 @@ export const EditAudioPage = () => {
       });
     });
   }, [recordingBlob]);
-  const handlePauseAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
+  const handlePauseAudio = (index) => {
+    if (audioRef.current[index]) {
+      audioRef.current[index].pause();
     }
   };
   function convertToTimeFormat(seconds) {
@@ -165,29 +169,54 @@ export const EditAudioPage = () => {
       // console.log("e", e?.response?.data);
     }
   };
+  // useEffect(() => {
+  //   audioRef.current = audioRef.current || [];
 
-  useEffect(() => {
-    const audioElement = audioRef.current;
+  //   // Set up event listeners for each audio element
+  //   audioRef.current.forEach((audioElement, index) => {
+  //     const handleLoadedMetadata = () => {
+  //       setDurations((prevDurations) => {
+  //         const newDurations = [...prevDurations];
+  //         newDurations[index] = audioElement.duration;
+  //         return newDurations;
+  //       });
+  //     };
 
-    // Get the duration when metadata is loaded
-    const handleLoadedMetadata = () => {
-      setDuration(audioElement.duration); // duration in seconds
-    };
+  //     if (audioElement) {
+  //       audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+  //     }
 
-    if (audioElement) {
-      audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
-    }
+  //     return () => {
+  //       if (audioElement) {
+  //         audioElement.removeEventListener(
+  //           "loadedmetadata",
+  //           handleLoadedMetadata
+  //         );
+  //       }
+  //     };
+  //   });
+  // }, [audioFiles]);
 
-    // Clean up the event listener when component unmounts
-    return () => {
-      if (audioElement) {
-        audioElement.removeEventListener(
-          "loadedmetadata",
-          handleLoadedMetadata
-        );
-      }
-    };
-  }, [audioFiles]);
+  // useEffect(() => {
+  //   const audioElement = audioRef.current;
+
+  //   const handleLoadedMetadata = () => {
+  //     setDuration(audioElement.duration);
+  //   };
+
+  //   if (audioElement) {
+  //     audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+  //   }
+
+  //   return () => {
+  //     if (audioElement) {
+  //       audioElement.removeEventListener(
+  //         "loadedmetadata",
+  //         handleLoadedMetadata
+  //       );
+  //     }
+  //   };
+  // }, [audioFiles]);
   const handleDeleteRecording = () => {
     if (audioFiles.length > 0) {
       if (confirm("Are you sure you want to delete this recording?")) {
@@ -442,18 +471,34 @@ export const EditAudioPage = () => {
     }
   };
 
+  console.log("audioFiles", audioFiles);
+
   return (
     <>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
-        {audioFiles.length > 0 && (
+        {/* {audioFiles.length > 0 && (
           <audio
             ref={audioRef}
             className="hidden"
             controls="controls"
-            src={`${audioFiles[0]}?c=${cacheBust}`}
+            src={`${audioFiles[0].file}?c=${cacheBust}`}
           ></audio>
-        )}
+        )} */}
+
+        {audioFiles?.map((item, index) => (
+          <audio
+            ref={(el) => (audioRef.current[index] = el)}
+            className="hidden"
+            controls="controls"
+            src={`${item.file}?c=${cacheBust}`}
+          ></audio>
+        ))}
+        {audioFiles?.map((item, index) => (
+          <div onClick={() => handlePlayAudio(index)}>
+            {activeIndex === index ? "pause" : "play"}{" "}
+          </div>
+        ))}
         {/* {userAudio?.map((item) => (
           <audio
             ref={audioRef}
@@ -487,6 +532,25 @@ export const EditAudioPage = () => {
                         >
                           <div onClick={() => handleCropAudio(item, index)}>
                             Save{item.seconds}
+                          </div>
+                          <div className="absolute top-0 bottom-0 -left-[40px] h-full">
+                            <PlayIcon
+                              onClick={() => handlePlayAudio(index)}
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                              // style={{ cursor: "pointer" }}
+                            />
+                            <PauseIcon
+                              onClick={() => handlePlayAudio(index)}
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                            />
                           </div>
                           <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
                             <CheckIcon

@@ -151,10 +151,17 @@ export const StartRecordingPage = () => {
           className="w-full mt-12 p-4 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
           defaultValue={activeUnmute?.properties?._inspiration}
         />
+
+        <button
+          onClick={stopRecording}
+          className="text-white bg-rose-500 border border-rose transition duration-200 ease-out focus:outline-none hover:bg-rose-900 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer mt-10"
+        >
+          Stop recording
+        </button>
       </div>
 
       <audio ref={audioRef} className="hidden">
-        <source />
+        <source/>
       </audio>
 
       <AudioBottomNavigation

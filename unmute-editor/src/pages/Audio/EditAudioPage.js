@@ -11,6 +11,8 @@ import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
+import {PauseIcon} from "../../assets/icons/icon_pause";
+import {PlayIcon} from "../../assets/icons/icon_play";
 import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
@@ -525,6 +527,24 @@ export const EditAudioPage = () => {
                           <div onClick={() => handleCropAudio(item, index)}>
                             Save{item.seconds}
                           </div>
+                          <div className="absolute top-0 bottom-0 -left-[40px] h-full">
+                            <PlayIcon
+                              onClick={() => handlePlayAudio(index)}
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                            />
+                            <PauseIcon
+                              onClick={() => handlePlayAudio(index)}
+                              color={"fill-rose-100"}
+                              size={16}
+                              className={
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              }
+                            />
+                          </div>
                           <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
                             <CheckIcon
                               color={"fill-rose-100"}
@@ -547,7 +567,7 @@ export const EditAudioPage = () => {
                                 min={0}
                                 max={item.seconds}
                                 range={
-                                  rangeMap[index] || { start: 0, end: 100 }
+                                  rangeMap[index] || {start: 0, end: 100}
                                 }
                                 handleChange={(e) => handleChange(e, index)}
                                 startRef={(ref) =>

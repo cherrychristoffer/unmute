@@ -471,8 +471,6 @@ export const EditAudioPage = () => {
     }
   };
 
-  console.log("audioFiles", audioFiles);
-
   return (
     <>
       <div className="flex flex-col items-center">

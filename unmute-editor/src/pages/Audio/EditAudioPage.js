@@ -139,6 +139,7 @@ export const EditAudioPage = () => {
           const newData = {
             blob: data,
             seconds: dataSeconds,
+            uuid: uuid(),
           };
           const dataArray = [];
           dataArray.push(newData);
@@ -320,6 +321,7 @@ export const EditAudioPage = () => {
           const newData = {
             blob: data,
             seconds: dataSeconds,
+            uuid: uuid(),
           };
 
           const dataArray = [...audioBlob];
@@ -421,7 +423,7 @@ export const EditAudioPage = () => {
     const { destination, source } = result;
     if (!destination) return;
 
-    const reorderedItems = Array.from(items);
+    const reorderedItems = Array.from(audioBlob);
     const [removed] = reorderedItems.splice(source.index, 1);
     reorderedItems.splice(destination.index, 0, removed);
 
@@ -469,8 +471,6 @@ export const EditAudioPage = () => {
     }
   };
 
-  console.log("audioFiles", audioFiles);
-
   return (
     <>
       <div className="flex flex-col items-center">
@@ -508,7 +508,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="audioList">
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -517,8 +517,8 @@ export const EditAudioPage = () => {
                 >
                   {audioBlob.map((item, index) => (
                     <Draggable
-                      key={index}
-                      draggableId={`item-${index}`}
+                      key={item.uuid}
+                      draggableId={item.uuid}
                       index={index}
                     >
                       {(provided) => (

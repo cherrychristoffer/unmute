@@ -7,8 +7,6 @@ export const getInspirations = async () => {
 };
 
 export const mergeAudio = async (audioKeys) => {
-  console.log("audioKeys", audioKeys);
-
   const res = await axios.post(`${BASE_API_URL}/audio/merge`, { audioKeys });
   return res.data;
 };

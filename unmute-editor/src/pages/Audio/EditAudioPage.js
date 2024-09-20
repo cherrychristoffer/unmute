@@ -125,18 +125,19 @@ export const EditAudioPage = () => {
             start: 0,
             end: String(dataSeconds),
           });
+          const audio = {
+            file: responseData.url,
+            countdown: convertToTimeFormat(responseData.duration),
+          };
           const newData = {
             blob: data,
+            fileData: audio,
             seconds: dataSeconds,
             uuid: uuid(),
           };
           const dataArray = [];
           dataArray.push(newData);
           setAudioBlob(dataArray);
-          const audio = {
-            file: responseData.url,
-            countdown: convertToTimeFormat(responseData.duration),
-          };
 
           updateUnmuteInCart({
             key: activeUnmute.key,

@@ -537,16 +537,15 @@ export const EditAudioPage = () => {
                               color={"fill-rose-100"}
                               size={16}
                               className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center cursor-pointer"
                               }
-                              // style={{ cursor: "pointer" }}
                             />
                             <PauseIcon
                               onClick={() => handlePlayAudio(index)}
                               color={"fill-rose-100"}
                               size={16}
                               className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center cursor-pointer"
                               }
                             />
                           </div>
@@ -555,14 +554,14 @@ export const EditAudioPage = () => {
                               color={"fill-rose-100"}
                               size={16}
                               className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center cursor-pointer"
                               }
                             />
                             <CloseIcon
                               color={"fill-rose-100"}
                               size={16}
                               className={
-                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center cursor-pointer"
                               }
                             />
                           </div>

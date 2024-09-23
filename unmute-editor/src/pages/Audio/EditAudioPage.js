@@ -68,7 +68,7 @@ export const EditAudioPage = () => {
           audioRef.current[key].play();
         }, 0);
       } else {
-        audioRef.current[key].pause();
+        audioRef.current?.[key]?.pause();
       }
     }
   };

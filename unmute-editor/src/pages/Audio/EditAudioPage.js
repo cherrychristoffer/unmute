@@ -60,6 +60,8 @@ export const EditAudioPage = () => {
   );
   const audioFiles = activeUnmute?.properties?._audios || [];
 
+  const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
+
   const handlePlayAudio = (id) => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
@@ -350,48 +352,41 @@ export const EditAudioPage = () => {
         rangeMap[id].end
       );
 
-      const regex = /\/([a-f0-9\-]{36})\.wav$/;
+      uploadFile({
+        file: new File(
+          [croppedAudioBlob],
+          item.fileData.file.split("/").at(-1)
+        ),
+        path: unmuteId,
+      }).then(() => {
+        const fileUrl = getFileUrl(
+          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
+        );
 
-      const match = item.fileData.file.match(regex);
-
-      if (match) {
-        const identifier = match[1];
-
-        uploadFile({
-          file: new File([croppedAudioBlob], `${identifier}.wav`, {
-            type: "audio/wav",
-          }),
-          path: unmuteId,
-        }).then(() => {
-          const fileUrl = getFileUrl(`${unmuteId}/${identifier}.wav`);
-
-          const audios = activeUnmute.properties._audios?.map((state) => {
-            if (item.fileData.file === state.file) {
-              return {
-                file: fileUrl,
-                countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
-              };
-            }
-            return state;
-          });
-          updateUnmuteInCart({
-            key: activeUnmute.key,
-            properties: {
-              ...activeUnmute.properties,
-              _audios: audios,
-            },
-          }).then(({ data }) => {
-            setAudioBlob([]);
-
-            setTimeout(() => {
-              dispatch(updateUnmutes(data.items));
-              updateRef.current = false;
-            }, 500);
-          });
+        const audios = activeUnmute.properties._audios?.map((state) => {
+          if (item.fileData.file === state.file) {
+            return {
+              file: fileUrl,
+              countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
+            };
+          }
+          return state;
         });
-      } else {
-        console.log("Identifier not found.");
-      }
+        updateUnmuteInCart({
+          key: activeUnmute.key,
+          properties: {
+            ...activeUnmute.properties,
+            _audios: audios,
+          },
+        }).then(({ data }) => {
+          setAudioBlob([]);
+
+          setTimeout(() => {
+            dispatch(updateUnmutes(data.items));
+            updateRef.current = false;
+          }, 500);
+        });
+      });
     }
   };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
@@ -477,7 +472,6 @@ export const EditAudioPage = () => {
     }
     return false;
   };
-  console.log("audi", audioBlob);
 
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
@@ -633,8 +627,11 @@ export const EditAudioPage = () => {
 
         <div className="mt-16 flex flex-row justify-center items-center gap-4">
           <button
-            className="font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer"
+            className={`font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer 
+              ${dontShowAddTrack ? " cursor-default" : ""}`}
             onClick={goAdd}
+            style={{ opacity: dontShowAddTrack ? "0.5" : "1" }}
+            disabled={dontShowAddTrack}
           >
             Add new recording
           </button>

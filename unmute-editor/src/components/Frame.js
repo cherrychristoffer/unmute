@@ -135,11 +135,7 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img
-            src={frame_image}
-            alt="Frame"
-            className="relative top-0 w-1/2"
-          />
+          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -234,8 +230,9 @@ export const Frame = () => {
             to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
             className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
             style={{
-              opacity: disableAllExtions ? "0.5" : "1",
-              pointerEvents: disableAllExtions ? "none" : "unset",
+              opacity: !activeUnmute || disableAllExtions ? "0.5" : "1",
+              pointerEvents:
+                !activeUnmute || disableAllExtions ? "none" : "unset",
             }}
           >
             Add your audio

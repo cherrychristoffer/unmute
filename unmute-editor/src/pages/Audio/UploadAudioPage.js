@@ -99,6 +99,7 @@ export const UploadAudioPage = () => {
       const audio = {
         file: fileUrl,
         countdown: minuteData,
+        notRecorded: true,
       };
 
       updateUnmuteInCart({
@@ -137,6 +138,7 @@ export const UploadAudioPage = () => {
         const audio = {
           file: fileUrl,
           countdown: minuteData,
+          notRecorded: true,
         };
 
         updateUnmuteInCart({
@@ -206,7 +208,7 @@ export const UploadAudioPage = () => {
           </label>
           <input
             type="file"
-            accept="video/mp4"
+            // accept="video/mp4"
             onChange={handleVideoUpload}
             className="hidden"
             id="videoUpload"

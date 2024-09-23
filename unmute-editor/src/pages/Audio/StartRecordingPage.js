@@ -7,12 +7,7 @@ import { useLocation, useParams } from "wouter";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 import { v4 as uuid } from "uuid";
-import {
-  addAudioUnmute,
-  addUnmute,
-  updateUnmute,
-  updateUnmutes,
-} from "../../features/user/userSlice";
+import { updateUnmutes } from "../../features/user/userSlice";
 
 import { updateUnmuteInCart } from "../../api/cart";
 
@@ -43,17 +38,35 @@ export const StartRecordingPage = () => {
 
   const audioRef = useRef();
   const { activeUnmute } = useActiveUnmute();
-
+  const [isRecordingValidate, setIsRecordingValidate] = useState(0);
   const [countDown, setCountDown] = useState(3);
   const [time, setTime] = useState(0);
+
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
   const { id } = useParams();
-
+  const getQueryParams = (url) => {
+    const params = new URLSearchParams(
+      new URL(url, window.location.origin).search
+    );
+    return params.get("seconds");
+  };
+  const seconds = getQueryParams(location);
+  console.log("+setIsRecordingValidate", isRecordingValidate);
+  useEffect(() => {
+    setIsRecordingValidate(Number(seconds));
+  }, []);
+  useEffect(() => {
+    if (isRecordingValidate >= 600) {
+      stopRecording();
+    }
+  }, [isRecordingValidate]);
   useInterval(
     () => {
       setTime((prevTime) => prevTime + 1);
+      setIsRecordingValidate((prevTime) => prevTime + 1);
     },
+
     isRecording && !isPaused ? 1000 : null
   );
 
@@ -172,7 +185,10 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

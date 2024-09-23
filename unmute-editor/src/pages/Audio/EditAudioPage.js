@@ -168,11 +168,7 @@ export const EditAudioPage = () => {
         .catch((error) => {
           console.error("Error fetching audio:", error);
         });
-
-      // const dataAudio = response
-    } catch (e) {
-      // console.log("e", e?.response?.data);
-    }
+    } catch (e) {}
   };
 
   const handleDeleteRecording = (item) => {
@@ -289,26 +285,15 @@ export const EditAudioPage = () => {
 
           const dataArray = [...audioBlob];
           dataArray.push(newData);
-          console.log("new", newData);
 
           setAudioBlob((prev) => [...prev, newData]);
-          // setAudioBlob((prev) => {
-          //   const updatedArray = [...prev];
-          //   updatedArray[i] = newData;
-          //   return updatedArray;
-          // });
         })
         .catch((error) => {
           console.error("Error fetching audio:", error);
         });
     });
   };
-  // useEffect(() => {
-  //   if (sortedData?.length > 0) {
-  //     const audio = sortedData.sort((a, b) => a.index - b.index);
-  //     setAudioBlob(audio);
-  //   }
-  // }, [sortedData?.length]);
+
   useEffect(() => {
     if (audioFiles.length > 0 && !updateRef.current) {
       getMyUserAudio();
@@ -386,7 +371,6 @@ export const EditAudioPage = () => {
       index,
     }));
     const fileDataArray = sortedItems.map((item) => item.fileData);
-    console.log("sortedItems", sortedItems);
 
     updateUnmuteInCart({
       key: activeUnmute.key,
@@ -394,17 +378,7 @@ export const EditAudioPage = () => {
         ...activeUnmute.properties,
         _audios: fileDataArray,
       },
-    }).then(({ data }) => {
-      console.log("mtar");
-
-      // dispatch(updateUnmutes(data.items));
-      // data?.items.map((item) =>
-      //   // dispatch(updateUnmute({ ...item, id: uuid }))
-      //   dispatch(updateUnmutes(item.items))
-      // );
-      // dispatch(addAudioUnmute(data.items));
-      // dispatch(updateUnmutes(data.items));
-    });
+    }).then(({ data }) => {});
     setAudioBlob(sortedItems);
   };
 
@@ -451,7 +425,7 @@ export const EditAudioPage = () => {
   };
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
   return (
-    <div className={'pb-[90px]'}>
+    <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
         <div className="w-full flex flex-col items-center mt-24">

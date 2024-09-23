@@ -299,18 +299,25 @@ export const EditAudioPage = () => {
           const [minutes, seconds] = item.countdown?.split(":")?.map(Number);
           const dataSeconds = minutes * 60 + seconds;
 
-          setRangeMap({
-            start: 0,
-            end: String(dataSeconds),
-          });
+          const id = uuid();
 
           const newData = {
             blob: data,
             fileData: item,
             seconds: dataSeconds,
-            uuid: uuid(),
+            uuid: id,
             index: i,
           };
+
+          setRangeMap((prev) => ({
+            ...prev,
+            start: 0,
+            end: Number(dataSeconds),
+            [id]: {
+              start: 0,
+              end: Number(dataSeconds),
+            },
+          }));
 
           const dataArray = [...audioBlob];
           dataArray.push(newData);
@@ -463,6 +470,7 @@ export const EditAudioPage = () => {
     return false;
   };
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
+  console.log("rangeMap", rangeMap);
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
@@ -470,10 +478,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              type="group"
-              droppableId="audioList"
-            >
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}

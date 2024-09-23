@@ -278,23 +278,37 @@ export const EditAudioPage = () => {
             start: 0,
             end: String(dataSeconds),
           });
+
           const newData = {
             blob: data,
             fileData: item,
             seconds: dataSeconds,
             uuid: uuid(),
+            index: i,
           };
 
           const dataArray = [...audioBlob];
           dataArray.push(newData);
+          console.log("new", newData);
+
           setAudioBlob((prev) => [...prev, newData]);
+          // setAudioBlob((prev) => {
+          //   const updatedArray = [...prev];
+          //   updatedArray[i] = newData;
+          //   return updatedArray;
+          // });
         })
         .catch((error) => {
           console.error("Error fetching audio:", error);
         });
     });
   };
-
+  // useEffect(() => {
+  //   if (sortedData?.length > 0) {
+  //     const audio = sortedData.sort((a, b) => a.index - b.index);
+  //     setAudioBlob(audio);
+  //   }
+  // }, [sortedData?.length]);
   useEffect(() => {
     if (audioFiles.length > 0 && !updateRef.current) {
       getMyUserAudio();
@@ -367,9 +381,33 @@ export const EditAudioPage = () => {
     const reorderedItems = Array.from(audioBlob);
     const [removed] = reorderedItems.splice(source.index, 1);
     reorderedItems.splice(destination.index, 0, removed);
+    const sortedItems = reorderedItems.map((item, index) => ({
+      ...item,
+      index,
+    }));
+    const fileDataArray = sortedItems.map((item) => item.fileData);
+    console.log("sortedItems", sortedItems);
 
-    setAudioBlob(reorderedItems);
+    updateUnmuteInCart({
+      key: activeUnmute.key,
+      properties: {
+        ...activeUnmute.properties,
+        _audios: fileDataArray,
+      },
+    }).then(({ data }) => {
+      console.log("mtar");
+
+      // dispatch(updateUnmutes(data.items));
+      // data?.items.map((item) =>
+      //   // dispatch(updateUnmute({ ...item, id: uuid }))
+      //   dispatch(updateUnmutes(item.items))
+      // );
+      // dispatch(addAudioUnmute(data.items));
+      // dispatch(updateUnmutes(data.items));
+    });
+    setAudioBlob(sortedItems);
   };
+
   function calculateValues(startValue, endValue, max, id) {
     const progressElement = progressRefs.current[id];
 
@@ -411,7 +449,7 @@ export const EditAudioPage = () => {
       );
     }
   };
-
+  const sortedData = audioBlob.sort((a, b) => a.index - b.index);
   return (
     <div className={'pb-[90px]'}>
       <div className="flex flex-col items-center">
@@ -419,14 +457,17 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
+            <Droppable
+              type="group"
+              droppableId="audioList"
+            >
               {(provided) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   style={{ padding: "10px" }}
                 >
-                  {audioBlob.map((item, index) => (
+                  {sortedData.map((item, index) => (
                     <Fragment key={item.uuid}>
                       <AudioComponent
                         audioRef={audioRef}
@@ -562,12 +603,14 @@ export const EditAudioPage = () => {
           >
             Add new recording
           </button>
-          <button
-            onClick={mergeAudioData}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
-          >
-            Merge
-          </button>
+          {audioFiles?.length > 1 && (
+            <button
+              onClick={mergeAudioData}
+              className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+            >
+              Merge
+            </button>
+          )}
         </div>
       </div>
 

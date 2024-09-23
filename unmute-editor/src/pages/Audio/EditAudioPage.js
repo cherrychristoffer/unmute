@@ -274,7 +274,6 @@ export const EditAudioPage = () => {
           dataArray.push(newData);
           setAudioBlob((prev) => [...prev, newData]);
         })
-
         .catch((error) => {
           console.error("Error fetching audio:", error);
         });
@@ -317,7 +316,7 @@ export const EditAudioPage = () => {
             if (item.fileData.file === state.file) {
               return {
                 file: fileUrl,
-                countdown: formatTime(rangeMap[id].end),
+                countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
               };
             }
             return state;

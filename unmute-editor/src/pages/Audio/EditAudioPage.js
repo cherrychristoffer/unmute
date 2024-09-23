@@ -117,6 +117,7 @@ export const EditAudioPage = () => {
   }
 
   const mergeAudioData = async () => {
+    setIsLoading((prev) => ({ ...prev, isMerged: true }));
     const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
     const result = sortedData.map((item) => {
@@ -153,11 +154,25 @@ export const EditAudioPage = () => {
             seconds: dataSeconds,
             uuid: uuid(),
           };
-          const dataArray = [];
-          dataArray.push(newData);
-          setAudioBlob(dataArray);
-          console.log("audio", audio);
 
+          updateUnmuteInCart({
+            key: activeUnmute.key,
+            properties: {
+              ...activeUnmute.properties,
+              _audios: [audio],
+            },
+          }).then(({ data }) => {
+            setIsLoading((prev) => ({ ...prev, isMerged: false }));
+            const dataArray = [];
+            dataArray.push(newData);
+            setAudioBlob(dataArray);
+            dispatch(updateUnmutes(data.items));
+          });
+        })
+
+        .catch((error) => {
+          console.error("Error fetching audio:", error);
+          setIsLoading((prev) => ({ ...prev, isMerged: true }));
           updateUnmuteInCart({
             key: activeUnmute.key,
             properties: {
@@ -167,10 +182,6 @@ export const EditAudioPage = () => {
           }).then(({ data }) => {
             dispatch(updateUnmutes(data.items));
           });
-        })
-
-        .catch((error) => {
-          console.error("Error fetching audio:", error);
         });
     } catch (e) {}
   };

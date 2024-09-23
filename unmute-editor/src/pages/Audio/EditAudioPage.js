@@ -48,8 +48,9 @@ export const EditAudioPage = () => {
   const [audioBlob, setAudioBlob] = useState([]);
   const [duration, setDuration] = useState(10);
   const { id: unmuteId } = useParams();
-  const { unmutes } = useSelector((state) => state.user);
+  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
+  const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
 
   const [rangeMap, setRangeMap] = useState({});
@@ -262,6 +263,7 @@ export const EditAudioPage = () => {
   const getMyUserAudio = () => {
     updateRef.current = true;
     audioFiles?.map((item, i) => {
+      setIsLoading((prev) => ({ ...prev, [item.file]: true }));
       axios
         .get(`${item.file}?c=${cacheBust}`, {
           responseType: "blob",
@@ -287,8 +289,10 @@ export const EditAudioPage = () => {
           dataArray.push(newData);
 
           setAudioBlob((prev) => [...prev, newData]);
+          setIsLoading((prev) => ({ ...prev, [item.file]: false }));
         })
         .catch((error) => {
+          setIsLoading((prev) => ({ ...prev, [item.file]: false }));
           console.error("Error fetching audio:", error);
         });
     });
@@ -423,6 +427,14 @@ export const EditAudioPage = () => {
       );
     }
   };
+
+  const showLoading = () => {
+    if (isLoadingUnmutes) return true;
+    for (let key in isLoading) {
+      if (isLoading[key]) return true;
+    }
+    return false;
+  };
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
   return (
     <div className={"pb-[90px]"}>
@@ -431,10 +443,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              type="group"
-              droppableId="audioList"
-            >
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -569,6 +578,12 @@ export const EditAudioPage = () => {
             </Droppable>
           </DragDropContext>
         </div>
+
+        {showLoading() && (
+          <div>
+            <Loader size={"w-24 h-24"} />
+          </div>
+        )}
 
         <div className="mt-16 flex flex-row justify-center items-center gap-4">
           <button

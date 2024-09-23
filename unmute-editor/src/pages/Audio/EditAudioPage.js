@@ -13,7 +13,7 @@ import { useAudioRecorder } from "react-audio-voice-recorder";
 import { updateUnmuteInCart } from "../../api/cart";
 import { PauseIcon } from "../../assets/icons/icon_pause";
 import { PlayIcon } from "../../assets/icons/icon_play";
-import { updateUnmutes } from "../../features/user/userSlice";
+import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
@@ -166,22 +166,16 @@ export const EditAudioPage = () => {
             const dataArray = [];
             dataArray.push(newData);
             setAudioBlob(dataArray);
-            dispatch(updateUnmutes(data.items));
+            const activeItem = data.items.find(
+              (item) => item.properties._uuid === activeUnmute.properties._uuid
+            );
+            dispatch(updateUnmute(activeItem));
           });
         })
 
         .catch((error) => {
           console.error("Error fetching audio:", error);
           setIsLoading((prev) => ({ ...prev, isMerged: true }));
-          updateUnmuteInCart({
-            key: activeUnmute.key,
-            properties: {
-              ...activeUnmute.properties,
-              _audios: [audio],
-            },
-          }).then(({ data }) => {
-            dispatch(updateUnmutes(data.items));
-          });
         });
     } catch (e) {}
   };
@@ -194,7 +188,10 @@ export const EditAudioPage = () => {
         _audios: [],
       },
     }).then(({ data }) => {
-      dispatch(updateUnmutes(data.items));
+      const activeItem = data.items.find(
+        (item) => item.properties._uuid === activeUnmute.properties._uuid
+      );
+      dispatch(updateUnmute(activeItem));
       setAudioBlob([]);
     });
   };
@@ -213,7 +210,11 @@ export const EditAudioPage = () => {
             ),
           },
         }).then(({ data }) => {
-          dispatch(updateUnmutes(data.items));
+          const activeItem = data.items.find(
+            (item) => item.properties._uuid === activeUnmute.properties._uuid
+          );
+          dispatch(updateUnmute(activeItem));
+          // dispatch(updateUnmutes(data.items));
           setAudioBlob((prev) =>
             prev.filter((audio) => audio.uuid !== item.uuid)
           );
@@ -416,7 +417,12 @@ export const EditAudioPage = () => {
         ...activeUnmute.properties,
         _audios: fileDataArray,
       },
-    }).then(({ data }) => {});
+    }).then(({ data }) => {
+      const activeItem = data.items.find(
+        (item) => item.properties._uuid === activeUnmute.properties._uuid
+      );
+      dispatch(updateUnmute(activeItem));
+    });
     setAudioBlob(sortedItems);
   };
 
@@ -470,7 +476,7 @@ export const EditAudioPage = () => {
     return false;
   };
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
-  console.log("rangeMap", rangeMap);
+
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">

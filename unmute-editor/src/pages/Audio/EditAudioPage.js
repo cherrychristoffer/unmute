@@ -116,8 +116,10 @@ export const EditAudioPage = () => {
   }
 
   const mergeAudioData = async () => {
-    const result = audioFiles.map((item) => {
-      const fileParts = item.file.split("/");
+    const sortedData = audioBlob.sort((a, b) => a.index - b.index);
+
+    const result = sortedData.map((item) => {
+      const fileParts = item.fileData.file.split("/");
 
       const folder = fileParts[fileParts.length - 2];
       const fileName = fileParts[fileParts.length - 1];
@@ -153,6 +155,7 @@ export const EditAudioPage = () => {
           const dataArray = [];
           dataArray.push(newData);
           setAudioBlob(dataArray);
+          console.log("audio", audio);
 
           updateUnmuteInCart({
             key: activeUnmute.key,

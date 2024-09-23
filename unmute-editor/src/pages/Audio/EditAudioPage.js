@@ -398,7 +398,7 @@ export const EditAudioPage = () => {
   };
 
   return (
-    <>
+    <div className={'pb-[90px]'}>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
         <div className="w-full flex flex-col items-center mt-24">
@@ -567,6 +567,6 @@ export const EditAudioPage = () => {
         pauseAudio={handlePauseAudio}
         // deleteRecording={handleDeleteRecording}
       />
-    </>
+    </div>
   );
 };

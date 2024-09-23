@@ -95,6 +95,8 @@ export const Frame = () => {
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
+        console.log("mtav", audioRef.current.play());
+
         audioRef.current.play();
       } else {
         audioRef.current.pause();
@@ -133,7 +135,11 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
+          <img
+            src={frame_image}
+            alt="Frame"
+            className="relative top-0 w-1/2"
+          />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -212,12 +218,15 @@ export const Frame = () => {
                 </>
               )}
             </button>
-
+            {console.log(
+              "unmutes[activeUnmuteIndex]?.properties?._audios[0]",
+              unmutes[activeUnmuteIndex]?.properties?._audios[0]
+            )}
             <audio
               ref={audioRef}
               className="hidden"
               controls="controls"
-              src={`${unmutes[activeUnmuteIndex]?.properties?._audios[0]}?c=${cacheBust}`}
+              src={`${unmutes[activeUnmuteIndex]?.properties?._audios[0]?.file}?c=${cacheBust}`}
             ></audio>
           </div>
         ) : (

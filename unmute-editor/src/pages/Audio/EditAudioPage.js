@@ -1,4 +1,4 @@
-import { Fragment, React, useEffect, useRef, useState } from "react";
+import { Fragment, React, memo, useEffect, useRef, useState } from "react";
 
 import axios from "axios";
 
@@ -24,6 +24,7 @@ import { Loader } from "../../components/Loader";
 import Range from "./Range";
 import audioBufferToWav from "./AudioBuffer";
 import { mergeAudio } from "../../api/inspiration";
+import { AudioComponent } from "./AudioComponent";
 
 export const EditAudioPage = () => {
   const {
@@ -49,6 +50,7 @@ export const EditAudioPage = () => {
   const { id: unmuteId } = useParams();
   const { unmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
+  const activeAudioRef = useRef(null);
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -61,14 +63,27 @@ export const EditAudioPage = () => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
     for (let key in audios) {
+      const item = audioRef.current?.[key];
       if (key === id) {
         setActiveAudio(id);
+        activeAudioRef.current = id;
         // we need setTimeout for playing audio
         setTimeout(() => {
-          audioRef.current[key].play();
+          if (rangeMap[key]?.start)
+            item.currentTime = rangeMap[key]?.start ?? 0;
+
+          item.play();
+          if (rangeMap[key]?.end) {
+            item.addEventListener("timeupdate", function () {
+              if (item.currentTime >= rangeMap[key]?.end) {
+                item?.pause();
+                setActiveAudio(null);
+              }
+            });
+          }
         }, 0);
       } else {
-        audioRef.current?.[key]?.pause();
+        item?.pause();
       }
     }
   };
@@ -80,7 +95,7 @@ export const EditAudioPage = () => {
   };
 
   const handleAudioEnded = (id) => {
-    if (activeAudio === id) {
+    if (activeAudioRef.current === id) {
       setActiveAudio(null);
     }
   };
@@ -250,7 +265,7 @@ export const EditAudioPage = () => {
   };
   const getMyUserAudio = () => {
     updateRef.current = true;
-    audioFiles?.map((item) => {
+    audioFiles?.map((item, i) => {
       axios
         .get(`${item.file}?c=${cacheBust}`, {
           responseType: "blob",
@@ -413,13 +428,12 @@ export const EditAudioPage = () => {
                 >
                   {audioBlob.map((item, index) => (
                     <Fragment key={item.uuid}>
-                      <audio
-                        ref={(el) => (audioRef.current[item.uuid] = el)}
-                        className="hidden"
-                        controls="controls"
-                        onEnded={() => handleAudioEnded(item.uuid)}
-                        src={`${item.fileData.file}?c=${cacheBust}`}
-                      ></audio>
+                      <AudioComponent
+                        audioRef={audioRef}
+                        uuid={item.uuid}
+                        handleAudioEnded={handleAudioEnded}
+                        file={`${item.fileData.file}?c=${cacheBust}`}
+                      />
                       <Draggable
                         key={item.uuid}
                         draggableId={item.uuid}

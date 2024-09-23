@@ -394,8 +394,10 @@ export const EditAudioPage = () => {
       }
     }
   };
+  const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
+
   const goAdd = () => {
-    navigate(`start-recording/${unmuteId}`);
+    navigate(`start-recording/${unmuteId}?seconds=${newSecond}`);
   };
 
   const onDragEnd = (result) => {
@@ -475,12 +477,15 @@ export const EditAudioPage = () => {
     }
     return false;
   };
+  console.log("audi", audioBlob);
+
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
+        <p className="font-serif text-muld-400 text-3xl mb-4">(max 10min)</p>
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>

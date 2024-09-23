@@ -175,6 +175,19 @@ export const EditAudioPage = () => {
     } catch (e) {}
   };
 
+  const handleAllDeleteRecording = () => {
+    updateUnmuteInCart({
+      key: activeUnmute.key,
+      properties: {
+        ...activeUnmute.properties,
+        _audios: [],
+      },
+    }).then(({ data }) => {
+      dispatch(updateUnmutes(data.items));
+      setAudioBlob([]);
+    });
+  };
+
   const handleDeleteRecording = (item) => {
     if (confirm("Are you sure you want to delete this recording?")) {
       deleteFile({
@@ -446,7 +459,10 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
+            <Droppable
+              type="group"
+              droppableId="audioList"
+            >
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -614,7 +630,7 @@ export const EditAudioPage = () => {
         stopRecording={stopRecording}
         playAudio={handlePlayAudio}
         pauseAudio={handlePauseAudio}
-        // deleteRecording={handleDeleteRecording}
+        deleteRecording={handleAllDeleteRecording}
       />
     </div>
   );

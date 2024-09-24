@@ -65,6 +65,7 @@ export const EditAudioPage = () => {
   const handlePlayAudio = (id) => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
+
     for (let key in audios) {
       const item = audioRef.current?.[key];
       if (key === id) {
@@ -73,14 +74,17 @@ export const EditAudioPage = () => {
         if (rangeMap[key]?.start) item.currentTime = rangeMap[key]?.start ?? 0;
 
         item.play();
-        if (rangeMap[key]?.end) {
-          item.addEventListener("timeupdate", function () {
-            if (item.currentTime >= rangeMap[key]?.end) {
-              item?.pause();
-              setActiveAudio(null);
-            }
-          });
-        }
+        // console.log("key", key);
+        // console.log("rangeMap[key]?.end", rangeMap[key]?.end);
+        // if (rangeMap[key]?.end) {
+        //   item.addEventListener("timeupdate", function () {
+        //     if (item.currentTime >= rangeMap[key]?.end) {
+        //       console.log(`Paus ${key} ${item.currentTime}`);
+        //       item?.pause();
+        //       setActiveAudio(null);
+        //     }
+        //   });
+        // }
       } else {
         item?.pause();
       }

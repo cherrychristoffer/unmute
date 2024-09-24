@@ -18,7 +18,7 @@ export const addUnmuteToCart = async ({
   extra = false,
   collage = false,
 }) => {
-  const items = [...Array(quantity)].map(() => {
+  const items = [...Array(quantity)].map((_, index) => {
     // Apply uuid to each Unmute to make Shopify treat them as different products
     const uuid = uuidv4();
 
@@ -36,6 +36,10 @@ export const addUnmuteToCart = async ({
         _passepartout: "none",
         _inspiration: null,
         _countdown: "",
+        _created: {
+          date: new Date(),
+          index: index,
+        },
       },
     };
   });

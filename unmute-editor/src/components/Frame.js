@@ -57,28 +57,28 @@ export const Frame = () => {
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
       isAlreadyRendered.current = true;
-      const isExtraExists = unmutes.find(
-        (item) => item.properties._extra || item.properties._collage
-      );
-      if (!isExtraExists) setShowExtra(true);
-
       if (unmutes?.length !== 1) {
-        const itemsWithImage = unmutes.filter(
+        const sortedUnmutes = [...unmutes]?.sort((a, b) => {
+          const a_created = a.properties._created;
+          const b_created = b.properties._created;
+
+          if (a_created.date !== b_created.date)
+            return new Date(a_created.date) - new Date(b_created.date);
+
+          return a_created.index - b_created.index;
+        });
+        const itemsWithImage = sortedUnmutes.filter(
           (item) => item.properties._images?.length > 0
         );
         setEditSlider((prev) => prev + 1);
         setInitialSlide(itemsWithImage.length - 1);
-        const itemsWithoutImages = unmutes.filter(
+        const itemsWithoutImages = sortedUnmutes.filter(
           (item) => !item.properties._images?.length
         );
 
         dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
       }
     }
-    return () => {
-      setEditSlider((prev) => prev + 1);
-      setInitialSlide(activeUnmuteIndex);
-    };
   }, [unmutes]);
 
   useEffect(() => {
@@ -203,11 +203,9 @@ export const Frame = () => {
             />
           </SwiperSlide>
         ))}
-        {showExtra && (
-          <SwiperSlide style={sliderSize}>
-            <EmptyBox setShowExtra={setShowExtra} />
-          </SwiperSlide>
-        )}
+        <SwiperSlide style={sliderSize}>
+          <EmptyBox />
+        </SwiperSlide>
       </Swiper>
       <div className="flex flex-col items-center">
         {activeUnmute?.properties?._audios?.length > 0 ? (

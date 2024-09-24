@@ -10,7 +10,7 @@ import { addUnmuteToCart, updateUnmuteInCart } from "../api/cart";
 import { addUnmute, updateUnmutes } from "../features/user/userSlice";
 import { getFileUrl, uploadFile } from "../api/aws";
 
-export const EmptyBox = ({ orientation, setShowExtra }) => {
+export const EmptyBox = ({ orientation }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,6 @@ export const EmptyBox = ({ orientation, setShowExtra }) => {
       if (!unmute) return;
       dispatch(addUnmute(unmute));
 
-      setShowExtra(false);
       const uuid = unmute._uuid;
       const file = event.target.files[0];
       uploadFile({

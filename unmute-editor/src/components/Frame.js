@@ -229,10 +229,7 @@ export const Frame = () => {
                 </>
               )}
             </button>
-            {console.log(
-              "unmutes[activeUnmuteIndex]?.properties?._audios[0]",
-              unmutes[activeUnmuteIndex]?.properties
-            )}
+
             <audio
               ref={audioRef}
               className="hidden"

@@ -52,7 +52,7 @@ export const StartRecordingPage = () => {
     return params.get("seconds");
   };
   const seconds = getQueryParams(location);
-  console.log("+setIsRecordingValidate", isRecordingValidate);
+
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);

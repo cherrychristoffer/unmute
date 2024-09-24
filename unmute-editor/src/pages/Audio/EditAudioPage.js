@@ -277,9 +277,8 @@ export const EditAudioPage = () => {
     });
   };
 
-  // Helper function to convert audio buffer to WAV Blob
   const bufferToWaveBlob = (buffer) => {
-    const wavBuffer = audioBufferToWav(buffer); // You'll need an external utility function to convert audio buffer to WAV format
+    const wavBuffer = audioBufferToWav(buffer);
     return new Blob([wavBuffer], { type: "audio/wav" });
   };
   const formatTime = (time) => {

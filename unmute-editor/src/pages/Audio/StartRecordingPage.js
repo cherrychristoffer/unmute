@@ -52,7 +52,7 @@ export const StartRecordingPage = () => {
     return params.get("seconds");
   };
   const seconds = getQueryParams(location);
-  console.log("+setIsRecordingValidate", isRecordingValidate);
+
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);
@@ -110,6 +110,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
+          notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
         updateUnmuteInCart({

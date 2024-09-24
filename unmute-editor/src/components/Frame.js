@@ -44,6 +44,7 @@ export const Frame = () => {
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
+  const [activeUuid, setActiveUuid] = useState(null);
 
   const { unmutes } = useSelector((state) => state.user);
   const { scrollToExtra, disableAllExtions } = useSelector(
@@ -102,8 +103,16 @@ export const Frame = () => {
     }
   }, [audioRef.current, playing]);
 
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (item) => {
+    setActiveUuid(item._uuid);
     setPlaying(true);
+    const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
+    const parts = time.split(":");
+    const result = parseInt(parts[1], 10);
+    console.log("result", result);
+    setTimeout(() => {
+      setPlaying(false);
+    }, result * 1000);
   };
 
   const handlePauseAudio = () => {
@@ -144,6 +153,7 @@ export const Frame = () => {
       </div>
     );
   }
+
   return (
     <div
       className={"pt-8"}
@@ -198,11 +208,14 @@ export const Frame = () => {
 
             <button
               onClick={() => {
-                playing ? handlePauseAudio() : handlePlayAudio();
+                playing
+                  ? handlePauseAudio()
+                  : handlePlayAudio(unmutes[activeUnmuteIndex]?.properties);
               }}
               className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing ? (
+              {playing &&
+              activeUuid === unmutes[activeUnmuteIndex]?.properties?._uuid ? (
                 <>
                   <PauseIcon />
                 </>

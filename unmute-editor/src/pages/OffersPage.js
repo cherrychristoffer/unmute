@@ -83,7 +83,7 @@ export const OffersPage = () => {
   ];
 
   return (
-    <div className={"offers-page flex items-center py-10"}>
+    <div className={"offers-page flex items-center py-10 pb-[80px]"}>
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
@@ -114,7 +114,7 @@ export const OffersPage = () => {
               <div
                 className={`-mt-12 px-2.5 py-2 w-5/6 rounded-[4px] ${
                   item.special ? "bg-rose-500" : "bg-muld-1000"
-                } ${item.inactive && 'opacity-2'}`}
+                } ${item.inactive && 'bg-[#a9a9a9] z-[1] pointer-events-none'}`}
               >
                 <div className="font-light text-gray-700">
                   <p

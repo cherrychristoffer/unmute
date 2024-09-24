@@ -346,10 +346,7 @@ export const EditAudioPage = () => {
   if (loading) {
     return <div>Loading audio...</div>;
   }
-  console.log(
-    "activeUnmute.properties._audios",
-    activeUnmute?.properties?._audios
-  );
+
   const handleCropAudio = async (item, id) => {
     if (Number(rangeMap.start) < Number(rangeMap.end)) {
       const croppedAudioBlob = await cropAudio(

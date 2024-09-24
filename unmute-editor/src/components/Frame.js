@@ -95,8 +95,6 @@ export const Frame = () => {
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
-        console.log("mtav", audioRef.current.play());
-
         audioRef.current.play();
       } else {
         audioRef.current.pause();
@@ -130,6 +128,7 @@ export const Frame = () => {
       });
     });
   };
+  console.log("active", activeUnmute?.properties?._audios);
 
   if (loading) {
     return (
@@ -187,9 +186,8 @@ export const Frame = () => {
           </SwiperSlide>
         )}
       </Swiper>
-
       <div className="flex flex-col items-center">
-        {unmutes[activeUnmuteIndex]?.properties?._audios?.length > 0 ? (
+        {activeUnmute?.properties?._audios?.length > 0 ? (
           <div className="flex flex-row items-center mt-12">
             <Link
               to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
@@ -214,15 +212,11 @@ export const Frame = () => {
                 </>
               )}
             </button>
-            {console.log(
-              "unmutes[activeUnmuteIndex]?.properties?._audios[0]",
-              unmutes[activeUnmuteIndex]?.properties?._audios[0]
-            )}
             <audio
               ref={audioRef}
               className="hidden"
               controls="controls"
-              src={`${unmutes[activeUnmuteIndex]?.properties?._audios[0]?.file}?c=${cacheBust}`}
+              src={`${activeUnmute?.properties?._audios[0]?.file}?c=${cacheBust}`}
             ></audio>
           </div>
         ) : (

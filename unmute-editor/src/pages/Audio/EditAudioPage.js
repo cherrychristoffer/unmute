@@ -139,20 +139,26 @@ export const EditAudioPage = () => {
           const [minutes, seconds] = minuteData?.split(":")?.map(Number);
           const dataSeconds = minutes * 60 + seconds;
 
-          setRangeMap({
-            start: 0,
-            end: String(dataSeconds),
-          });
           const audio = {
             file: responseData.url,
             countdown: convertToTimeFormat(responseData.duration),
           };
+          const id = uuid();
           const newData = {
             blob: data,
             fileData: audio,
             seconds: dataSeconds,
-            uuid: uuid(),
+            uuid: id,
           };
+
+          setRangeMap({
+            start: 0,
+            end: String(dataSeconds),
+            [id]: {
+              start: 0,
+              end: dataSeconds,
+            },
+          });
 
           updateUnmuteInCart({
             key: activeUnmute.key,
@@ -480,10 +486,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              type="group"
-              droppableId="audioList"
-            >
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}

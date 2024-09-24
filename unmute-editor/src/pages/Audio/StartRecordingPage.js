@@ -56,11 +56,13 @@ export const StartRecordingPage = () => {
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);
+
   useEffect(() => {
-    if (isRecordingValidate >= 600) {
+    if (isRecordingValidate >= 10) {
       stopRecording();
     }
   }, [isRecordingValidate]);
+
   useInterval(
     () => {
       setTime((prevTime) => prevTime + 1);
@@ -93,7 +95,6 @@ export const StartRecordingPage = () => {
         wavBlob = await convertToWav(recordingBlob);
       }
 
-      //"recorded.wav"
       const newUuid = uuid();
       const file = new File([wavBlob], `${newUuid}.wav`, {
         type: "audio/wav",
@@ -110,7 +111,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
-          notRecorded: isRecordingValidate >= 600 ? true : false,
+          notRecorded: isRecordingValidate >= 10 ? true : false,
         };
 
         updateUnmuteInCart({
@@ -120,12 +121,6 @@ export const StartRecordingPage = () => {
             _audios: [...activeUnmute.properties._audios, audio],
           },
         }).then(({ data }) => {
-          // dispatch(updateUnmutes(data.items));
-          // data?.items.map((item) =>
-          //   // dispatch(updateUnmute({ ...item, id: uuid }))
-          //   dispatch(updateUnmutes(item.items))
-          // );
-          // dispatch(addAudioUnmute(data.items));
           dispatch(updateUnmutes(data.items));
           navigate(`/edit-audio/${id}`);
         });
@@ -186,10 +181,7 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

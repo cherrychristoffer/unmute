@@ -70,21 +70,17 @@ export const EditAudioPage = () => {
       if (key === id) {
         setActiveAudio(id);
         activeAudioRef.current = id;
-        // we need setTimeout for playing audio
-        setTimeout(() => {
-          if (rangeMap[key]?.start)
-            item.currentTime = rangeMap[key]?.start ?? 0;
+        if (rangeMap[key]?.start) item.currentTime = rangeMap[key]?.start ?? 0;
 
-          item.play();
-          if (rangeMap[key]?.end) {
-            item.addEventListener("timeupdate", function () {
-              if (item.currentTime >= rangeMap[key]?.end) {
-                item?.pause();
-                setActiveAudio(null);
-              }
-            });
-          }
-        }, 0);
+        item.play();
+        if (rangeMap[key]?.end) {
+          item.addEventListener("timeupdate", function () {
+            if (item.currentTime >= rangeMap[key]?.end) {
+              item?.pause();
+              setActiveAudio(null);
+            }
+          });
+        }
       } else {
         item?.pause();
       }

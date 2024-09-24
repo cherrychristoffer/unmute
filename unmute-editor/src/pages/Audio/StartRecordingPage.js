@@ -58,7 +58,7 @@ export const StartRecordingPage = () => {
   }, []);
 
   useEffect(() => {
-    if (isRecordingValidate >= 10) {
+    if (isRecordingValidate >= 600) {
       stopRecording();
     }
   }, [isRecordingValidate]);
@@ -111,7 +111,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
-          notRecorded: isRecordingValidate >= 10 ? true : false,
+          notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
         updateUnmuteInCart({

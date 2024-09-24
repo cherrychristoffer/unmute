@@ -33,7 +33,9 @@ export const OffersPage = () => {
     }
   }, [unmutes]);
 
-  const navigateToCollage = () => navigate("/collage");
+  // @ToDo: This function can be reverted once the Collage feature is implemented
+  // const navigateToCollage = () => navigate("/collage");
+  const navigateToCollage = () => { console.log('coming soon.') };
 
   if (isLoadingUnmutes || unmutes?.length !== 0)
     return (
@@ -49,6 +51,7 @@ export const OffersPage = () => {
       title: "Unmute",
       price: "399",
       onClick: handleClick,
+      inactive: false,
     },
     {
       image: offer2,
@@ -57,6 +60,7 @@ export const OffersPage = () => {
       price: "699",
       saving: 100,
       onClick: handleClick,
+      inactive: false,
     },
     {
       image: offer3,
@@ -64,6 +68,7 @@ export const OffersPage = () => {
       title: "Collage",
       price: "399",
       onClick: navigateToCollage,
+      inactive: true, // @ToDo: inactive flag can be removed once the Collage feature is implemented
     },
     {
       image: offer4,
@@ -73,6 +78,7 @@ export const OffersPage = () => {
       saving: 200,
       special: true,
       onClick: handleClick,
+      inactive: false,
     },
   ];
 
@@ -93,17 +99,22 @@ export const OffersPage = () => {
             <div
               key={index}
               onClick={() => item.onClick({ quantity: item.quantity })}
-              className="flex flex-col items-center my-2 cursor-pointer"
+              className={`flex flex-col items-center my-2 cursor-pointer ${item.inactive && 'pointer-events-none position-relative'}`}
             >
               <img
                 src={item.image}
-                className="rounded-[3px] aspect-square object-cover"
+                className={`rounded-[3px] aspect-square object-cover ${item.inactive && 'opacity-2'}`}
                 alt={item.title}
               />
+              {item.inactive &&
+              <span className="coming-soon text-[25px]">
+                Coming Soon
+              </span>
+              }
               <div
                 className={`-mt-12 px-2.5 py-2 w-5/6 rounded-[4px] ${
                   item.special ? "bg-rose-500" : "bg-muld-1000"
-                }`}
+                } ${item.inactive && 'opacity-2'}`}
               >
                 <div className="font-light text-gray-700">
                   <p

@@ -296,3 +296,20 @@ input[type="range"]::range-progress {
   width: 100%;
   max-width: none;
 }
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.opacity-2 {
+  opacity: 0.2
+}
+
+.position-relative {
+  position: relative;
+}
+
+.coming-soon {
+  top: 30%;
+  position: absolute;
+}

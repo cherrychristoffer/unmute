@@ -44,13 +44,15 @@ export const Frame = () => {
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
-  const [activeUuid, setActiveUuid] = useState(null);
 
   const { unmutes } = useSelector((state) => state.user);
-  const { scrollToExtra, disableAllExtions } = useSelector(
+  const { scrollToExtra, scrollToActive, disableAllExtions } = useSelector(
     (state) => state.image
   );
   const [initialSlide, setInitialSlide] = useState(0);
+  const activeUnmuteIndex = useSelector(
+    (state) => state.user.activeUnmuteIndex
+  );
 
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
@@ -73,6 +75,10 @@ export const Frame = () => {
         dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
       }
     }
+    return () => {
+      setEditSlider((prev) => prev + 1);
+      setInitialSlide(activeUnmuteIndex);
+    };
   }, [unmutes]);
 
   useEffect(() => {
@@ -87,9 +93,12 @@ export const Frame = () => {
     }
   }, [scrollToExtra]);
 
-  const activeUnmuteIndex = useSelector(
-    (state) => state.user.activeUnmuteIndex
-  );
+  useEffect(() => {
+    if (scrollToActive > 0) {
+      setEditSlider((prev) => prev + 1);
+      setInitialSlide(activeUnmuteIndex);
+    }
+  }, [scrollToActive]);
 
   const loading = activeUnmuteIndex === null;
 
@@ -103,13 +112,18 @@ export const Frame = () => {
     }
   }, [audioRef.current, playing]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setPlaying(false);
+    }
+  }, [activeUnmuteIndex]);
+
   const handlePlayAudio = (item) => {
-    setActiveUuid(item._uuid);
     setPlaying(true);
     const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
     const parts = time.split(":");
     const result = parseInt(parts[1], 10);
-    console.log("result", result);
     setTimeout(() => {
       setPlaying(false);
     }, result * 1000);
@@ -137,7 +151,6 @@ export const Frame = () => {
       });
     });
   };
-  console.log("active", activeUnmute?.properties?._audios);
 
   if (loading) {
     return (
@@ -208,14 +221,11 @@ export const Frame = () => {
 
             <button
               onClick={() => {
-                playing
-                  ? handlePauseAudio()
-                  : handlePlayAudio(unmutes[activeUnmuteIndex]?.properties);
+                playing ? handlePauseAudio() : handlePlayAudio();
               }}
               className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing &&
-              activeUuid === unmutes[activeUnmuteIndex]?.properties?._uuid ? (
+              {playing ? (
                 <>
                   <PauseIcon />
                 </>

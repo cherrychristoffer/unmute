@@ -9,6 +9,7 @@ export const userSlice = createSlice({
     ratio: 0,
     mustCropAsNumber: 0,
     scrollToExtra: 0,
+    scrollToActive: 0,
     disableAllExtions: false,
   },
   reducers: {
@@ -30,6 +31,9 @@ export const userSlice = createSlice({
     setScrolltoExtra: (state) => {
       state.scrollToExtra = state.scrollToExtra + 1;
     },
+    setScrolltoActive: (state) => {
+      state.scrollToActive = state.scrollToActive + 1;
+    },
     setDisableAllActions: (state, action) => {
       state.disableAllExtions = action.payload;
     },
@@ -45,6 +49,7 @@ export const {
   setMinValue,
   setScrolltoExtra,
   setDisableAllActions,
+  setScrolltoActive,
 } = userSlice.actions;
 
 export default userSlice.reducer;

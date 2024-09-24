@@ -2,13 +2,15 @@ import clsx from "clsx";
 
 import { React } from "react";
 
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { NavCheckIcon } from "../assets/icons/icon_nav_check";
 import { NavCloseIcon } from "../assets/icons/icon_nav_close";
 import { NavEditIcon } from "../assets/icons/icon_nav_edit";
 import { NavPauseIcon } from "../assets/icons/icon_nav_pause";
 import { NavPlayIcon } from "../assets/icons/icon_nav_play";
 import { NavRecordingIcon } from "../assets/icons/icon_nav_recording";
+import { setScrolltoActive } from "../features/image/imageSlice";
+import { useDispatch } from "react-redux";
 
 export const AudioBottomNavigation = ({
   isPaused = false,
@@ -18,6 +20,9 @@ export const AudioBottomNavigation = ({
   pauseAudio = () => {},
   deleteRecording = () => {},
 }) => {
+  const dispatch = useDispatch();
+  const [_location, navigate] = useLocation();
+
   const NAVIGATION = [
     {
       label: "Play",
@@ -41,8 +46,11 @@ export const AudioBottomNavigation = ({
     },
     {
       label: "Add",
-      to: "/orientation",
       icon: <NavCheckIcon />,
+      action: () => {
+        dispatch(setScrolltoActive());
+        navigate("/orientation");
+      },
     },
     {
       label: "Delete",

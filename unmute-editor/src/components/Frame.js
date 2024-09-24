@@ -44,6 +44,7 @@ export const Frame = () => {
   const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
+  const [activeUuid, setActiveUuid] = useState(null);
 
   const { unmutes } = useSelector((state) => state.user);
   const { scrollToExtra, disableAllExtions } = useSelector(
@@ -95,8 +96,6 @@ export const Frame = () => {
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
-        console.log("mtav", audioRef.current.play());
-
         audioRef.current.play();
       } else {
         audioRef.current.pause();
@@ -104,8 +103,16 @@ export const Frame = () => {
     }
   }, [audioRef.current, playing]);
 
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (item) => {
+    setActiveUuid(item._uuid);
     setPlaying(true);
+    const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
+    const parts = time.split(":");
+    const result = parseInt(parts[1], 10);
+    console.log("result", result);
+    setTimeout(() => {
+      setPlaying(false);
+    }, result * 1000);
   };
 
   const handlePauseAudio = () => {
@@ -135,7 +142,11 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
+          <img
+            src={frame_image}
+            alt="Frame"
+            className="relative top-0 w-1/2"
+          />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -145,6 +156,7 @@ export const Frame = () => {
       </div>
     );
   }
+
   return (
     <div
       className={"pt-8"}
@@ -200,11 +212,14 @@ export const Frame = () => {
 
             <button
               onClick={() => {
-                playing ? handlePauseAudio() : handlePlayAudio();
+                playing
+                  ? handlePauseAudio()
+                  : handlePlayAudio(unmutes[activeUnmuteIndex]?.properties);
               }}
               className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing ? (
+              {playing &&
+              activeUuid === unmutes[activeUnmuteIndex]?.properties?._uuid ? (
                 <>
                   <PauseIcon />
                 </>
@@ -216,7 +231,7 @@ export const Frame = () => {
             </button>
             {console.log(
               "unmutes[activeUnmuteIndex]?.properties?._audios[0]",
-              unmutes[activeUnmuteIndex]?.properties?._audios[0]
+              unmutes[activeUnmuteIndex]?.properties
             )}
             <audio
               ref={audioRef}

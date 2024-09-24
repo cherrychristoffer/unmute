@@ -208,7 +208,7 @@ export const UploadAudioPage = () => {
           </label>
           <input
             type="file"
-            // accept="video/mp4"
+            accept="video/mp4"
             onChange={handleVideoUpload}
             className="hidden"
             id="videoUpload"

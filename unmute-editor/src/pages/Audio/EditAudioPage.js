@@ -104,14 +104,11 @@ export const EditAudioPage = () => {
   };
 
   function convertToTimeFormat(seconds) {
-    // Round down the seconds to the nearest whole number
     const roundedSeconds = Math.floor(seconds);
 
-    // Calculate minutes and remaining seconds
     const minutes = Math.floor(roundedSeconds / 60);
     const remainingSeconds = roundedSeconds % 60;
 
-    // Format the minutes and seconds with leading zeroes if necessary
     const formattedMinutes = String(minutes).padStart(2, "0");
     const formattedSeconds = String(remainingSeconds).padStart(2, "0");
 
@@ -253,7 +250,6 @@ export const EditAudioPage = () => {
 
           audioContext.createBufferSource().buffer = croppedBuffer;
 
-          // Convert the cropped audio buffer to a Blob
           const offlineAudioContext = new OfflineAudioContext(
             croppedBuffer.numberOfChannels,
             croppedBuffer.length,
@@ -368,6 +364,7 @@ export const EditAudioPage = () => {
             return {
               file: fileUrl,
               countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
+              notRecorded: dontShowAddTrack,
             };
           }
           return state;
@@ -483,7 +480,10 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
+            <Droppable
+              type="group"
+              droppableId="audioList"
+            >
               {(provided) => (
                 <div
                   {...provided.droppableProps}

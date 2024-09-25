@@ -39,7 +39,7 @@ export const FramePage = () => {
     {
       value: 'oak',
       image: oak,
-      title: '100% Oak Tree',
+      title: '100% Egetræ',
     },
     // {
     //   value: 'black',

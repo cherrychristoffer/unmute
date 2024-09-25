@@ -218,7 +218,7 @@ export const Frame = () => {
               to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
               className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
             >
-              Edit audio
+              Rediger lyd
             </Link>
 
             <button
@@ -254,7 +254,7 @@ export const Frame = () => {
                 !activeUnmute || disableAllExtions ? "none" : "unset",
             }}
           >
-            Add your audio
+            Tilføj lydfil
           </Link>
         )}
       </div>

@@ -100,18 +100,18 @@ export const ReplacePage = () => {
                     <button
                         onClick={removeReplaceMode}
                         className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
-                        No thanks
+                        Nej tak
                     </button>
                     <button
                         className="font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer"
                         onClick={onYes}
                     >
-                        Yes (+49DKK)
+                        Ja (+49 DKK)
                     </button>
                 </div>
 
                 <p className={"font-serif text-rose-500 text-2xl text-center leading-tight mt-10"}>
-                    AI-Enhance your photo
+                    Forbedret fotokvalitet med AI
                 </p>
             </div>
         )

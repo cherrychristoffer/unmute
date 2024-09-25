@@ -156,7 +156,11 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
+          <img
+            src={frame_image}
+            alt="Frame"
+            className="relative top-0 w-1/2"
+          />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />

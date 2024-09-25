@@ -16,14 +16,21 @@ export const AudioBottomNavigation = ({
   isPaused = false,
   togglePauseResume = () => {},
   stopRecording = () => {},
+  goEditorPage = () => {},
   playAudio = () => {},
   pauseAudio = () => {},
   deleteRecording = () => {},
+  mergeAudio = () => {},
 }) => {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
 
   const NAVIGATION = [
+    {
+      label: "Delete",
+      action: deleteRecording,
+      icon: <NavCloseIcon />,
+    },
     {
       label: "Play",
       action: playAudio,
@@ -34,6 +41,16 @@ export const AudioBottomNavigation = ({
       action: pauseAudio,
       icon: <NavPauseIcon />,
     },
+    // {
+    //   label: isPaused ? "Record" : "Recording",
+    //   action: isPaused ? togglePauseResume : stopRecording,
+    //   icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
+    // },
+    // {
+    //   label: "Edit",
+    //   to: "/edit-audio/:id",
+    //   icon: <NavEditIcon />,
+    // },
     {
       label: isPaused ? "Record" : "Recording",
       action: isPaused ? togglePauseResume : stopRecording,
@@ -53,9 +70,10 @@ export const AudioBottomNavigation = ({
       },
     },
     {
-      label: "Delete",
-      action: deleteRecording,
-      icon: <NavCloseIcon />,
+      label: "Add",
+      // to: "/orientation",
+      action: mergeAudio,
+      icon: <NavCheckIcon />,
     },
   ];
 

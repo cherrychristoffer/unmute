@@ -483,7 +483,7 @@ export const EditAudioPage = () => {
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
         <p className="font-serif text-muld-400 text-3xl mb-4">(max 10min)</p>
-        <div className="w-full flex flex-col items-center mt-24">
+        <div className="w-full flex flex-col items-center pt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable type="group" droppableId="audioList">

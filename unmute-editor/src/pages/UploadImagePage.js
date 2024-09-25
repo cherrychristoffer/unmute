@@ -66,7 +66,7 @@ export const UploadImagePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-24">
+    <div className="flex flex-col items-center py-24">
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Upload</h1>

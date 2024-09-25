@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-import { UNMUTE_PRODUCT_VARIANT_ID } from "../app/const";
+import { UNMUTE_PRODUCT_VARIANT_ID, UNMUTE_ENHANCED_PRODUCT_VARIANT_ID } from "../app/const";
 
 const cartUrl = `${window.Shopify.routes.root}cart`;
 
@@ -12,6 +12,12 @@ export const updateUnmuteInCart = async ({ key, properties }) =>
     id: key,
     properties,
   });
+
+export const removeUnmuteInCart = async (key) =>
+    await axios.post(`${cartUrl}/change.js`, {
+      id: key,
+      quantity: 0,
+    });
 
 export const addUnmuteToCart = async ({
   quantity,
@@ -54,3 +60,25 @@ export const addUnmuteToCart = async ({
 
   return response;
 };
+
+export const duplicateUnmuteToCart = async (unmute) => {
+  const items = [
+    {
+      ...unmute,
+      id: UNMUTE_ENHANCED_PRODUCT_VARIANT_ID,
+    }
+  ]
+
+  const response = await axios.post(`${cartUrl}/add.js`, {
+    items,
+    sections: "cart-icon-bubble",
+  });
+
+  document.querySelector("#cart-icon-bubble").innerHTML =
+      response.data.sections["cart-icon-bubble"];
+
+  return response;
+};
+
+
+

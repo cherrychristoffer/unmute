@@ -4,8 +4,8 @@ import clsx from 'clsx'
 import { setReplaceIndex, setImages, setReplaceMode } from "../features/replace/replaceSlice";
 import { photosEnhance } from '../api/image'
 import {useActiveUnmute} from "../api/useUnmutes";
-import {updateUnmuteInCart} from "../api/cart";
-import {updateUnmutes} from "../features/user/userSlice";
+import {duplicateUnmuteToCart, removeUnmuteInCart} from "../api/cart";
+import {addUnmute, deleteUnmute} from "../features/user/userSlice";
 import {getFileUrl, uploadFile} from "../api/aws";
 
 function base64ToFile(base64String, filename) {
@@ -80,15 +80,22 @@ export const ReplacePage = () => {
         const imgUrl = getFileUrl(
             `${uuid}/image-enhance.png`
         );
-        updateUnmuteInCart({
+
+        removeUnmuteInCart(activeUnmute.key).then(() => {
+            dispatch(deleteUnmute(activeUnmute.key))
+        });
+
+        duplicateUnmuteToCart({
             key: activeUnmute.key,
             properties: {
                 ...activeUnmute.properties,
                 _images: [imgUrl],
                 _enhanced: true,
             },
-        }).then((data) => {
-            dispatch(updateUnmutes(data.data.items));
+        }).then(({data}) => {
+            data.items.forEach((unmute) => {
+                dispatch(addUnmute(unmute));
+            });
             removeReplaceMode()
         });
     }

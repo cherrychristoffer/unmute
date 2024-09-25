@@ -3,26 +3,19 @@ import { Fragment, React, memo, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { CheckIcon } from "../../assets/icons/icon_check";
-import { CloseIcon } from "../../assets/icons/icon_close";
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import { PauseIcon } from "../../assets/icons/icon_pause";
-import { PlayIcon } from "../../assets/icons/icon_play";
 import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
 import { useActiveUnmute } from "../../api/useUnmutes";
 
-import { AudioVisualizer } from "react-audio-visualize";
 import { Loader } from "../../components/Loader";
-import Range from "./Range";
-import audioBufferToWav from "./AudioBuffer";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
 
@@ -36,22 +29,18 @@ export const EditAudioPage = () => {
     isPaused,
   } = useAudioRecorder();
   const audioRef = useRef({});
-  const priceGap = 1;
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const startRefs = useRef([]);
-  const endRefs = useRef([]);
-  const progressRefs = useRef([]);
   const updateRef = useRef(false);
   const cacheBust = Date.now();
   const { loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
-  const [cropId, setCropId] = useState(null);
   const { id: unmuteId } = useParams();
   const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
+  const allAudioRefs = useRef({});
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -62,7 +51,7 @@ export const EditAudioPage = () => {
 
   const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
 
-  const handlePlayAudio = (id, index) => {
+  const handlePlayAudio = (id) => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
 
@@ -95,12 +84,6 @@ export const EditAudioPage = () => {
   const handlePauseAudio = (id) => {
     if (audioRef.current[id]) {
       audioRef.current[id].pause();
-      setActiveAudio(null);
-    }
-  };
-
-  const handleAudioEnded = (id) => {
-    if (activeAudioRef.current === id) {
       setActiveAudio(null);
     }
   };
@@ -201,96 +184,96 @@ export const EditAudioPage = () => {
     });
   };
 
-  const handleDeleteRecording = (item) => {
-    if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
-      deleteFile({
-        path: item?.fileData?.file,
-      }).then(() => {
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: activeUnmute.properties?._audios.filter(
-              (audio) => audio.file !== item.fileData.file
-            ),
-          },
-        }).then(({ data }) => {
-          const activeItem = data.items.find(
-            (item) => item.properties._uuid === activeUnmute.properties._uuid
-          );
-          dispatch(updateUnmute(activeItem));
-          // dispatch(updateUnmutes(data.items));
-          setAudioBlob((prev) =>
-            prev.filter((audio) => audio.uuid !== item.uuid)
-          );
-        });
-      });
-    }
-  };
+  // const handleDeleteRecording = (item) => {
+  //   if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
+  //     deleteFile({
+  //       path: item?.fileData?.file,
+  //     }).then(() => {
+  //       updateUnmuteInCart({
+  //         key: activeUnmute.key,
+  //         properties: {
+  //           ...activeUnmute.properties,
+  //           _audios: activeUnmute.properties?._audios.filter(
+  //             (audio) => audio.file !== item.fileData.file
+  //           ),
+  //         },
+  //       }).then(({ data }) => {
+  //         const activeItem = data.items.find(
+  //           (item) => item.properties._uuid === activeUnmute.properties._uuid
+  //         );
+  //         dispatch(updateUnmute(activeItem));
+  //         // dispatch(updateUnmutes(data.items));
+  //         setAudioBlob((prev) =>
+  //           prev.filter((audio) => audio.uuid !== item.uuid)
+  //         );
+  //       });
+  //     });
+  //   }
+  // };
 
-  const cropAudio = async (blob, start, end) => {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const arrayBuffer = await blob.arrayBuffer();
+  // const cropAudio = async (blob, start, end) => {
+  //   const audioContext = new (window.AudioContext ||
+  //     window.webkitAudioContext)();
+  //   const arrayBuffer = await blob.arrayBuffer();
 
-    return new Promise((resolve, reject) => {
-      audioContext.decodeAudioData(
-        arrayBuffer,
-        (audioBuffer) => {
-          const sampleRate = audioBuffer.sampleRate;
-          const startSample = Math.floor(start * sampleRate);
-          const endSample = Math.floor(end * sampleRate);
+  //   return new Promise((resolve, reject) => {
+  //     audioContext.decodeAudioData(
+  //       arrayBuffer,
+  //       (audioBuffer) => {
+  //         const sampleRate = audioBuffer.sampleRate;
+  //         const startSample = Math.floor(start * sampleRate);
+  //         const endSample = Math.floor(end * sampleRate);
 
-          const croppedBuffer = audioContext.createBuffer(
-            audioBuffer.numberOfChannels,
-            endSample - startSample,
-            sampleRate
-          );
+  //         const croppedBuffer = audioContext.createBuffer(
+  //           audioBuffer.numberOfChannels,
+  //           endSample - startSample,
+  //           sampleRate
+  //         );
 
-          for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-            croppedBuffer.copyToChannel(
-              audioBuffer.getChannelData(i).subarray(startSample, endSample),
-              i
-            );
-          }
+  //         for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+  //           croppedBuffer.copyToChannel(
+  //             audioBuffer.getChannelData(i).subarray(startSample, endSample),
+  //             i
+  //           );
+  //         }
 
-          audioContext.createBufferSource().buffer = croppedBuffer;
+  //         audioContext.createBufferSource().buffer = croppedBuffer;
 
-          const offlineAudioContext = new OfflineAudioContext(
-            croppedBuffer.numberOfChannels,
-            croppedBuffer.length,
-            croppedBuffer.sampleRate
-          );
+  //         const offlineAudioContext = new OfflineAudioContext(
+  //           croppedBuffer.numberOfChannels,
+  //           croppedBuffer.length,
+  //           croppedBuffer.sampleRate
+  //         );
 
-          const source = offlineAudioContext.createBufferSource();
-          source.buffer = croppedBuffer;
-          source.connect(offlineAudioContext.destination);
-          source.start();
+  //         const source = offlineAudioContext.createBufferSource();
+  //         source.buffer = croppedBuffer;
+  //         source.connect(offlineAudioContext.destination);
+  //         source.start();
 
-          offlineAudioContext.startRendering().then((renderedBuffer) => {
-            const wavBlob = bufferToWaveBlob(renderedBuffer);
-            resolve(wavBlob);
-          });
-        },
-        reject
-      );
-    });
-  };
+  //         offlineAudioContext.startRendering().then((renderedBuffer) => {
+  //           const wavBlob = bufferToWaveBlob(renderedBuffer);
+  //           resolve(wavBlob);
+  //         });
+  //       },
+  //       reject
+  //     );
+  //   });
+  // };
 
-  const bufferToWaveBlob = (buffer) => {
-    const wavBuffer = audioBufferToWav(buffer);
-    return new Blob([wavBuffer], { type: "audio/wav" });
-  };
-  const formatTime = (time) => {
-    let minutes = Math.floor(time / 60);
-    let seconds = time % 60;
+  // const bufferToWaveBlob = (buffer) => {
+  //   const wavBuffer = audioBufferToWav(buffer);
+  //   return new Blob([wavBuffer], { type: "audio/wav" });
+  // };
+  // const formatTime = (time) => {
+  //   let minutes = Math.floor(time / 60);
+  //   let seconds = time % 60;
 
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
+  //   if (seconds < 10) {
+  //     seconds = `0${seconds}`;
+  //   }
 
-    return `${minutes}:${seconds}`;
-  };
+  //   return `${minutes}:${seconds}`;
+  // };
   const getMyUserAudio = () => {
     updateRef.current = true;
     audioFiles?.map((item, i) => {
@@ -323,9 +306,6 @@ export const EditAudioPage = () => {
             },
           }));
 
-          const dataArray = [...audioBlob];
-          dataArray.push(newData);
-
           setAudioBlob((prev) => [...prev, newData]);
           setIsLoading((prev) => ({ ...prev, [item.file]: false }));
         })
@@ -346,52 +326,52 @@ export const EditAudioPage = () => {
     return <div>Loading audio...</div>;
   }
 
-  const handleCropAudio = async (item, id) => {
-    if (Number(rangeMap.start) < Number(rangeMap.end)) {
-      const croppedAudioBlob = await cropAudio(
-        item.blob,
-        rangeMap[id].start,
-        rangeMap[id].end / 1000
-      );
+  // const handleCropAudio = async (item, id) => {
+  //   if (Number(rangeMap.start) < Number(rangeMap.end)) {
+  //     const croppedAudioBlob = await cropAudio(
+  //       item.blob,
+  //       rangeMap[id].start,
+  //       rangeMap[id].end / 1000
+  //     );
 
-      uploadFile({
-        file: new File(
-          [croppedAudioBlob],
-          item.fileData.file.split("/").at(-1)
-        ),
-        path: unmuteId,
-      }).then(() => {
-        const fileUrl = getFileUrl(
-          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
-        );
+  //     uploadFile({
+  //       file: new File(
+  //         [croppedAudioBlob],
+  //         item.fileData.file.split("/").at(-1)
+  //       ),
+  //       path: unmuteId,
+  //     }).then(() => {
+  //       const fileUrl = getFileUrl(
+  //         `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
+  //       );
 
-        const audios = activeUnmute.properties._audios?.map((state) => {
-          if (item.fileData.file === state.file) {
-            return {
-              file: fileUrl,
-              countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
-              notRecorded: state?.notRecorded,
-            };
-          }
-          return state;
-        });
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: audios,
-          },
-        }).then(({ data }) => {
-          setAudioBlob([]);
+  //       const audios = activeUnmute.properties._audios?.map((state) => {
+  //         if (item.fileData.file === state.file) {
+  //           return {
+  //             file: fileUrl,
+  //             countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
+  //             notRecorded: state?.notRecorded,
+  //           };
+  //         }
+  //         return state;
+  //       });
+  //       updateUnmuteInCart({
+  //         key: activeUnmute.key,
+  //         properties: {
+  //           ...activeUnmute.properties,
+  //           _audios: audios,
+  //         },
+  //       }).then(({ data }) => {
+  //         setAudioBlob([]);
 
-          setTimeout(() => {
-            dispatch(updateUnmutes(data.items));
-            updateRef.current = false;
-          }, 500);
-        });
-      });
-    }
-  };
+  //         setTimeout(() => {
+  //           dispatch(updateUnmutes(data.items));
+  //           updateRef.current = false;
+  //         }, 500);
+  //       });
+  //     });
+  //   }
+  // };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
@@ -430,47 +410,47 @@ export const EditAudioPage = () => {
     setAudioBlob(sortedItems);
   };
 
-  function calculateValues(startValue, endValue, max, id) {
-    const progressElement = progressRefs.current[id];
+  // function calculateValues(startValue, endValue, max, id) {
+  //   const progressElement = progressRefs.current[id];
 
-    if (progressElement) {
-      progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
-    }
-  }
-  const handleChange = (e, id) => {
-    const { name, value } = e.target;
-    const startValue = parseInt(startRefs.current[id].value);
-    const endValue = parseInt(endRefs.current[id].value);
-    setCropId(id);
-    let updatedStartValue = startValue;
-    let updatedEndValue = endValue;
+  //   if (progressElement) {
+  //     progressElement.style.left = (startValue / max) * 100 + "%";
+  //     progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
+  //   }
+  // }
+  // const handleChange = (e, id) => {
+  //   const { name, value } = e.target;
+  //   const startValue = parseInt(startRefs.current[id].value);
+  //   const endValue = parseInt(endRefs.current[id].value);
+  //   setCropId(id);
+  //   let updatedStartValue = startValue;
+  //   let updatedEndValue = endValue;
 
-    if (endValue - startValue < priceGap) {
-      if (name === "start") {
-        updatedStartValue = endValue - priceGap;
-      } else {
-        updatedEndValue = startValue + priceGap;
-      }
-    }
+  //   if (endValue - startValue < priceGap) {
+  //     if (name === "start") {
+  //       updatedStartValue = endValue - priceGap;
+  //     } else {
+  //       updatedEndValue = startValue + priceGap;
+  //     }
+  //   }
 
-    setRangeMap((prev) => ({
-      ...prev,
-      [id]: {
-        start: name === "start" ? updatedStartValue : startValue,
-        end: name === "end" ? updatedEndValue : endValue,
-      },
-    }));
+  //   setRangeMap((prev) => ({
+  //     ...prev,
+  //     [id]: {
+  //       start: name === "start" ? updatedStartValue : startValue,
+  //       end: name === "end" ? updatedEndValue : endValue,
+  //     },
+  //   }));
 
-    if (progressRefs.current[id]) {
-      calculateValues(
-        updatedStartValue,
-        updatedEndValue,
-        audioBlob[id]?.seconds,
-        id
-      );
-    }
-  };
+  //   if (progressRefs.current[id]) {
+  //     calculateValues(
+  //       updatedStartValue,
+  //       updatedEndValue,
+  //       audioBlob[id]?.seconds,
+  //       id
+  //     );
+  //   }
+  // };
 
   const showLoading = () => {
     if (isLoadingUnmutes) return true;
@@ -482,6 +462,15 @@ export const EditAudioPage = () => {
 
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
+  const pauseAllAudios = () => {
+    if (!allAudioRefs.current) return;
+
+    const audios = { ...allAudioRefs.current };
+    for (let key in audios) {
+      allAudioRefs.current?.[key].pause();
+    }
+  };
+
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
@@ -492,10 +481,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center pt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              type="group"
-              droppableId="audioList"
-            >
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -503,132 +489,16 @@ export const EditAudioPage = () => {
                   style={{ padding: "10px" }}
                 >
                   {sortedData.map((item, index) => (
-                    <Fragment key={item.uuid}>
-                      <AudioComponent
-                        audioRef={audioRef}
-                        uuid={item.uuid}
-                        handleAudioEnded={handleAudioEnded}
-                        file={`${item.fileData.file}?c=${cacheBust}`}
-                      />
-                      <Draggable
-                        key={item.uuid}
-                        draggableId={item.uuid}
-                        index={index}
-                        filter="input"
-                        preventOnFilter="false"
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="audio-crop mb-5"
-                          >
-                            {/* <div>Time {item.seconds}</div> */}
-                            <div className="absolute top-0 bottom-0 -left-[40px] h-full">
-                              {activeAudio !== item.uuid ? (
-                                <button
-                                  onClick={() =>
-                                    handlePlayAudio(item.uuid, index)
-                                  }
-                                >
-                                  <PlayIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                    // style={{ cursor: "pointer" }}
-                                  />
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handlePauseAudio(item.uuid)}
-                                >
-                                  <PauseIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                  />
-                                </button>
-                              )}
-                            </div>
-                            <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
-                              {cropId === item.uuid && (
-                                <button
-                                  onClick={() =>
-                                    handleCropAudio(item, item.uuid)
-                                  }
-                                >
-                                  <CheckIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                  />
-                                </button>
-                              )}
-
-                              {/* <button
-                                onClick={() => handleDeleteRecording(item)}
-                              >
-                                <CloseIcon
-                                  color={"fill-rose-100"}
-                                  size={16}
-                                  className={
-                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                  }
-                                />
-                              </button> */}
-                            </div>
-                            <div className="handle">
-                              {item.seconds !== undefined && (
-                                <Range
-                                  min={0}
-                                  max={item.seconds * 1000}
-                                  range={
-                                    rangeMap[item.uuid] || {
-                                      start: 0,
-                                      end: 100,
-                                    }
-                                  }
-                                  handleChange={(e) =>
-                                    handleChange(e, item.uuid)
-                                  }
-                                  startRef={(ref) =>
-                                    (startRefs.current[item.uuid] = ref)
-                                  }
-                                  endRef={(ref) =>
-                                    (endRefs.current[item.uuid] = ref)
-                                  }
-                                  progressRef={(ref) =>
-                                    (progressRefs.current[item.uuid] = ref)
-                                  }
-                                />
-                              )}
-                              <AudioVisualizer
-                                blob={item.blob}
-                                width={250}
-                                height={82}
-                                barWidth={1}
-                                gap={4}
-                                backgroundColor="#F3F3F3"
-                                barColor="#B0928C"
-                                style={{
-                                  borderRadius: 4,
-                                  maxWidth: "100%",
-                                  borderWidth: "1px",
-                                  borderColor: "#B0928C",
-                                }}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    </Fragment>
+                    <AudioComponent
+                      cacheBust={cacheBust}
+                      activeAudio={activeAudio}
+                      setActiveAudio={setActiveAudio}
+                      item={item}
+                      allAudioRefs={allAudioRefs}
+                      index={index}
+                      key={item.uuid}
+                      pauseAllAudios={pauseAllAudios}
+                    />
                   ))}
                   {provided.placeholder}{" "}
                   {/* Ensures space is reserved when dragging */}

@@ -51,11 +51,11 @@ export const AudioBottomNavigation = ({
     //   to: "/edit-audio/:id",
     //   icon: <NavEditIcon />,
     // },
-    {
-      label: isPaused ? "Record" : "Recording",
-      action: isPaused ? togglePauseResume : stopRecording,
-      icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
-    },
+    // {
+    //   label: isPaused ? "Record" : "Recording",
+    //   action: isPaused ? togglePauseResume : stopRecording,
+    //   icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
+    // },
     {
       label: "Edit",
       to: "/edit-audio/:id",

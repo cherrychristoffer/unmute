@@ -44,11 +44,12 @@ export const InspirationPage = () => {
     <div className="flex flex-col items-center py-20">
       <div className="mx-auto flex flex-col items-center">
         <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
-          Write text
+          Skriv tekst
         </h1>
         <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-          Write down ideas or a script
-          <br /> on what you would like to say.
+          Skriv ideer eller et manuskript til,
+          <br/>
+          hvad du gerne vil sige.
         </h2>
       </div>
 
@@ -58,7 +59,7 @@ export const InspirationPage = () => {
           minRows={4}
           className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
           defaultValue={activeUnmute?.properties?._inspiration}
-          placeholder="Write your text here..."
+          placeholder="Skriv din tekst her..."
         />
       </div>
 
@@ -74,7 +75,7 @@ export const InspirationPage = () => {
           onClick={handleClick}
           className="text-white bg-rose-500 border border-rose transition duration-200 ease-out focus:outline-none hover:bg-rose-900 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
         >
-          Start recording
+          Start optagelse
         </button>
       </div>
 

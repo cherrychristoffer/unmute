@@ -9,15 +9,15 @@ export const AudioIllustrations = () => {
   const ONBOARDING = [
     {
       image: no_headphones,
-      label: "Do not use in-ears to record",
+      label: "Brug ikke headset til at optage",
     },
     {
       image: distance,
-      label: "Min. distance to phone 15 cm",
+      label: "Hold ca. 15 cm fra mikrofonen.",
     },
     {
       image: inspiration,
-      label: "Write some inpiration text",
+      label: "Skriv stikord til din optagelse",
     },
   ];
 

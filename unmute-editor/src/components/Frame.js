@@ -156,7 +156,11 @@ export const Frame = () => {
     return (
       <div className="snap-start">
         <div className="relative top-0 flex justify-center mt-16">
-          <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
+          <img
+            src={frame_image}
+            alt="Frame"
+            className="relative top-0 w-1/2"
+          />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
               <Loader size={"w-24 h-24"} />
@@ -214,7 +218,7 @@ export const Frame = () => {
               to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
               className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
             >
-              Edit audio
+              Rediger lyd
             </Link>
 
             <button
@@ -250,7 +254,7 @@ export const Frame = () => {
                 !activeUnmute || disableAllExtions ? "none" : "unset",
             }}
           >
-            Add your audio
+            Tilføj lydfil
           </Link>
         )}
       </div>

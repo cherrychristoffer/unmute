@@ -20,27 +20,27 @@ export const UnmuteBottomNavigation = () => {
   const NAVIGATION = [
     {
       to: "/orientation",
-      label: "Orientation",
+      label: "Orientering",
       icon: <NavOrientationIcon />,
     },
     {
       to: "/frame",
-      label: <>Oak&nbsp;Frame</>,
+      label: "Ramme",
       icon: <NavFrameIcon />,
     },
     {
       to: "/passepartout",
-      label: "Passepartout",
+      label: "Kant",
       icon: <NavPassepartoutIcon />,
     },
     {
       to: "/crop",
-      label: "Crop",
+      label: "Beskær",
       icon: <NavCropIcon />,
     },
     {
       to: "/replace", // upload-image
-      label: "Replace",
+      label: <>Skift&nbsp;foto</>,
       icon: <NavReplaceIcon />,
     },
   ];
@@ -74,7 +74,7 @@ export const UnmuteBottomNavigation = () => {
         >
           <NavAddIcon />
           <p className="font-sans text-sm text-muld-1000 text-center mt-2">
-            Add
+            Tilføj ny
           </p>
         </button>
       </div>

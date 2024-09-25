@@ -42,7 +42,7 @@ export const PassepartoutPage = () => {
     {
       value: "none",
       image: none,
-      title: "None",
+      title: "Ingen",
     },
     {
       value: "small",

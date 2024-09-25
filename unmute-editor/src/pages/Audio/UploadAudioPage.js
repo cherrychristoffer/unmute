@@ -106,7 +106,7 @@ export const UploadAudioPage = () => {
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
-          _audios: [audio],
+          _audios: [...activeUnmute.properties._audios, audio],
         },
       }).then(({ data }) => {
         dispatch(updateUnmutes(data.items));
@@ -145,7 +145,7 @@ export const UploadAudioPage = () => {
           key: activeUnmute.key,
           properties: {
             ...activeUnmute.properties,
-            _audios: [audio],
+            _audios: [...activeUnmute.properties._audios, audio],
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
@@ -163,10 +163,10 @@ export const UploadAudioPage = () => {
     <div className="content flex flex-col items-center justify-center h-full py-20">
       <div className="text-center">
         <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
-          Add audio
+          Tilføj Lydfil
         </h1>
         <h2 className="font-serif text-muld-1000 text-[17px] text-center leading-tight">
-          Choose how
+          Vælg hvordan herunder
         </h2>
       </div>
       {loading && (
@@ -181,18 +181,18 @@ export const UploadAudioPage = () => {
             "block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           }
         >
-          Record audio
+          Optag lyd
         </Link>
         <form className={"mt-5"}>
           <label
             htmlFor="image"
             className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
-            Upload audio
+            Upload lydfil
           </label>
           <input
             type="file"
-            accept="audio/wav"
+            accept="audio/wav audio/mp3"
             className="hidden"
             onChange={handleChange}
             id="image"
@@ -204,7 +204,7 @@ export const UploadAudioPage = () => {
             htmlFor="videoUpload"
             className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
-            Video to Audio
+            Video til lyd
           </label>
           <input
             type="file"

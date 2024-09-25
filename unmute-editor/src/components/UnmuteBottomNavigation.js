@@ -12,6 +12,7 @@ import { NavPassepartoutIcon } from "../assets/icons/icon_nav_passepartout";
 import { NavReplaceIcon } from "../assets/icons/icon_nav_replace";
 import { useDispatch, useSelector } from "react-redux";
 import { setScrolltoExtra } from "../features/image/imageSlice";
+import cropImg from "../assets/images/bottomNavigation/crop.svg";
 
 export const UnmuteBottomNavigation = () => {
   const dispatch = useDispatch();

@@ -89,6 +89,11 @@ export const userSlice = createSlice({
         unmutes: newUnmutes,
       };
     },
+
+    replaceUnmute: (state, action) => {
+      state.unmutes[action.payload.index] = action.payload.unmute
+    },
+
     updateAllUnmutes: (state, action) => {
       state.unmutes = action.payload;
     },
@@ -180,6 +185,7 @@ export const {
   setAudioBlob,
   addAudioUnmute,
   setIsLoadingUnmutes,
+  replaceUnmute,
 } = userSlice.actions;
 
 export default userSlice.reducer;

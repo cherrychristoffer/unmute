@@ -27,7 +27,7 @@ import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
 
 import { addUnmute, setIsLoadingUnmutes } from "./features/user/userSlice";
-import { UNMUTE_PRODUCT_VARIANT_ID } from "./app/const";
+import { UNMUTE_PRODUCT_VARIANT_ID, UNMUTE_ENHANCED_PRODUCT_VARIANT_ID } from "./app/const";
 
 import "./assets/styles/global.css";
 
@@ -55,7 +55,7 @@ function App() {
       } else {
         data.items
           .filter(
-            (cartItem) => cartItem.variant_id === UNMUTE_PRODUCT_VARIANT_ID
+            (cartItem) => (cartItem.variant_id === UNMUTE_PRODUCT_VARIANT_ID || cartItem.variant_id === UNMUTE_ENHANCED_PRODUCT_VARIANT_ID)
           )
           .forEach((unmute) => {
             dispatch(addUnmute(unmute));

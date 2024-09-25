@@ -5,7 +5,7 @@ import { setReplaceIndex, setImages, setReplaceMode } from "../features/replace/
 import { photosEnhance } from '../api/image'
 import {useActiveUnmute} from "../api/useUnmutes";
 import {duplicateUnmuteToCart, removeUnmuteInCart} from "../api/cart";
-import {addUnmute, deleteUnmute} from "../features/user/userSlice";
+import {replaceUnmute} from "../features/user/userSlice";
 import {getFileUrl, uploadFile} from "../api/aws";
 
 function base64ToFile(base64String, filename) {
@@ -82,21 +82,17 @@ export const ReplacePage = () => {
         );
 
         removeUnmuteInCart(activeUnmute.key).then(() => {
-            dispatch(deleteUnmute(activeUnmute.key))
-        });
-
-        duplicateUnmuteToCart({
-            key: activeUnmute.key,
-            properties: {
-                ...activeUnmute.properties,
-                _images: [imgUrl],
-                _enhanced: true,
-            },
-        }).then(({data}) => {
-            data.items.forEach((unmute) => {
-                dispatch(addUnmute(unmute));
+            duplicateUnmuteToCart({
+                key: activeUnmute.key,
+                properties: {
+                    ...activeUnmute.properties,
+                    _images: [imgUrl],
+                    _enhanced: true,
+                },
+            }).then(({data}) => {
+                dispatch(replaceUnmute({index: data.items[0].properties._created.index, unmute: data.items[0]}))
+                removeReplaceMode()
             });
-            removeReplaceMode()
         });
     }
 

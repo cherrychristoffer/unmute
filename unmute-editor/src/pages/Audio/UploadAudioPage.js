@@ -106,7 +106,7 @@ export const UploadAudioPage = () => {
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
-          _audios: [audio],
+          _audios: [...activeUnmute.properties._audios, audio],
         },
       }).then(({ data }) => {
         dispatch(updateUnmutes(data.items));
@@ -145,7 +145,7 @@ export const UploadAudioPage = () => {
           key: activeUnmute.key,
           properties: {
             ...activeUnmute.properties,
-            _audios: [audio],
+            _audios: [...activeUnmute.properties._audios, audio],
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
@@ -192,7 +192,7 @@ export const UploadAudioPage = () => {
           </label>
           <input
             type="file"
-            accept="audio/wav"
+            accept="audio/wav audio/mp3"
             className="hidden"
             onChange={handleChange}
             id="image"

@@ -109,7 +109,7 @@ export const Frame = () => {
     const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
     const parts = time.split(":");
     const result = parseInt(parts[1], 10);
-    console.log("result", result);
+
     setTimeout(() => {
       setPlaying(false);
     }, result * 1000);

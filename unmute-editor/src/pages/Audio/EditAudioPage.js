@@ -46,7 +46,7 @@ export const EditAudioPage = () => {
   const cacheBust = Date.now();
   const { loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
-  const [duration, setDuration] = useState(10);
+  const [cropId, setCropId] = useState(null);
   const { id: unmuteId } = useParams();
   const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
@@ -62,11 +62,12 @@ export const EditAudioPage = () => {
 
   const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
 
-  const handlePlayAudio = (id) => {
+  const handlePlayAudio = (id, index) => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
     for (let key in audios) {
       const item = audioRef.current?.[key];
+
       if (key === id) {
         setActiveAudio(id);
         activeAudioRef.current = id;
@@ -90,6 +91,7 @@ export const EditAudioPage = () => {
       }
     }
   };
+
   const handlePauseAudio = (id) => {
     if (audioRef.current[id]) {
       audioRef.current[id].pause();
@@ -116,67 +118,71 @@ export const EditAudioPage = () => {
   }
 
   const mergeAudioData = async () => {
-    setIsLoading((prev) => ({ ...prev, isMerged: true }));
-    const sortedData = audioBlob.sort((a, b) => a.index - b.index);
+    if (audioFiles?.length > 1) {
+      setIsLoading((prev) => ({ ...prev, isMerged: true }));
+      const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
-    const result = sortedData.map((item) => {
-      const fileParts = item.fileData.file.split("/");
+      const result = sortedData.map((item) => {
+        const fileParts = item.fileData.file.split("/");
 
-      const folder = fileParts[fileParts.length - 2];
-      const fileName = fileParts[fileParts.length - 1];
-      return `${folder}/${fileName}`;
-    });
+        const folder = fileParts[fileParts.length - 2];
+        const fileName = fileParts[fileParts.length - 1];
+        return `${folder}/${fileName}`;
+      });
 
-    try {
-      const responseData = await mergeAudio(result);
+      try {
+        const responseData = await mergeAudio(result);
 
-      axios
-        .get(`${responseData.url}?c=${cacheBust}`, {
-          responseType: "blob",
-        })
-        .then(({ data }) => {
-          const minuteData = convertToTimeFormat(responseData.duration);
-          const [minutes, seconds] = minuteData?.split(":")?.map(Number);
-          const dataSeconds = minutes * 60 + seconds;
+        axios
+          .get(`${responseData.url}?c=${cacheBust}`, {
+            responseType: "blob",
+          })
+          .then(({ data }) => {
+            const minuteData = convertToTimeFormat(responseData.duration);
+            const [minutes, seconds] = minuteData?.split(":")?.map(Number);
+            const dataSeconds = minutes * 60 + seconds;
 
-          setRangeMap({
-            start: 0,
-            end: String(dataSeconds),
+            setRangeMap({
+              start: 0,
+              end: String(dataSeconds),
+            });
+            const audio = {
+              file: responseData.url,
+              countdown: convertToTimeFormat(responseData.duration),
+            };
+            const newData = {
+              blob: data,
+              fileData: audio,
+              seconds: dataSeconds,
+              uuid: uuid(),
+            };
+
+            updateUnmuteInCart({
+              key: activeUnmute.key,
+              properties: {
+                ...activeUnmute.properties,
+                _audios: [audio],
+              },
+            }).then(({ data }) => {
+              setIsLoading((prev) => ({ ...prev, isMerged: false }));
+              const dataArray = [];
+              dataArray.push(newData);
+              setAudioBlob(dataArray);
+              const activeItem = data.items.find(
+                (item) =>
+                  item.properties._uuid === activeUnmute.properties._uuid
+              );
+              dispatch(updateUnmute(activeItem));
+            });
+          })
+
+          .catch((error) => {
+            console.error("Error fetching audio:", error);
+            setIsLoading((prev) => ({ ...prev, isMerged: true }));
           });
-          const audio = {
-            file: responseData.url,
-            countdown: convertToTimeFormat(responseData.duration),
-          };
-          const newData = {
-            blob: data,
-            fileData: audio,
-            seconds: dataSeconds,
-            uuid: uuid(),
-          };
-
-          updateUnmuteInCart({
-            key: activeUnmute.key,
-            properties: {
-              ...activeUnmute.properties,
-              _audios: [audio],
-            },
-          }).then(({ data }) => {
-            setIsLoading((prev) => ({ ...prev, isMerged: false }));
-            const dataArray = [];
-            dataArray.push(newData);
-            setAudioBlob(dataArray);
-            const activeItem = data.items.find(
-              (item) => item.properties._uuid === activeUnmute.properties._uuid
-            );
-            dispatch(updateUnmute(activeItem));
-          });
-        })
-
-        .catch((error) => {
-          console.error("Error fetching audio:", error);
-          setIsLoading((prev) => ({ ...prev, isMerged: true }));
-        });
-    } catch (e) {}
+      } catch (e) {}
+    }
+    navigate("/orientation");
   };
 
   const handleAllDeleteRecording = () => {
@@ -313,7 +319,7 @@ export const EditAudioPage = () => {
             end: Number(dataSeconds),
             [id]: {
               start: 0,
-              end: Number(dataSeconds),
+              end: Number(dataSeconds) * 1000,
             },
           }));
 
@@ -344,7 +350,7 @@ export const EditAudioPage = () => {
       const croppedAudioBlob = await cropAudio(
         item.blob,
         rangeMap[id].start,
-        rangeMap[id].end
+        rangeMap[id].end / 1000
       );
 
       uploadFile({
@@ -391,6 +397,10 @@ export const EditAudioPage = () => {
     navigate(`start-recording/${unmuteId}?seconds=${newSecond}`);
   };
 
+  const goEditorPage = () => {
+    navigate(`audio-upload/${unmuteId}`);
+  };
+
   const onDragEnd = (result) => {
     const { destination, source } = result;
     if (!destination) return;
@@ -424,14 +434,14 @@ export const EditAudioPage = () => {
 
     if (progressElement) {
       progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
+      progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
     }
   }
   const handleChange = (e, id) => {
     const { name, value } = e.target;
     const startValue = parseInt(startRefs.current[id].value);
     const endValue = parseInt(endRefs.current[id].value);
-
+    setCropId(id);
     let updatedStartValue = startValue;
     let updatedEndValue = endValue;
 
@@ -511,11 +521,13 @@ export const EditAudioPage = () => {
                             {...provided.dragHandleProps}
                             className="audio-crop mb-5"
                           >
-                            <div>Time {item.seconds}</div>
+                            {/* <div>Time {item.seconds}</div> */}
                             <div className="absolute top-0 bottom-0 -left-[40px] h-full">
                               {activeAudio !== item.uuid ? (
                                 <button
-                                  onClick={() => handlePlayAudio(item.uuid)}
+                                  onClick={() =>
+                                    handlePlayAudio(item.uuid, index)
+                                  }
                                 >
                                   <PlayIcon
                                     color={"fill-rose-100"}
@@ -541,18 +553,23 @@ export const EditAudioPage = () => {
                               )}
                             </div>
                             <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
-                              <button
-                                onClick={() => handleCropAudio(item, item.uuid)}
-                              >
-                                <CheckIcon
-                                  color={"fill-rose-100"}
-                                  size={16}
-                                  className={
-                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                              {cropId === item.uuid && (
+                                <button
+                                  onClick={() =>
+                                    handleCropAudio(item, item.uuid)
                                   }
-                                />
-                              </button>
-                              <button
+                                >
+                                  <CheckIcon
+                                    color={"fill-rose-100"}
+                                    size={16}
+                                    className={
+                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                                    }
+                                  />
+                                </button>
+                              )}
+
+                              {/* <button
                                 onClick={() => handleDeleteRecording(item)}
                               >
                                 <CloseIcon
@@ -562,13 +579,13 @@ export const EditAudioPage = () => {
                                     "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
                                   }
                                 />
-                              </button>
+                              </button> */}
                             </div>
                             <div className="handle">
                               {item.seconds !== undefined && (
                                 <Range
                                   min={0}
-                                  max={item.seconds}
+                                  max={item.seconds * 1000}
                                   range={
                                     rangeMap[item.uuid] || {
                                       start: 0,
@@ -632,16 +649,17 @@ export const EditAudioPage = () => {
             style={{ opacity: dontShowAddTrack ? "0.5" : "1" }}
             disabled={dontShowAddTrack}
           >
-            Add new recording
+            {/* Add new recording */}
+            Optag
           </button>
-          {audioFiles?.length > 1 && (
+          {/* {audioFiles?.length > 1 && (
             <button
               onClick={mergeAudioData}
               className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
             >
               Merge
             </button>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -654,6 +672,8 @@ export const EditAudioPage = () => {
         playAudio={handlePlayAudio}
         pauseAudio={handlePauseAudio}
         deleteRecording={handleAllDeleteRecording}
+        goEditorPage={goEditorPage}
+        mergeAudio={mergeAudioData}
       />
     </div>
   );

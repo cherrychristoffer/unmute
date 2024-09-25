@@ -110,7 +110,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
-          notRecorded: isRecordingValidate >= 600 ? true : false,
+          // notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
         updateUnmuteInCart({

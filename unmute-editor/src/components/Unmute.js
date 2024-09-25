@@ -24,10 +24,10 @@ const frame_padding = (scale, landscape) => {
   // for landscape it was 17
 
   return {
-    paddingTop: `${13 * scale}px`,
-    paddingRight: `${13 * scale}px`,
-    paddingBottom: `${13 * scale}px`,
-    paddingLeft: `${13 * scale}px`,
+    paddingTop: `${10 * scale}px`,
+    paddingRight: `${10 * scale}px`,
+    paddingBottom: `${10 * scale}px`,
+    paddingLeft: `${10 * scale}px`,
   };
 };
 
@@ -84,7 +84,7 @@ const Unmute = ({
     },
   } = unmute;
 
-  const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
+  const scale = { none: 1, small: 3.5, medium: 5.5, large: 7 }[passepartout];
   const isLandscape = orientation === "landscape";
 
   const frame = isLandscape ? frame_landscape_image : frame_image;
@@ -231,7 +231,7 @@ const Unmute = ({
             className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
           >
             For lav opløsning
-            <br/>
+            <br />
             Tilføj nyt foto
           </label>
           <input

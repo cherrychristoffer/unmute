@@ -177,7 +177,7 @@ export const StartRecordingPage = () => {
           onClick={stopRecording}
           className="text-white bg-rose-500 border border-rose transition duration-200 ease-out outline-none hover:bg-rose-900 font-medium rounded-lg px-8 py-2.5 cursor-pointer mt-10"
         >
-          Stop recording
+          Stop optagelse
         </button>
       </div>
 

@@ -202,7 +202,7 @@ export const EditAudioPage = () => {
   };
 
   const handleDeleteRecording = (item) => {
-    if (confirm("Are you sure you want to delete this recording?")) {
+    if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
       deleteFile({
         path: item?.fileData?.file,
       }).then(() => {
@@ -481,7 +481,7 @@ export const EditAudioPage = () => {
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
-        <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Edit</h1>
+        <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">Rediger</h1>
         <p className="font-serif text-muld-400 text-3xl mb-4">(max 10min)</p>
         <div className="w-full flex flex-col items-center mt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
@@ -636,7 +636,7 @@ export const EditAudioPage = () => {
             style={{ opacity: dontShowAddTrack ? "0.5" : "1" }}
             disabled={dontShowAddTrack}
           >
-            Add new recording
+            Tilføj en optagelse mere
           </button>
           {audioFiles?.length > 1 && (
             <button

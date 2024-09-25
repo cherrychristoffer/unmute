@@ -66,7 +66,7 @@ export const CropPage = () => {
           "font-serif text-rose-500 text-[12px] text-center leading-tight mt-6"
         }
       >
-        Pinch to zoom, drag to move.
+        Knip for at zoome, træk for at flytte
       </p>
     </div>
   );

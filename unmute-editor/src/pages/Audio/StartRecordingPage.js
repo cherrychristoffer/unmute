@@ -37,11 +37,11 @@ export const StartRecordingPage = () => {
   } = useAudioRecorder({ downloadFileExtension: "wav" });
 
   const audioRef = useRef();
-
   const [isRecordingValidate, setIsRecordingValidate] = useState(0);
   const [countDown, setCountDown] = useState(3);
+  const { unmutes } = useSelector((state) => state.user);
+
   const [time, setTime] = useState(0);
-  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
   const { id: unmuteId } = useParams();
@@ -106,6 +106,7 @@ export const StartRecordingPage = () => {
         file,
         path: activeUnmute.properties._uuid,
       }).then(() => {
+        console.log("here");
         const fileUrl = getFileUrl(
           `${activeUnmute.properties._uuid}/${newUuid}.wav`
         );
@@ -116,6 +117,7 @@ export const StartRecordingPage = () => {
           notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
+        console.log("aaaaaaaa");
         updateUnmuteInCart({
           key: activeUnmute.key,
           properties: {
@@ -123,6 +125,7 @@ export const StartRecordingPage = () => {
             _audios: [...activeUnmute.properties._audios, audio],
           },
         }).then(({ data }) => {
+          console.log("updates", data.items);
           dispatch(updateUnmutes(data.items));
           navigate(`/edit-audio/${unmuteId}`);
         });
@@ -183,10 +186,7 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

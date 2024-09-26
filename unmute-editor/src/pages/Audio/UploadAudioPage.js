@@ -77,10 +77,13 @@ export const UploadAudioPage = () => {
 
   const handleChange = async (event) => {
     const recordingBlob = event.target.files[0];
-
     if (!recordingBlob) return;
+    if (!recordingBlob.type?.startsWith("audio"))
+      return alert("Invalid file type. Please upload an audio file.");
 
     const duration = await getBlobDuration(recordingBlob);
+    if (duration > 600) return alert("Audio length limit is 10 minutes.");
+
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
     const dataSeconds = minutes * 60 + seconds;
@@ -117,6 +120,8 @@ export const UploadAudioPage = () => {
   const handleVideoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+    if (!file.type?.startsWith("video"))
+      return alert("Invalid file type. Please upload an video file.");
 
     try {
       setLoading(true);

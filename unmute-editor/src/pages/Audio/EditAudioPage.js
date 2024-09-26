@@ -3,29 +3,23 @@ import { Fragment, React, memo, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { CheckIcon } from "../../assets/icons/icon_check";
-import { CloseIcon } from "../../assets/icons/icon_close";
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import { PauseIcon } from "../../assets/icons/icon_pause";
-import { PlayIcon } from "../../assets/icons/icon_play";
 import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
 import { useActiveUnmute } from "../../api/useUnmutes";
 
-import { AudioVisualizer } from "react-audio-visualize";
 import { Loader } from "../../components/Loader";
-import Range from "./Range";
-import audioBufferToWav from "./AudioBuffer";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
 import ProgressBar from "./progress";
+import { setScrolltoActive } from "../../features/image/imageSlice";
 
 export const EditAudioPage = () => {
   const {
@@ -37,58 +31,48 @@ export const EditAudioPage = () => {
     isPaused,
   } = useAudioRecorder();
   const audioRef = useRef({});
-  const priceGap = 1;
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const startRefs = useRef([]);
-  const endRefs = useRef([]);
-  const progressRefs = useRef([]);
   const updateRef = useRef(false);
   const cacheBust = Date.now();
   const { loading } = useActiveUnmute();
   const [audioBlob, setAudioBlob] = useState([]);
-  const [cropId, setCropId] = useState(null);
   const { id: unmuteId } = useParams();
   const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const [activeAudio, setActiveAudio] = useState(null);
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
-  const [progress, setProgress] = useState(0);
-
-  const [rangeMap, setRangeMap] = useState({});
+  const allAudioRefs = useRef({});
+  const [activateButton, setActivateButton] = useState(0);
 
   const activeUnmute = unmutes?.find(
     (item) => item.properties?._uuid === unmuteId
   );
   const audioFiles = activeUnmute?.properties?._audios || [];
 
-  const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
-
-  // const handleAllPlayAudio = () => {
-  //   if (!audioRef.current) return;
-  //   const audios = { ...audioRef.current };
-  //   const audioData = audioBlob?.map((item) => item.uuid);
-  //   console.log("audios", audios);
-  //   console.log("audioData", audioData);
-
-  //   const item = audioRef.current?.[audioData?.[0]];
-  //   console.log("item", item);
-  //   item.play();
-  // };
-
   const handleAllPlayAudio = async () => {
-    handleAllPauseAudio();
+    pauseAllAudios();
 
-    if (!audioRef.current) return;
+    if (!allAudioRefs.current) return;
 
-    const audios = { ...audioRef.current };
+    const audios = { ...allAudioRefs.current };
     const audioData = audioBlob?.map((item) => item.uuid);
+
+    useEffect(() => {
+      if (audioFiles?.length > 0) {
+        const totalSeconds = audioFiles.reduce((total, item) => {
+          const [minutes, seconds] = item.countdown.split(":").map(Number);
+          return total + minutes * 60 + seconds;
+        }, 0);
+        setActivateButton(totalSeconds);
+      }
+    }, [audioFiles]);
 
     let currentAudioIndex = 0;
 
     const playAudio = (index) => {
       if (index >= audioData.length) {
-        handleAllPauseAudio();
+        pauseAllAudios();
       }
 
       const item = audios[audioData[index]];
@@ -103,66 +87,6 @@ export const EditAudioPage = () => {
     };
 
     playAudio(currentAudioIndex);
-  };
-
-  const handlePlayAudio = (id) => {
-    if (!audioRef.current) return;
-    const audios = { ...audioRef.current };
-
-    for (let key in audios) {
-      const item = audioRef.current?.[key];
-
-      if (key === id) {
-        setActiveAudio(id);
-        activeAudioRef.current = id;
-        if (rangeMap[key]?.start)
-          item.currentTime = rangeMap[key]?.start / 1000 ?? 0;
-
-        // setInterval(() => {
-        //   console.log("mtnuma");
-        //   setProgress(rangeMap[key]?.end - rangeMap[key]?.start);
-        // }, 1000);
-        item.play();
-
-        if (rangeMap[key]?.end) {
-          item.addEventListener("timeupdate", function () {
-            if (item.currentTime >= rangeMap[key]?.end) {
-              console.log(`Paus ${key} ${item.currentTime}`);
-              item?.pause();
-              setActiveAudio(null);
-            }
-          });
-        }
-      } else {
-        item?.pause();
-      }
-    }
-  };
-
-  const handlePauseAudio = (id) => {
-    if (audioRef.current[id]) {
-      audioRef.current[id].pause();
-      setActiveAudio(null);
-    }
-  };
-  const handleAllPauseAudio = () => {
-    if (!audioRef.current) return;
-    const audioKeys = Object.keys(audioRef.current);
-
-    for (let i = 0; i < audioKeys.length; i++) {
-      const key = audioKeys[i];
-      const item = audioRef.current[key];
-
-      if (!item.paused) {
-        item.pause();
-      }
-    }
-    setActiveAudio(null);
-  };
-  const handleAudioEnded = (id) => {
-    if (activeAudioRef.current === id) {
-      setActiveAudio(null);
-    }
   };
 
   function convertToTimeFormat(seconds) {
@@ -202,10 +126,6 @@ export const EditAudioPage = () => {
             const [minutes, seconds] = minuteData?.split(":")?.map(Number);
             const dataSeconds = minutes * 60 + seconds;
 
-            setRangeMap({
-              start: 0,
-              end: String(dataSeconds),
-            });
             const audio = {
               file: responseData.url,
               countdown: convertToTimeFormat(responseData.duration),
@@ -262,96 +182,6 @@ export const EditAudioPage = () => {
     });
   };
 
-  const handleDeleteRecording = (item) => {
-    if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
-      deleteFile({
-        path: item?.fileData?.file,
-      }).then(() => {
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: activeUnmute.properties?._audios.filter(
-              (audio) => audio.file !== item.fileData.file
-            ),
-          },
-        }).then(({ data }) => {
-          const activeItem = data.items.find(
-            (item) => item.properties._uuid === activeUnmute.properties._uuid
-          );
-          dispatch(updateUnmute(activeItem));
-          // dispatch(updateUnmutes(data.items));
-          setAudioBlob((prev) =>
-            prev.filter((audio) => audio.uuid !== item.uuid)
-          );
-        });
-      });
-    }
-  };
-
-  const cropAudio = async (blob, start, end) => {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const arrayBuffer = await blob.arrayBuffer();
-
-    return new Promise((resolve, reject) => {
-      audioContext.decodeAudioData(
-        arrayBuffer,
-        (audioBuffer) => {
-          const sampleRate = audioBuffer.sampleRate;
-          const startSample = Math.floor(start * sampleRate);
-          const endSample = Math.floor(end * sampleRate);
-
-          const croppedBuffer = audioContext.createBuffer(
-            audioBuffer.numberOfChannels,
-            endSample - startSample,
-            sampleRate
-          );
-
-          for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-            croppedBuffer.copyToChannel(
-              audioBuffer.getChannelData(i).subarray(startSample, endSample),
-              i
-            );
-          }
-
-          audioContext.createBufferSource().buffer = croppedBuffer;
-
-          const offlineAudioContext = new OfflineAudioContext(
-            croppedBuffer.numberOfChannels,
-            croppedBuffer.length,
-            croppedBuffer.sampleRate
-          );
-
-          const source = offlineAudioContext.createBufferSource();
-          source.buffer = croppedBuffer;
-          source.connect(offlineAudioContext.destination);
-          source.start();
-
-          offlineAudioContext.startRendering().then((renderedBuffer) => {
-            const wavBlob = bufferToWaveBlob(renderedBuffer);
-            resolve(wavBlob);
-          });
-        },
-        reject
-      );
-    });
-  };
-
-  const bufferToWaveBlob = (buffer) => {
-    const wavBuffer = audioBufferToWav(buffer);
-    return new Blob([wavBuffer], { type: "audio/wav" });
-  };
-  const formatTime = (time) => {
-    let minutes = Math.floor(time / 60);
-    let seconds = time % 60;
-
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
-
-    return `${minutes}:${seconds}`;
-  };
   const getMyUserAudio = () => {
     updateRef.current = true;
     audioFiles?.map((item, i) => {
@@ -374,19 +204,6 @@ export const EditAudioPage = () => {
             index: i,
           };
 
-          setRangeMap((prev) => ({
-            ...prev,
-            start: 0,
-            end: Number(dataSeconds),
-            [id]: {
-              start: 0,
-              end: Number(dataSeconds) * 1000,
-            },
-          }));
-
-          const dataArray = [...audioBlob];
-          dataArray.push(newData);
-
           setAudioBlob((prev) => [...prev, newData]);
           setIsLoading((prev) => ({ ...prev, [item.file]: false }));
         })
@@ -407,58 +224,6 @@ export const EditAudioPage = () => {
     return <div>Loading audio...</div>;
   }
 
-  const handleCropAudio = async (item, id) => {
-    if (Number(rangeMap.start) < Number(rangeMap.end)) {
-      const startAudio = rangeMap[id].start / 1000;
-      const endAudio = rangeMap[id].end / 1000;
-      console.log("start", startAudio, endAudio);
-
-      const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
-
-      uploadFile({
-        file: new File(
-          [croppedAudioBlob],
-          item.fileData.file.split("/").at(-1)
-        ),
-        path: unmuteId,
-      }).then(() => {
-        const fileUrl = getFileUrl(
-          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
-        );
-
-        console.log(
-          "rangeMap[id].end - rangeMap[id].start",
-          rangeMap[id].end,
-          rangeMap[id].start
-        );
-
-        const audios = activeUnmute.properties._audios?.map((state) => {
-          if (item.fileData.file === state.file) {
-            return {
-              file: fileUrl,
-              countdown: formatTime(endAudio - startAudio),
-              notRecorded: state?.notRecorded,
-            };
-          }
-          return state;
-        });
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: audios,
-          },
-        }).then(({ data }) => {
-          setAudioBlob([]);
-
-          setTimeout(() => {
-            dispatch(updateUnmutes(data.items));
-            updateRef.current = false;
-          }, 500);
-        });
-      });
-    }
-  };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
@@ -497,52 +262,6 @@ export const EditAudioPage = () => {
     setAudioBlob(sortedItems);
   };
 
-  function calculateValues(startValue, endValue, max, id) {
-    const progressElement = progressRefs.current[id];
-
-    if (progressElement) {
-      progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
-    }
-  }
-  const handleChange = (e, id) => {
-    console.log("fewfew");
-
-    const { name, value } = e.target;
-    const startValue = parseInt(startRefs.current[id].value);
-    console.log("start", startValue);
-
-    const endValue = parseInt(endRefs.current[id].value);
-    setCropId(id);
-    let updatedStartValue = startValue;
-    let updatedEndValue = endValue;
-
-    if (endValue - startValue < priceGap) {
-      if (name === "start") {
-        updatedStartValue = endValue - priceGap;
-      } else {
-        updatedEndValue = startValue + priceGap;
-      }
-    }
-
-    setRangeMap((prev) => ({
-      ...prev,
-      [id]: {
-        start: name === "start" ? updatedStartValue : startValue,
-        end: name === "end" ? updatedEndValue : endValue,
-      },
-    }));
-
-    if (progressRefs.current[id]) {
-      calculateValues(
-        updatedStartValue,
-        updatedEndValue,
-        audioBlob[id]?.seconds,
-        id
-      );
-    }
-  };
-
   const showLoading = () => {
     if (isLoadingUnmutes) return true;
     for (let key in isLoading) {
@@ -551,18 +270,16 @@ export const EditAudioPage = () => {
     return false;
   };
 
-  function convertSeconds(seconds) {
-    seconds = Math.round(seconds);
-    if (seconds < 60) {
-      return `${seconds} sek`;
-    }
-
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
-  }
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
+  const pauseAllAudios = () => {
+    if (!allAudioRefs.current) return;
+    const audios = { ...allAudioRefs.current };
+    for (let key in audios) {
+      allAudioRefs.current?.[key]?.pause();
+    }
+    setActiveAudio(null);
+  };
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
@@ -573,10 +290,7 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center pt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              type="group"
-              droppableId="audioList"
-            >
+            <Droppable type="group" droppableId="audioList">
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -584,133 +298,19 @@ export const EditAudioPage = () => {
                   style={{ padding: "10px" }}
                 >
                   {sortedData.map((item, index) => (
-                    <Fragment key={item.uuid}>
-                      <AudioComponent
-                        audioRef={audioRef}
-                        uuid={item.uuid}
-                        handleAudioEnded={handleAudioEnded}
-                        file={`${item.fileData.file}?c=${cacheBust}`}
-                      />
-                      <Draggable
-                        key={item.uuid}
-                        draggableId={item.uuid}
-                        index={index}
-                        filter="input"
-                        preventOnFilter="false"
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="audio-crop mb-5"
-                          >
-                            <div>{convertSeconds(item.seconds)}</div>
-
-                            {/* <ProgressBar progress={progress} /> */}
-
-                            <div className="absolute top-0 bottom-0 -left-[40px] h-full">
-                              {activeAudio !== item.uuid ? (
-                                <button
-                                  onClick={() => handlePlayAudio(item.uuid)}
-                                >
-                                  <PlayIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                    // style={{ cursor: "pointer" }}
-                                  />
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handlePauseAudio(item.uuid)}
-                                >
-                                  <PauseIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                  />
-                                </button>
-                              )}
-                            </div>
-                            <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
-                              {cropId === item.uuid && (
-                                <button
-                                  onClick={() =>
-                                    handleCropAudio(item, item.uuid)
-                                  }
-                                >
-                                  <CheckIcon
-                                    color={"fill-rose-100"}
-                                    size={16}
-                                    className={
-                                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                    }
-                                  />
-                                </button>
-                              )}
-
-                              {/* <button
-                                onClick={() => handleDeleteRecording(item)}
-                              >
-                                <CloseIcon
-                                  color={"fill-rose-100"}
-                                  size={16}
-                                  className={
-                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                  }
-                                />
-                              </button> */}
-                            </div>
-                            <div className="handle">
-                              {item.seconds !== undefined && (
-                                <Range
-                                  min={0}
-                                  max={item.seconds * 1000}
-                                  range={
-                                    rangeMap[item.uuid] || {
-                                      start: 0,
-                                      end: 100000,
-                                    }
-                                  }
-                                  handleChange={(e) =>
-                                    handleChange(e, item.uuid)
-                                  }
-                                  startRef={(ref) =>
-                                    (startRefs.current[item.uuid] = ref)
-                                  }
-                                  endRef={(ref) =>
-                                    (endRefs.current[item.uuid] = ref)
-                                  }
-                                  progressRef={(ref) =>
-                                    (progressRefs.current[item.uuid] = ref)
-                                  }
-                                />
-                              )}
-                              <AudioVisualizer
-                                blob={item.blob}
-                                width={250}
-                                height={82}
-                                barWidth={1}
-                                gap={4}
-                                backgroundColor="#F3F3F3"
-                                barColor="#B0928C"
-                                style={{
-                                  borderRadius: 4,
-                                  maxWidth: "100%",
-                                  borderWidth: "1px",
-                                  borderColor: "#B0928C",
-                                }}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    </Fragment>
+                    <AudioComponent
+                      cacheBust={cacheBust}
+                      activeAudio={activeAudio}
+                      setActiveAudio={setActiveAudio}
+                      item={item}
+                      allAudioRefs={allAudioRefs}
+                      index={index}
+                      key={item.uuid}
+                      pauseAllAudios={pauseAllAudios}
+                      activeUnmute={activeUnmute}
+                      setAudioBlob={setAudioBlob}
+                      updateRef={updateRef}
+                    />
                   ))}
                   {provided.placeholder}{" "}
                   {/* Ensures space is reserved when dragging */}
@@ -729,21 +329,13 @@ export const EditAudioPage = () => {
         <div className="mt-16 flex flex-row justify-center items-center gap-4">
           <button
             className={`font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer 
-              ${dontShowAddTrack ? " cursor-default" : ""}`}
+              ${activateButton > 600 ? " cursor-default" : ""}`}
             onClick={goAdd}
-            style={{ opacity: dontShowAddTrack ? "0.5" : "1" }}
-            disabled={dontShowAddTrack}
+            style={{ opacity: activateButton > 600 ? "0.5" : "1" }}
+            disabled={activateButton > 600 ? true : false}
           >
             Tilføj en optagelse mere
           </button>
-          {/* {audioFiles?.length > 1 && (
-            <button
-              onClick={mergeAudioData}
-              className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
-            >
-              Merge
-            </button>
-          )} */}
         </div>
       </div>
 
@@ -754,7 +346,7 @@ export const EditAudioPage = () => {
         goAdd={goAdd}
         stopRecording={stopRecording}
         playAudio={handleAllPlayAudio}
-        pauseAudio={handleAllPauseAudio}
+        pauseAudio={pauseAllAudios}
         deleteRecording={handleAllDeleteRecording}
         goEditorPage={goEditorPage}
         mergeAudio={mergeAudioData}

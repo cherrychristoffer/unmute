@@ -111,7 +111,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
-          // notRecorded: isRecordingValidate >= 600 ? true : false,
+          notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
         updateUnmuteInCart({
@@ -181,7 +181,10 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

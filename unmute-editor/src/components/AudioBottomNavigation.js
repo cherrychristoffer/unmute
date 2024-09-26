@@ -11,6 +11,8 @@ import { NavPlayIcon } from "../assets/icons/icon_nav_play";
 import { NavRecordingIcon } from "../assets/icons/icon_nav_recording";
 import { setScrolltoActive } from "../features/image/imageSlice";
 import { useDispatch } from "react-redux";
+import { NavAddIcon } from "../assets/icons/icon_nav_add";
+import { UploadIcon } from "../assets/icons/icon_audio";
 
 export const AudioBottomNavigation = ({
   isPaused = false,
@@ -41,6 +43,16 @@ export const AudioBottomNavigation = ({
       action: pauseAudio,
       icon: <NavPauseIcon />,
     },
+    {
+      label: "Add",
+      icon: <NavCheckIcon />,
+      action: goEditorPage,
+      // action: () => {
+      //   // dispatch(setScrolltoActive());
+      //   // navigate("/orientation");
+      //   goEditorPage
+      // },
+    },
     // {
     //   label: isPaused ? "Record" : "Recording",
     //   action: isPaused ? togglePauseResume : stopRecording,
@@ -57,23 +69,16 @@ export const AudioBottomNavigation = ({
     //   icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
     // },
     {
-      label: "Edit",
+      label: "Upload",
       to: "/edit-audio/:id",
-      icon: <NavEditIcon />,
+      icon: <UploadIcon />,
     },
-    {
-      label: "Add",
-      icon: <NavCheckIcon />,
-      action: () => {
-        dispatch(setScrolltoActive());
-        navigate("/orientation");
-      },
-    },
+
     {
       label: "Add",
       // to: "/orientation",
       action: mergeAudio,
-      icon: <NavCheckIcon />,
+      icon: <NavAddIcon />,
     },
   ];
 

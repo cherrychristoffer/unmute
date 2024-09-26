@@ -464,10 +464,10 @@ export const EditAudioPage = () => {
 
   const pauseAllAudios = () => {
     if (!allAudioRefs.current) return;
-
+    console.log("allAudioRefs.current", allAudioRefs.current);
     const audios = { ...allAudioRefs.current };
     for (let key in audios) {
-      allAudioRefs.current?.[key].pause();
+      allAudioRefs.current?.[key]?.pause();
     }
   };
 
@@ -498,6 +498,9 @@ export const EditAudioPage = () => {
                       index={index}
                       key={item.uuid}
                       pauseAllAudios={pauseAllAudios}
+                      activeUnmute={activeUnmute}
+                      setAudioBlob={setAudioBlob}
+                      updateRef={updateRef}
                     />
                   ))}
                   {provided.placeholder}{" "}

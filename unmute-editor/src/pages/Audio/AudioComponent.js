@@ -9,6 +9,11 @@ import { AudioVisualizer } from "react-audio-visualize";
 import { CheckIcon } from "../../assets/icons/icon_check";
 import { CloseIcon } from "../../assets/icons/icon_close";
 import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
+import audioBufferToWav from "./AudioBuffer";
+import { useParams } from "wouter";
+import { updateUnmuteInCart } from "../../api/cart";
+import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
+import { useDispatch } from "react-redux";
 
 export const AudioComponent = ({
   item,
@@ -18,12 +23,18 @@ export const AudioComponent = ({
   cacheBust,
   setActiveAudio,
   activeAudio,
+  activeUnmute,
+  setAudioBlob,
+  updateRef,
 }) => {
+  const dispatch = useDispatch();
   const audioRef = useRef(null);
   const progressRefs = useRef(null);
   const startRef = useRef(null);
   const endRef = useRef(null);
-  const [isCropping, setIsCroping] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
+  const { id: unmuteId } = useParams();
+
   const [rangeMap, setRangeMap] = useState({
     start: 0,
     end: item.seconds * 1000,
@@ -60,7 +71,7 @@ export const AudioComponent = ({
     const { name, value } = e.target;
     const startValue = parseInt(startRef.current?.value);
     const endValue = parseInt(endRef.current?.value);
-    setIsCroping(true);
+    setIsCropping(true);
     let updatedStartValue = startValue;
     let updatedEndValue = endValue;
 
@@ -176,12 +187,13 @@ export const AudioComponent = ({
 
   const handleCropAudio = async (item, id) => {
     if (Number(rangeMap.start) < Number(rangeMap.end)) {
+      setIsCropping(false);
       const croppedAudioBlob = await cropAudio(
         item.blob,
         rangeMap.start / 1000,
         rangeMap.end / 1000
       );
-
+      console.log("stex");
       uploadFile({
         file: new File(
           [croppedAudioBlob],
@@ -189,6 +201,7 @@ export const AudioComponent = ({
         ),
         path: unmuteId,
       }).then(() => {
+        console.log("2222");
         const fileUrl = getFileUrl(
           `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
         );
@@ -210,6 +223,7 @@ export const AudioComponent = ({
             _audios: audios,
           },
         }).then(({ data }) => {
+          console.log("33333");
           setAudioBlob([]);
 
           setTimeout(() => {

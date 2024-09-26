@@ -94,7 +94,7 @@ export const OffersPage = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mx-4 mt-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mx-4 mt-14">
           {UNMUTE.map((item, index) => (
             <div
               key={index}
@@ -107,7 +107,7 @@ export const OffersPage = () => {
                 alt={item.title}
               />
               {item.inactive &&
-              <span className="coming-soon text-[25px]">
+              <span className="coming-soon text-[20px]">
                 Kommer snart
               </span>
               }

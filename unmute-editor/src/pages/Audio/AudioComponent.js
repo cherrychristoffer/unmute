@@ -41,20 +41,35 @@ export const AudioComponent = ({
   });
   const priceGap = 1;
 
+  function timeupdate(e) {
+    const element = e.target;
+    if (element.currentTime >= rangeMap?.end / 1000) {
+      audioRef.current?.pause();
+      // setActiveAudio(null);
+    }
+  }
+
   const handleAudioEnded = () => {
     setActiveAudio(null);
+    audioRef.current?.removeEventListener("timeupdate", timeupdate);
   };
 
   const handlePlayAudio = () => {
     if (!audioRef.current) return;
     pauseAllAudios();
-    audioRef.current.play();
     setActiveAudio(item.uuid);
+    audioRef.current.play();
+    if (rangeMap?.end) {
+      audioRef.current.addEventListener("timeupdate", timeupdate);
+      console.log(audioRef);
+    }
   };
 
   const handlePauseAudio = () => {
     if (!audioRef.current) return;
     audioRef.current.pause();
+    audioRef?.current?.removeEventListener("timeupdate", timeupdate);
+
     setActiveAudio(null);
   };
 
@@ -163,7 +178,6 @@ export const AudioComponent = ({
       const endAudio = rangeMap.end / 1000;
       setIsCropping(false);
       const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
-      console.log("stex");
       uploadFile({
         file: new File(
           [croppedAudioBlob],
@@ -171,7 +185,6 @@ export const AudioComponent = ({
         ),
         path: unmuteId,
       }).then(() => {
-        console.log("2222");
         const fileUrl = getFileUrl(
           `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
         );
@@ -193,7 +206,6 @@ export const AudioComponent = ({
             _audios: audios,
           },
         }).then(({ data }) => {
-          console.log("33333");
           setAudioBlob([]);
 
           setTimeout(() => {

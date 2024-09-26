@@ -189,6 +189,14 @@ const CropperComponent = ({
         frame_width,
         "absolute h-full object-cover overflow-hidden"
       )}
+      onMouseOver={() => {
+        if (params[0] === "crop")
+          swiperRef.current.swiper.allowTouchMove = false;
+      }}
+      onMouseLeave={() => {
+        if (params[0] === "crop")
+          swiperRef.current.swiper.allowTouchMove = true;
+      }}
       onTouchMoveCapture={() => {
         if (params[0] === "crop")
           swiperRef.current.swiper.allowTouchMove = false;

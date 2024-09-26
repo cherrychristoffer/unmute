@@ -94,7 +94,7 @@ export const ReplacePage = () => {
     }
 
     return (
-            <div className={clsx("pb-[80px]", {'hidden': !replaceMode})}>
+            <div className={clsx("pb-[80px] sm:pb-[110px]", {'hidden': !replaceMode})}>
                 <style>{`.audio-hidden-replace {display: none;}`}</style>
                 <div className="mt-16 flex flex-row justify-center items-center gap-4">
                     <button

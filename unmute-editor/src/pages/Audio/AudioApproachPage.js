@@ -30,7 +30,7 @@ export const AudioApproachPage = () => {
   ];
 
   return (
-    <div className={"pb-[80px] pt-10"}>
+    <div className={"pb-[80px] sm:pb-[110px] pt-10"}>
       <div className="mx-auto flex flex-col items-center pb-10">
         <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Select</h1>
         <h2 className="font-serif text-muld-1000 text-[17px] text-center leading-tight">

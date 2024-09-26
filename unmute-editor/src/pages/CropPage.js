@@ -37,7 +37,7 @@ export const CropPage = () => {
   };
 
   return (
-    <div className={"pb-[67px]"}>
+    <div className={"pb-[80px] sm:pb-[110px]"}>
       <div className="mt-16 flex flex-row justify-center items-center gap-4">
         <button
           onClick={handleDecrease}

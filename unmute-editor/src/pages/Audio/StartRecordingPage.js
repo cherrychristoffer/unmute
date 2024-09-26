@@ -133,7 +133,7 @@ export const StartRecordingPage = () => {
   }, [recordingBlob]);
 
   return (
-    <div className={"pb-[80px] pt-10"}>
+    <div className={"pb-[80px] sm:pb-[110px] pt-10"}>
       <div className="flex flex-col items-center">
         <div className="mt-6">
           {!isRecording && (

@@ -77,7 +77,9 @@ export const EditAudioPage = () => {
   // };
   console.log("setActiveAudio", activeAudio);
 
-  const handleAllPlayAudio = () => {
+  const handleAllPlayAudio = async () => {
+    handleAllPauseAudio();
+
     if (!audioRef.current) return;
 
     const audios = { ...audioRef.current };
@@ -407,11 +409,11 @@ export const EditAudioPage = () => {
 
   const handleCropAudio = async (item, id) => {
     if (Number(rangeMap.start) < Number(rangeMap.end)) {
-      const croppedAudioBlob = await cropAudio(
-        item.blob,
-        rangeMap[id].start,
-        rangeMap[id].end / 1000
-      );
+      const startAudio = rangeMap[id].start / 1000;
+      const endAudio = rangeMap[id].end / 1000;
+      console.log("start", startAudio, endAudio);
+
+      const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
 
       uploadFile({
         file: new File(
@@ -424,11 +426,17 @@ export const EditAudioPage = () => {
           `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
         );
 
+        console.log(
+          "rangeMap[id].end - rangeMap[id].start",
+          rangeMap[id].end,
+          rangeMap[id].start
+        );
+
         const audios = activeUnmute.properties._audios?.map((state) => {
           if (item.fileData.file === state.file) {
             return {
               file: fileUrl,
-              countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
+              countdown: formatTime(endAudio - startAudio),
               notRecorded: state?.notRecorded,
             };
           }
@@ -544,6 +552,7 @@ export const EditAudioPage = () => {
   };
 
   function convertSeconds(seconds) {
+    seconds = Math.round(seconds);
     if (seconds < 60) {
       return `${seconds} sek`;
     }

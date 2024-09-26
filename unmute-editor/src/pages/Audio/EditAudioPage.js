@@ -153,6 +153,7 @@ export const EditAudioPage = () => {
                   item.properties._uuid === activeUnmute.properties._uuid
               );
               dispatch(updateUnmute(activeItem));
+              navigate("/orientation");
             });
           })
 
@@ -163,7 +164,6 @@ export const EditAudioPage = () => {
       } catch (e) {}
     }
     dispatch(setScrolltoActive());
-    navigate("/orientation");
   };
 
   const handleAllDeleteRecording = () => {

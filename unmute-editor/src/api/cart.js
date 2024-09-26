@@ -13,11 +13,18 @@ export const updateUnmuteInCart = async ({ key, properties }) =>
     properties,
   });
 
-export const removeUnmuteInCart = async (key) =>
-    await axios.post(`${cartUrl}/change.js`, {
-      id: key,
-      quantity: 0,
-    });
+export const removeUnmuteInCart = async (key) => {
+  const response = await axios.post(`${cartUrl}/change.js`, {
+    id: key,
+    quantity: 0,
+    sections: "cart-icon-bubble",
+  });
+
+  document.querySelector("#cart-icon-bubble").innerHTML =
+      response.data.sections["cart-icon-bubble"];
+
+  return response
+}
 
 export const addUnmuteToCart = async ({
   quantity,

@@ -17,8 +17,8 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 
 import CropperComponent from "./Cropper";
-import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { setDisableAllActions } from "../features/image/imageSlice";
+import {ConfirmModal} from "./ConfirmModal";
 
 const frame_padding = (scale, landscape) => {
   // for landscape it was 17
@@ -43,6 +43,7 @@ const Unmute = ({
 
   const [loading, setLoading] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false)
   const replaceIndex = useSelector((state) => state.replace.replaceIndex);
   const replaceMode = useSelector((state) => state.replace.replaceMode);
   const beforeImage = useSelector((state) => state.replace.beforeImage);
@@ -188,14 +189,14 @@ const Unmute = ({
               )}
               {smallImage ? (
                 <button
-                  onClick={() => onDelete(unmute.key)}
+                  onClick={() => setOpenConfirm(true)}
                   className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
                 >
                   <ExclamationIcon size={20} />
                 </button>
               ) : (
                 <button
-                  onClick={() => onDelete(unmute.key)}
+                  onClick={() => setOpenConfirm(true)}
                   className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-10"
                 >
                   <CloseIcon />
@@ -227,7 +228,7 @@ const Unmute = ({
         <div className="flex justify-center pt-8">
           <label
             htmlFor={`mage-add-${unmute.key}`}
-            onClick={() => onDelete(unmute.key)}
+            onClick={() => setOpenConfirm(true)}
             className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
           >
             Low resolution - Add new photo
@@ -241,6 +242,11 @@ const Unmute = ({
           />
         </div>
       )}
+
+      {openConfirm && <ConfirmModal onConfirm={() => {
+        onDelete(unmute.key)
+        setOpenConfirm(false)
+      }}  onCancel={() => setOpenConfirm(false)}/>}
     </>
   );
 };

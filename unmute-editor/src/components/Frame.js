@@ -8,8 +8,8 @@ import { PlayIcon } from "../assets/icons/icon_play";
 import { Loader } from "./Loader";
 
 import { deleteFile } from "../api/aws";
-import { updateUnmuteInCart } from "../api/cart";
-import { updateUnmutes, updateAllUnmutes } from "../features/user/userSlice";
+import {removeUnmuteInCart} from "../api/cart";
+import { updateAllUnmutes, deleteUnmute } from "../features/user/userSlice";
 
 import { setActiveUnmuteIndex } from "../features/user/userSlice";
 
@@ -138,17 +138,9 @@ export const Frame = () => {
     deleteFile({
       path: unmuteToUpdate.properties._images[0],
     }).then(() => {
-      updateUnmuteInCart({
-        key: unmuteToUpdate.key,
-        properties: {
-          ...unmuteToUpdate.properties,
-          _images: [],
-          _enhanced: false,
-          _original_images: [],
-        },
-      }).then((data) => {
-        dispatch(updateUnmutes(data.data.items));
-      });
+      removeUnmuteInCart(unmuteToUpdate.key).then(() => {
+        dispatch(deleteUnmute(unmuteToUpdate.key))
+      })
     });
   };
 

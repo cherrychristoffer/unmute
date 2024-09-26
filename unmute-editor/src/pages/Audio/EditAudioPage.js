@@ -230,58 +230,6 @@ export const EditAudioPage = () => {
     return <div>Loading audio...</div>;
   }
 
-  const handleCropAudio = async (item, id) => {
-    if (Number(rangeMap.start) < Number(rangeMap.end)) {
-      const startAudio = rangeMap[id].start / 1000;
-      const endAudio = rangeMap[id].end / 1000;
-      console.log("start", startAudio, endAudio);
-
-      const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
-
-      uploadFile({
-        file: new File(
-          [croppedAudioBlob],
-          item.fileData.file.split("/").at(-1)
-        ),
-        path: unmuteId,
-      }).then(() => {
-        const fileUrl = getFileUrl(
-          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
-        );
-
-        console.log(
-          "rangeMap[id].end - rangeMap[id].start",
-          rangeMap[id].end,
-          rangeMap[id].start
-        );
-
-        const audios = activeUnmute.properties._audios?.map((state) => {
-          if (item.fileData.file === state.file) {
-            return {
-              file: fileUrl,
-              countdown: formatTime(endAudio - startAudio),
-              notRecorded: state?.notRecorded,
-            };
-          }
-          return state;
-        });
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: audios,
-          },
-        }).then(({ data }) => {
-          setAudioBlob([]);
-
-          setTimeout(() => {
-            dispatch(updateUnmutes(data.items));
-            updateRef.current = false;
-          }, 500);
-        });
-      });
-    }
-  };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
@@ -318,52 +266,6 @@ export const EditAudioPage = () => {
       dispatch(updateUnmute(activeItem));
     });
     setAudioBlob(sortedItems);
-  };
-
-  function calculateValues(startValue, endValue, max, id) {
-    const progressElement = progressRefs.current[id];
-
-    if (progressElement) {
-      progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
-    }
-  }
-  const handleChange = (e, id) => {
-    console.log("fewfew");
-
-    const { name, value } = e.target;
-    const startValue = parseInt(startRefs.current[id].value);
-    console.log("start", startValue);
-
-    const endValue = parseInt(endRefs.current[id].value);
-    setCropId(id);
-    let updatedStartValue = startValue;
-    let updatedEndValue = endValue;
-
-    if (endValue - startValue < priceGap) {
-      if (name === "start") {
-        updatedStartValue = endValue - priceGap;
-      } else {
-        updatedEndValue = startValue + priceGap;
-      }
-    }
-
-    setRangeMap((prev) => ({
-      ...prev,
-      [id]: {
-        start: name === "start" ? updatedStartValue : startValue,
-        end: name === "end" ? updatedEndValue : endValue,
-      },
-    }));
-
-    if (progressRefs.current[id]) {
-      calculateValues(
-        updatedStartValue,
-        updatedEndValue,
-        audioBlob[id]?.seconds,
-        id
-      );
-    }
   };
 
   const showLoading = () => {

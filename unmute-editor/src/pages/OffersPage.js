@@ -5,10 +5,6 @@ import { addUnmute } from "../features/user/userSlice";
 import { addUnmuteToCart } from "../api/cart";
 import { useDispatch, useSelector } from "react-redux";
 
-import offer1 from "../assets/images/offers/offer1.png";
-import offer2 from "../assets/images/offers/offer2.png";
-import offer3 from "../assets/images/offers/offer3.png";
-import offer4 from "../assets/images/offers/offer4.png";
 import { Loader } from "../components/Loader";
 
 export const OffersPage = () => {
@@ -46,7 +42,7 @@ export const OffersPage = () => {
 
   const UNMUTE = [
     {
-      image: offer1,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png",
       quantity: 1,
       title: "En UNMUTE",
       price: "499",
@@ -54,7 +50,7 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: offer2,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png",
       quantity: 2,
       title: "Mest populær",
       price: "898",
@@ -63,7 +59,7 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: offer3,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png",
       quantity: 1,
       title: "Collage",
       price: "399",
@@ -71,7 +67,7 @@ export const OffersPage = () => {
       inactive: true, // @ToDo: inactive flag can be removed once the Collage feature is implemented
     },
     {
-      image: offer4,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png",
       quantity: 3,
       title: "Bedste tilbud",
       price: "1.257",
@@ -94,7 +90,7 @@ export const OffersPage = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mx-4 mt-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mx-4 mt-14">
           {UNMUTE.map((item, index) => (
             <div
               key={index}
@@ -107,7 +103,7 @@ export const OffersPage = () => {
                 alt={item.title}
               />
               {item.inactive &&
-              <span className="coming-soon text-[25px]">
+              <span className="coming-soon text-[20px]">
                 Kommer snart
               </span>
               }

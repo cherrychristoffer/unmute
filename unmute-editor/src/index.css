@@ -41,12 +41,23 @@
 .app-wrapper {
   height: 100%;
   overflow: auto;
-  max-width: 600px;
   margin: 0 auto;
 }
 
 .app-wrapper.with-navigation {
   height: calc(100% - 67px);
+}
+
+@media (min-width: 769px) {
+  .app-wrapper {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-wrapper {
+    max-width: 600px;
+  }
 }
 
 /* Hack to remove preview bar on Shopify preview */

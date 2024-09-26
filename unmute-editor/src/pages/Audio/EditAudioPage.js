@@ -18,6 +18,7 @@ import { useActiveUnmute } from "../../api/useUnmutes";
 import { Loader } from "../../components/Loader";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
+import ProgressBar from "./progress";
 
 export const EditAudioPage = () => {
   const {
@@ -51,41 +52,33 @@ export const EditAudioPage = () => {
 
   const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
 
-  const handlePlayAudio = (id) => {
-    if (!audioRef.current) return;
-    const audios = { ...audioRef.current };
+  const handleAllPlayAudio = async () => {
+    pauseAllAudios();
 
-    for (let key in audios) {
-      const item = audioRef.current?.[key];
+    if (!allAudioRefs.current) return;
 
-      if (key === id) {
-        setActiveAudio(id);
-        activeAudioRef.current = id;
-        if (rangeMap[key]?.start) item.currentTime = rangeMap[key]?.start ?? 0;
+    const audios = { ...allAudioRefs.current };
+    const audioData = audioBlob?.map((item) => item.uuid);
 
-        item.play();
-        // console.log("key", key);
-        // console.log("rangeMap[key]?.end", rangeMap[key]?.end);
-        // if (rangeMap[key]?.end) {
-        //   item.addEventListener("timeupdate", function () {
-        //     if (item.currentTime >= rangeMap[key]?.end) {
-        //       console.log(`Paus ${key} ${item.currentTime}`);
-        //       item?.pause();
-        //       setActiveAudio(null);
-        //     }
-        //   });
-        // }
-      } else {
-        item?.pause();
+    let currentAudioIndex = 0;
+
+    const playAudio = (index) => {
+      if (index >= audioData.length) {
+        pauseAllAudios();
       }
-    }
-  };
 
-  const handlePauseAudio = (id) => {
-    if (audioRef.current[id]) {
-      audioRef.current[id].pause();
-      setActiveAudio(null);
-    }
+      const item = audios[audioData[index]];
+      setActiveAudio(audioData[index]);
+      if (item) {
+        item.play();
+
+        item.onended = () => {
+          playAudio(index + 1);
+        };
+      }
+    };
+
+    playAudio(currentAudioIndex);
   };
 
   function convertToTimeFormat(seconds) {
@@ -165,6 +158,7 @@ export const EditAudioPage = () => {
           });
       } catch (e) {}
     }
+    dispatch(setScrolltoActive());
     navigate("/orientation");
   };
 
@@ -236,6 +230,58 @@ export const EditAudioPage = () => {
     return <div>Loading audio...</div>;
   }
 
+  const handleCropAudio = async (item, id) => {
+    if (Number(rangeMap.start) < Number(rangeMap.end)) {
+      const startAudio = rangeMap[id].start / 1000;
+      const endAudio = rangeMap[id].end / 1000;
+      console.log("start", startAudio, endAudio);
+
+      const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
+
+      uploadFile({
+        file: new File(
+          [croppedAudioBlob],
+          item.fileData.file.split("/").at(-1)
+        ),
+        path: unmuteId,
+      }).then(() => {
+        const fileUrl = getFileUrl(
+          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
+        );
+
+        console.log(
+          "rangeMap[id].end - rangeMap[id].start",
+          rangeMap[id].end,
+          rangeMap[id].start
+        );
+
+        const audios = activeUnmute.properties._audios?.map((state) => {
+          if (item.fileData.file === state.file) {
+            return {
+              file: fileUrl,
+              countdown: formatTime(endAudio - startAudio),
+              notRecorded: state?.notRecorded,
+            };
+          }
+          return state;
+        });
+        updateUnmuteInCart({
+          key: activeUnmute.key,
+          properties: {
+            ...activeUnmute.properties,
+            _audios: audios,
+          },
+        }).then(({ data }) => {
+          setAudioBlob([]);
+
+          setTimeout(() => {
+            dispatch(updateUnmutes(data.items));
+            updateRef.current = false;
+          }, 500);
+        });
+      });
+    }
+  };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
@@ -274,6 +320,52 @@ export const EditAudioPage = () => {
     setAudioBlob(sortedItems);
   };
 
+  function calculateValues(startValue, endValue, max, id) {
+    const progressElement = progressRefs.current[id];
+
+    if (progressElement) {
+      progressElement.style.left = (startValue / max) * 100 + "%";
+      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
+    }
+  }
+  const handleChange = (e, id) => {
+    console.log("fewfew");
+
+    const { name, value } = e.target;
+    const startValue = parseInt(startRefs.current[id].value);
+    console.log("start", startValue);
+
+    const endValue = parseInt(endRefs.current[id].value);
+    setCropId(id);
+    let updatedStartValue = startValue;
+    let updatedEndValue = endValue;
+
+    if (endValue - startValue < priceGap) {
+      if (name === "start") {
+        updatedStartValue = endValue - priceGap;
+      } else {
+        updatedEndValue = startValue + priceGap;
+      }
+    }
+
+    setRangeMap((prev) => ({
+      ...prev,
+      [id]: {
+        start: name === "start" ? updatedStartValue : startValue,
+        end: name === "end" ? updatedEndValue : endValue,
+      },
+    }));
+
+    if (progressRefs.current[id]) {
+      calculateValues(
+        updatedStartValue,
+        updatedEndValue,
+        audioBlob[id]?.seconds,
+        id
+      );
+    }
+  };
+
   const showLoading = () => {
     if (isLoadingUnmutes) return true;
     for (let key in isLoading) {
@@ -282,6 +374,16 @@ export const EditAudioPage = () => {
     return false;
   };
 
+  function convertSeconds(seconds) {
+    seconds = Math.round(seconds);
+    if (seconds < 60) {
+      return `${seconds} sek`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
+  }
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
   const pauseAllAudios = () => {
@@ -290,6 +392,7 @@ export const EditAudioPage = () => {
     for (let key in audios) {
       allAudioRefs.current?.[key]?.pause();
     }
+    setActiveAudio(null);
   };
 
   return (
@@ -355,10 +458,10 @@ export const EditAudioPage = () => {
         isRecording={startRecording}
         isPaused={false}
         togglePauseResume={() => {}}
-        // stopRecording={() => {}}
+        goAdd={goAdd}
         stopRecording={stopRecording}
-        playAudio={handlePlayAudio}
-        pauseAudio={handlePauseAudio}
+        playAudio={handleAllPlayAudio}
+        pauseAudio={pauseAllAudios}
         deleteRecording={handleAllDeleteRecording}
         goEditorPage={goEditorPage}
         mergeAudio={mergeAudioData}

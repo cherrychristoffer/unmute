@@ -187,12 +187,10 @@ export const AudioComponent = ({
 
   const handleCropAudio = async (item, id) => {
     if (Number(rangeMap.start) < Number(rangeMap.end)) {
+      const startAudio = rangeMap.start / 1000;
+      const endAudio = rangeMap.end / 1000;
       setIsCropping(false);
-      const croppedAudioBlob = await cropAudio(
-        item.blob,
-        rangeMap.start / 1000,
-        rangeMap.end / 1000
-      );
+      const croppedAudioBlob = await cropAudio(item.blob, startAudio, endAudio);
       console.log("stex");
       uploadFile({
         file: new File(
@@ -210,7 +208,7 @@ export const AudioComponent = ({
           if (item.fileData.file === state.file) {
             return {
               file: fileUrl,
-              countdown: formatTime(rangeMap.end - rangeMap.start),
+              countdown: formatTime(endAudio - startAudio),
               notRecorded: state?.notRecorded,
             };
           }

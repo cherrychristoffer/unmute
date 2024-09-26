@@ -7,7 +7,6 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
-    "@img-comparison-slider/react": "^8.0.2",
     "@reduxjs/toolkit": "^2.2.7",
     "autoprefixer": "^10.4.20",
     "aws-sdk": "^2.1687.0",

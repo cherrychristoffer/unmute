@@ -1,9 +1,9 @@
 import { React } from "react";
 import {CheckIcon} from "../assets/icons/icon_check";
 
-import black from "../assets/images/frames/black.png";
+// import black from "../assets/images/frames/black.png";
 import oak from "../assets/images/frames/oak.png";
-import white from "../assets/images/frames/white.png";
+// import white from "../assets/images/frames/white.png";
 
 import { updateUnmute, updateUnmutes } from "../features/user/userSlice";
 import { useDispatch } from "react-redux";

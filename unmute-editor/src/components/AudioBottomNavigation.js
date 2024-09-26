@@ -11,11 +11,13 @@ import { NavPlayIcon } from "../assets/icons/icon_nav_play";
 import { NavRecordingIcon } from "../assets/icons/icon_nav_recording";
 import { setScrolltoActive } from "../features/image/imageSlice";
 import { useDispatch } from "react-redux";
+import { NavAddIcon } from "../assets/icons/icon_nav_add";
+import { UploadIcon } from "../assets/icons/icon_audio";
 
 export const AudioBottomNavigation = ({
   isPaused = false,
   togglePauseResume = () => {},
-  stopRecording = () => {},
+  goAdd = () => {},
   goEditorPage = () => {},
   playAudio = () => {},
   pauseAudio = () => {},
@@ -27,12 +29,12 @@ export const AudioBottomNavigation = ({
 
   const NAVIGATION = [
     {
-      label: "Delete",
+      label: "Slet",
       action: deleteRecording,
       icon: <NavCloseIcon />,
     },
     {
-      label: "Play",
+      label: "Afspil",
       action: playAudio,
       icon: <NavPlayIcon />,
     },
@@ -40,6 +42,16 @@ export const AudioBottomNavigation = ({
       label: "Pause",
       action: pauseAudio,
       icon: <NavPauseIcon />,
+    },
+    {
+      label: "Tilføj",
+      icon: <NavCheckIcon />,
+      action: goAdd,
+      // action: () => {
+      //   // dispatch(setScrolltoActive());
+      //   // navigate("/orientation");
+      //   goEditorPage
+      // },
     },
     // {
     //   label: isPaused ? "Record" : "Recording",
@@ -57,28 +69,22 @@ export const AudioBottomNavigation = ({
     //   icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
     // },
     {
-      label: "Edit",
-      to: "/edit-audio/:id",
-      icon: <NavEditIcon />,
+      label: "Upload",
+      // to: "/edit-audio/:id",
+      icon: <UploadIcon />,
+      action: goEditorPage,
     },
+
     {
-      label: "Add",
-      icon: <NavCheckIcon />,
-      action: () => {
-        dispatch(setScrolltoActive());
-        navigate("/orientation");
-      },
-    },
-    {
-      label: "Add",
+      label: "Færdig",
       // to: "/orientation",
       action: mergeAudio,
-      icon: <NavCheckIcon />,
+      icon: <NavAddIcon />,
     },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
+    <div className="fixed bottom-100 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
       <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (

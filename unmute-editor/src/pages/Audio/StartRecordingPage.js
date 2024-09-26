@@ -42,13 +42,9 @@ export const StartRecordingPage = () => {
   const { unmutes } = useSelector((state) => state.user);
 
   const [time, setTime] = useState(0);
-
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const { id } = useParams();
-
-  const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
-
+  const { id: unmuteId } = useParams();
   const getQueryParams = (url) => {
     const params = new URLSearchParams(
       new URL(url, window.location.origin).search
@@ -56,7 +52,9 @@ export const StartRecordingPage = () => {
     return params.get("seconds");
   };
   const seconds = getQueryParams(location);
-
+  const activeUnmute = unmutes?.find(
+    (item) => item.properties?._uuid === unmuteId
+  );
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);
@@ -116,7 +114,7 @@ export const StartRecordingPage = () => {
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
-          // notRecorded: isRecordingValidate >= 600 ? true : false,
+          notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
         console.log("aaaaaaaa");
@@ -129,7 +127,7 @@ export const StartRecordingPage = () => {
         }).then(({ data }) => {
           console.log("updates", data.items);
           dispatch(updateUnmutes(data.items));
-          navigate(`/edit-audio/${id}`);
+          navigate(`/edit-audio/${unmuteId}`);
         });
       });
     }

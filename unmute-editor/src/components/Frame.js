@@ -23,13 +23,11 @@ import { EmptyBox } from "./EmptyBox";
 import { useActiveUnmute } from "../api/useUnmutes";
 
 const sliderSize = {
-  width: "50%",
-  minWidth: "290px",
+  width: "290px",
   padding: "0 20px",
 };
 const sliderLanscapedSize = {
-  minWidth: "340px",
-  width: "55%",
+  width: "340px",
   padding: "0 20px",
 };
 

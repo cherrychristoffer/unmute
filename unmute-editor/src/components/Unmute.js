@@ -110,7 +110,7 @@ const Unmute = ({
 
   return (
     <>
-      <div className="snap-center flex items-center py-4">
+      <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', "snap-center flex items-center py-4")}>
         <div
           className={clsx(
             "relative flex justify-center",

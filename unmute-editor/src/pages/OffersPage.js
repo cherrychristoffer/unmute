@@ -120,7 +120,7 @@ export const OffersPage = () => {
                   >
                     {item.title}
                   </p>
-                  <p className="text-lg text-white text-[12px] my-1">
+                  <p className="text-white text-[12px] my-1">
                     {item.inactive ? (
                       <span style={{display: 'inline-block'}}> </span>
                       ) : (

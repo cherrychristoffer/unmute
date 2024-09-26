@@ -2,18 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/*@font-face {
-  font-family: 'Optima nova LT Pro';
-  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot');
-  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot?#iefix') format('embedded-opentype'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff2') format('woff2'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff') format('woff'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}*/
-
 :root {
   --typeBaseSize: 16px !important;
   --shopify-header-height: 66px;
@@ -106,10 +94,11 @@ html {
 /* Normalize */
 body {
   overflow: hidden;
-  /*
-  font-family: 'Optima nova LT Pro', sans-serif;
-  */
   background-color: #fafafa !important;
+}
+
+.app-wrapper .label-info, .app-wrapper label {
+  margin-bottom: 0;
 }
 
 /* Page height modifications */
@@ -143,30 +132,6 @@ body {
 
 #gtx-trans {
   display: none;
-}
-
-input[type="range"]::range-track {
-  width: 100%;
-  height: 20px;
-  border-radius: 10px;
-  background-color: #eee;
-  border: 2px solid #ccc;
-}
-
-input[type="range"]::range-thumb {
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  background-color: white;
-  border: 2px solid #1976d2;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-}
-
-input[type="range"]::range-progress {
-  height: 20px;
-  border-radius: 10px 0 0 10px;
-  background-color: #2196f3;
-  border: 2px solid #1976d2;
 }
 
 .audio-crop {
@@ -333,4 +298,43 @@ input[type="range"]::range-progress {
 /* Swiper Slider */
 .swiper-wrapper {
   align-items: center;
+}
+
+/* Input Range */
+input[type="range"]::range-track {
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #eee;
+  border: 2px solid #ccc;
+}
+
+input[type="range"]::range-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background-color: white;
+  border: 2px solid #1976d2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+input[type="range"]::range-progress {
+  height: 20px;
+  border-radius: 10px 0 0 10px;
+  background-color: #2196f3;
+  border: 2px solid #1976d2;
+}
+
+.app-wrapper input[type=range]::-webkit-slider-runnable-track {
+  height: auto;
+  background: transparent;
+}
+
+.app-wrapper input[type=range]::-webkit-slider-thumb {
+  margin-top: 0;
+}
+
+.app-wrapper input[type=range] {
+  max-width: 240px;
+  margin: 0;
 }

@@ -84,7 +84,7 @@ export const AudioBottomNavigation = ({
   ];
 
   return (
-    <div className="fixed bottom-100 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
       <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (

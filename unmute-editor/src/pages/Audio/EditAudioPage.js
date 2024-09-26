@@ -184,96 +184,6 @@ export const EditAudioPage = () => {
     });
   };
 
-  // const handleDeleteRecording = (item) => {
-  //   if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
-  //     deleteFile({
-  //       path: item?.fileData?.file,
-  //     }).then(() => {
-  //       updateUnmuteInCart({
-  //         key: activeUnmute.key,
-  //         properties: {
-  //           ...activeUnmute.properties,
-  //           _audios: activeUnmute.properties?._audios.filter(
-  //             (audio) => audio.file !== item.fileData.file
-  //           ),
-  //         },
-  //       }).then(({ data }) => {
-  //         const activeItem = data.items.find(
-  //           (item) => item.properties._uuid === activeUnmute.properties._uuid
-  //         );
-  //         dispatch(updateUnmute(activeItem));
-  //         // dispatch(updateUnmutes(data.items));
-  //         setAudioBlob((prev) =>
-  //           prev.filter((audio) => audio.uuid !== item.uuid)
-  //         );
-  //       });
-  //     });
-  //   }
-  // };
-
-  // const cropAudio = async (blob, start, end) => {
-  //   const audioContext = new (window.AudioContext ||
-  //     window.webkitAudioContext)();
-  //   const arrayBuffer = await blob.arrayBuffer();
-
-  //   return new Promise((resolve, reject) => {
-  //     audioContext.decodeAudioData(
-  //       arrayBuffer,
-  //       (audioBuffer) => {
-  //         const sampleRate = audioBuffer.sampleRate;
-  //         const startSample = Math.floor(start * sampleRate);
-  //         const endSample = Math.floor(end * sampleRate);
-
-  //         const croppedBuffer = audioContext.createBuffer(
-  //           audioBuffer.numberOfChannels,
-  //           endSample - startSample,
-  //           sampleRate
-  //         );
-
-  //         for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-  //           croppedBuffer.copyToChannel(
-  //             audioBuffer.getChannelData(i).subarray(startSample, endSample),
-  //             i
-  //           );
-  //         }
-
-  //         audioContext.createBufferSource().buffer = croppedBuffer;
-
-  //         const offlineAudioContext = new OfflineAudioContext(
-  //           croppedBuffer.numberOfChannels,
-  //           croppedBuffer.length,
-  //           croppedBuffer.sampleRate
-  //         );
-
-  //         const source = offlineAudioContext.createBufferSource();
-  //         source.buffer = croppedBuffer;
-  //         source.connect(offlineAudioContext.destination);
-  //         source.start();
-
-  //         offlineAudioContext.startRendering().then((renderedBuffer) => {
-  //           const wavBlob = bufferToWaveBlob(renderedBuffer);
-  //           resolve(wavBlob);
-  //         });
-  //       },
-  //       reject
-  //     );
-  //   });
-  // };
-
-  // const bufferToWaveBlob = (buffer) => {
-  //   const wavBuffer = audioBufferToWav(buffer);
-  //   return new Blob([wavBuffer], { type: "audio/wav" });
-  // };
-  // const formatTime = (time) => {
-  //   let minutes = Math.floor(time / 60);
-  //   let seconds = time % 60;
-
-  //   if (seconds < 10) {
-  //     seconds = `0${seconds}`;
-  //   }
-
-  //   return `${minutes}:${seconds}`;
-  // };
   const getMyUserAudio = () => {
     updateRef.current = true;
     audioFiles?.map((item, i) => {
@@ -326,52 +236,6 @@ export const EditAudioPage = () => {
     return <div>Loading audio...</div>;
   }
 
-  // const handleCropAudio = async (item, id) => {
-  //   if (Number(rangeMap.start) < Number(rangeMap.end)) {
-  //     const croppedAudioBlob = await cropAudio(
-  //       item.blob,
-  //       rangeMap[id].start,
-  //       rangeMap[id].end / 1000
-  //     );
-
-  //     uploadFile({
-  //       file: new File(
-  //         [croppedAudioBlob],
-  //         item.fileData.file.split("/").at(-1)
-  //       ),
-  //       path: unmuteId,
-  //     }).then(() => {
-  //       const fileUrl = getFileUrl(
-  //         `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
-  //       );
-
-  //       const audios = activeUnmute.properties._audios?.map((state) => {
-  //         if (item.fileData.file === state.file) {
-  //           return {
-  //             file: fileUrl,
-  //             countdown: formatTime(rangeMap[id].end - rangeMap[id].start),
-  //             notRecorded: state?.notRecorded,
-  //           };
-  //         }
-  //         return state;
-  //       });
-  //       updateUnmuteInCart({
-  //         key: activeUnmute.key,
-  //         properties: {
-  //           ...activeUnmute.properties,
-  //           _audios: audios,
-  //         },
-  //       }).then(({ data }) => {
-  //         setAudioBlob([]);
-
-  //         setTimeout(() => {
-  //           dispatch(updateUnmutes(data.items));
-  //           updateRef.current = false;
-  //         }, 500);
-  //       });
-  //     });
-  //   }
-  // };
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
@@ -410,48 +274,6 @@ export const EditAudioPage = () => {
     setAudioBlob(sortedItems);
   };
 
-  // function calculateValues(startValue, endValue, max, id) {
-  //   const progressElement = progressRefs.current[id];
-
-  //   if (progressElement) {
-  //     progressElement.style.left = (startValue / max) * 100 + "%";
-  //     progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
-  //   }
-  // }
-  // const handleChange = (e, id) => {
-  //   const { name, value } = e.target;
-  //   const startValue = parseInt(startRefs.current[id].value);
-  //   const endValue = parseInt(endRefs.current[id].value);
-  //   setCropId(id);
-  //   let updatedStartValue = startValue;
-  //   let updatedEndValue = endValue;
-
-  //   if (endValue - startValue < priceGap) {
-  //     if (name === "start") {
-  //       updatedStartValue = endValue - priceGap;
-  //     } else {
-  //       updatedEndValue = startValue + priceGap;
-  //     }
-  //   }
-
-  //   setRangeMap((prev) => ({
-  //     ...prev,
-  //     [id]: {
-  //       start: name === "start" ? updatedStartValue : startValue,
-  //       end: name === "end" ? updatedEndValue : endValue,
-  //     },
-  //   }));
-
-  //   if (progressRefs.current[id]) {
-  //     calculateValues(
-  //       updatedStartValue,
-  //       updatedEndValue,
-  //       audioBlob[id]?.seconds,
-  //       id
-  //     );
-  //   }
-  // };
-
   const showLoading = () => {
     if (isLoadingUnmutes) return true;
     for (let key in isLoading) {
@@ -464,7 +286,6 @@ export const EditAudioPage = () => {
 
   const pauseAllAudios = () => {
     if (!allAudioRefs.current) return;
-    console.log("allAudioRefs.current", allAudioRefs.current);
     const audios = { ...allAudioRefs.current };
     for (let key in audios) {
       allAudioRefs.current?.[key]?.pause();
@@ -527,14 +348,6 @@ export const EditAudioPage = () => {
           >
             Tilføj en optagelse mere
           </button>
-          {/* {audioFiles?.length > 1 && (
-            <button
-              onClick={mergeAudioData}
-              className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
-            >
-              Merge
-            </button>
-          )} */}
         </div>
       </div>
 

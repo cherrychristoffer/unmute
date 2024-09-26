@@ -75,7 +75,6 @@ export const EditAudioPage = () => {
   //   console.log("item", item);
   //   item.play();
   // };
-  console.log("setActiveAudio", activeAudio);
 
   const handleAllPlayAudio = async () => {
     handleAllPauseAudio();
@@ -158,6 +157,7 @@ export const EditAudioPage = () => {
         item.pause();
       }
     }
+    setActiveAudio(null);
   };
   const handleAudioEnded = (id) => {
     if (activeAudioRef.current === id) {
@@ -605,7 +605,7 @@ export const EditAudioPage = () => {
                             {...provided.dragHandleProps}
                             className="audio-crop mb-5"
                           >
-                            <div>Time {convertSeconds(item.seconds)}</div>
+                            <div>{convertSeconds(item.seconds)}</div>
 
                             {/* <ProgressBar progress={progress} /> */}
 
@@ -751,7 +751,7 @@ export const EditAudioPage = () => {
         isRecording={startRecording}
         isPaused={false}
         togglePauseResume={() => {}}
-        // stopRecording={() => {}}
+        goAdd={goAdd}
         stopRecording={stopRecording}
         playAudio={handleAllPlayAudio}
         pauseAudio={handleAllPauseAudio}

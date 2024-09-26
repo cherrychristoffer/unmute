@@ -223,24 +223,27 @@ const Unmute = ({
       </div>
 
       {smallImage && (
-        <div className="flex justify-center pt-8">
-          <label
-            htmlFor={`mage-add-${unmute.key}`}
-            onClick={() => onDelete(unmute.key)}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
-          >
+        <>
+          <div className="text-rose-500 text-center pt-8">
             For lav opløsning
-            <br />
-            Tilføj nyt foto
-          </label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg"
-            className="hidden"
-            id={`mage-add-${unmute.key}`}
-            onChange={handleChange}
-          />
-        </div>
+          </div>
+          <div className="flex justify-center">
+            <label
+              htmlFor={`mage-add-${unmute.key}`}
+              onClick={() => onDelete(unmute.key)}
+              className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
+            >
+              Tilføj nyt foto
+            </label>
+            <input
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              className="hidden"
+              id={`mage-add-${unmute.key}`}
+              onChange={handleChange}
+            />
+          </div>
+        </>
       )}
     </>
   );

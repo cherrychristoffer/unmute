@@ -193,10 +193,11 @@ export const Frame = () => {
               index={index}
               swiperRef={swiperRef}
             />
+            <div className="h-[24px]"/>
           </SwiperSlide>
         ))}
         <SwiperSlide className={"sliderSize"}>
-          <EmptyBox />
+          <EmptyBox/>
         </SwiperSlide>
       </Swiper>
       <div className="flex flex-col items-center">

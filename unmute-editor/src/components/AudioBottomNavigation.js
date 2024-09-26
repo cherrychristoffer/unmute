@@ -85,7 +85,7 @@ export const AudioBottomNavigation = ({
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
-      <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
+      <div className="grid sm:gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (
             <button
@@ -96,7 +96,7 @@ export const AudioBottomNavigation = ({
               }
             >
               {item.icon}
-              <p className="font-sans text-sm text-muld-1000 text-center mt-2">
+              <p className="font-sans text-[10px] text-muld-1000 text-center mt-2">
                 {item.label}
               </p>
             </button>
@@ -112,7 +112,7 @@ export const AudioBottomNavigation = ({
               }
             >
               {item.icon}
-              <p className="font-sans text-sm text-muld-1000 text-center mt-2">
+              <p className="font-sans text-[10px] text-muld-1000 text-center mt-2">
                 {item.label}
               </p>
             </Link>

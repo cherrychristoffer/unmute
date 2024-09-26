@@ -4,8 +4,14 @@
 
 :root {
   --typeBaseSize: 16px !important;
-  --shopify-header-height: 66px;
+  --shopify-header-height: 68px;
   --shopify-announcement-height: 0px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --shopify-header-height: 56px;
+  }
 }
 
 html {
@@ -23,9 +29,8 @@ html {
 }
 
 #root {
-  /*height: 100%;*/
   height: calc(
-    var(--app-height) - var(--header-height) -
+    var(--app-height) - var(--shopify-header-height) -
       var(--shopify-announcement-height)
   );
   letter-spacing: normal;
@@ -38,18 +43,12 @@ html {
 }
 
 .app-wrapper.with-navigation {
-  height: calc(100% - 67px);
+  height: calc(100% - 110px);
 }
 
 @media (min-width: 769px) {
   .app-wrapper {
     max-width: 1200px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-wrapper {
-    max-width: 600px;
   }
 }
 
@@ -338,4 +337,24 @@ input[type="range"]::range-progress {
 .app-wrapper input[type=range] {
   max-width: 240px;
   margin: 0;
+}
+
+/* Template override */
+#shopify-section-footer {
+  display: none;
+}
+
+#HeaderWrapper.header-wrapper--sticky {
+  position: relative;
+}
+
+#SiteHeader {
+  padding: 0 !important;
+  background-color: #d8d0c4;
+}
+
+@media screen and (max-width: 1024px) {
+  #MainContent .page-width {
+    padding: 0 12px;
+  }
 }

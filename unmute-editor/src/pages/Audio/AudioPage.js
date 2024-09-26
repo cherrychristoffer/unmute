@@ -65,7 +65,7 @@
 //       </div>
 //
 //       <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
-//         <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
+//         <div className="grid sm:gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
 //           <div>&nbsp;</div>
 //           <div>&nbsp;</div>
 //           <div>&nbsp;</div>
@@ -81,7 +81,7 @@
 //             }
 //           >
 //             <NavCloseIcon />
-//             <span className="font-sans text-sm text-muld-1000 text-center mt-2">
+//             <span className="font-sans text-[10px] text-muld-1000 text-center mt-2">
 //               Close
 //             </span>
 //           </Link>

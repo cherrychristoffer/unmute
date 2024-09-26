@@ -62,10 +62,10 @@ export const Frame = () => {
           const a_created = a.properties._created;
           const b_created = b.properties._created;
 
-          if (a_created.date !== b_created.date)
-            return new Date(a_created.date) - new Date(b_created.date);
+          if (a_created?.date !== b_created?.date)
+            return new Date(a_created?.date) - new Date(b_created?.date);
 
-          return a_created.index - b_created.index;
+          return a_created?.index - b_created?.index;
         });
         const itemsWithImage = sortedUnmutes.filter(
           (item) => item.properties._images?.length > 0

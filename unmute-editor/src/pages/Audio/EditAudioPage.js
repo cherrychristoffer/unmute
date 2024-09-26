@@ -25,6 +25,7 @@ import Range from "./Range";
 import audioBufferToWav from "./AudioBuffer";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
+import ProgressBar from "./progress";
 
 export const EditAudioPage = () => {
   const {
@@ -52,6 +53,7 @@ export const EditAudioPage = () => {
   const [activeAudio, setActiveAudio] = useState(null);
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
+  const [progress, setProgress] = useState(0);
 
   const [rangeMap, setRangeMap] = useState({});
 
@@ -62,7 +64,47 @@ export const EditAudioPage = () => {
 
   const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
 
-  const handlePlayAudio = (id, index) => {
+  // const handleAllPlayAudio = () => {
+  //   if (!audioRef.current) return;
+  //   const audios = { ...audioRef.current };
+  //   const audioData = audioBlob?.map((item) => item.uuid);
+  //   console.log("audios", audios);
+  //   console.log("audioData", audioData);
+
+  //   const item = audioRef.current?.[audioData?.[0]];
+  //   console.log("item", item);
+  //   item.play();
+  // };
+  console.log("setActiveAudio", activeAudio);
+
+  const handleAllPlayAudio = () => {
+    if (!audioRef.current) return;
+
+    const audios = { ...audioRef.current };
+    const audioData = audioBlob?.map((item) => item.uuid);
+
+    let currentAudioIndex = 0;
+
+    const playAudio = (index) => {
+      if (index >= audioData.length) {
+        handleAllPauseAudio();
+      }
+
+      const item = audios[audioData[index]];
+      setActiveAudio(audioData[index]);
+      if (item) {
+        item.play();
+
+        item.onended = () => {
+          playAudio(index + 1);
+        };
+      }
+    };
+
+    playAudio(currentAudioIndex);
+  };
+
+  const handlePlayAudio = (id) => {
     if (!audioRef.current) return;
     const audios = { ...audioRef.current };
 
@@ -72,20 +114,24 @@ export const EditAudioPage = () => {
       if (key === id) {
         setActiveAudio(id);
         activeAudioRef.current = id;
-        if (rangeMap[key]?.start) item.currentTime = rangeMap[key]?.start ?? 0;
+        if (rangeMap[key]?.start)
+          item.currentTime = rangeMap[key]?.start / 1000 ?? 0;
 
+        // setInterval(() => {
+        //   console.log("mtnuma");
+        //   setProgress(rangeMap[key]?.end - rangeMap[key]?.start);
+        // }, 1000);
         item.play();
-        // console.log("key", key);
-        // console.log("rangeMap[key]?.end", rangeMap[key]?.end);
-        // if (rangeMap[key]?.end) {
-        //   item.addEventListener("timeupdate", function () {
-        //     if (item.currentTime >= rangeMap[key]?.end) {
-        //       console.log(`Paus ${key} ${item.currentTime}`);
-        //       item?.pause();
-        //       setActiveAudio(null);
-        //     }
-        //   });
-        // }
+
+        if (rangeMap[key]?.end) {
+          item.addEventListener("timeupdate", function () {
+            if (item.currentTime >= rangeMap[key]?.end) {
+              console.log(`Paus ${key} ${item.currentTime}`);
+              item?.pause();
+              setActiveAudio(null);
+            }
+          });
+        }
       } else {
         item?.pause();
       }
@@ -98,7 +144,19 @@ export const EditAudioPage = () => {
       setActiveAudio(null);
     }
   };
+  const handleAllPauseAudio = () => {
+    if (!audioRef.current) return;
+    const audioKeys = Object.keys(audioRef.current);
 
+    for (let i = 0; i < audioKeys.length; i++) {
+      const key = audioKeys[i];
+      const item = audioRef.current[key];
+
+      if (!item.paused) {
+        item.pause();
+      }
+    }
+  };
   const handleAudioEnded = (id) => {
     if (activeAudioRef.current === id) {
       setActiveAudio(null);
@@ -182,6 +240,7 @@ export const EditAudioPage = () => {
           });
       } catch (e) {}
     }
+    dispatch(setScrolltoActive());
     navigate("/orientation");
   };
 
@@ -435,12 +494,16 @@ export const EditAudioPage = () => {
 
     if (progressElement) {
       progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
+      progressElement.style.right = 100 - (endValue / max) * 100 + "%";
     }
   }
   const handleChange = (e, id) => {
+    console.log("fewfew");
+
     const { name, value } = e.target;
     const startValue = parseInt(startRefs.current[id].value);
+    console.log("start", startValue);
+
     const endValue = parseInt(endRefs.current[id].value);
     setCropId(id);
     let updatedStartValue = startValue;
@@ -480,6 +543,15 @@ export const EditAudioPage = () => {
     return false;
   };
 
+  function convertSeconds(seconds) {
+    if (seconds < 60) {
+      return `${seconds} sek`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
+  }
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
   return (
@@ -524,13 +596,14 @@ export const EditAudioPage = () => {
                             {...provided.dragHandleProps}
                             className="audio-crop mb-5"
                           >
-                            {/* <div>Time {item.seconds}</div> */}
+                            <div>Time {convertSeconds(item.seconds)}</div>
+
+                            {/* <ProgressBar progress={progress} /> */}
+
                             <div className="absolute top-0 bottom-0 -left-[40px] h-full">
                               {activeAudio !== item.uuid ? (
                                 <button
-                                  onClick={() =>
-                                    handlePlayAudio(item.uuid, index)
-                                  }
+                                  onClick={() => handlePlayAudio(item.uuid)}
                                 >
                                   <PlayIcon
                                     color={"fill-rose-100"}
@@ -592,7 +665,7 @@ export const EditAudioPage = () => {
                                   range={
                                     rangeMap[item.uuid] || {
                                       start: 0,
-                                      end: 100,
+                                      end: 100000,
                                     }
                                   }
                                   handleChange={(e) =>
@@ -671,8 +744,8 @@ export const EditAudioPage = () => {
         togglePauseResume={() => {}}
         // stopRecording={() => {}}
         stopRecording={stopRecording}
-        playAudio={handlePlayAudio}
-        pauseAudio={handlePauseAudio}
+        playAudio={handleAllPlayAudio}
+        pauseAudio={handleAllPauseAudio}
         deleteRecording={handleAllDeleteRecording}
         goEditorPage={goEditorPage}
         mergeAudio={mergeAudioData}

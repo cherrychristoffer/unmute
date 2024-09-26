@@ -17,7 +17,6 @@ import frame_image from "../assets/images/frame.png";
 import frame_landscape_image from "../assets/images/frame_landscape.png";
 
 import CropperComponent from "./Cropper";
-import { ImgComparisonSlider } from "@img-comparison-slider/react";
 import { setDisableAllActions } from "../features/image/imageSlice";
 
 const frame_padding = (scale, landscape) => {

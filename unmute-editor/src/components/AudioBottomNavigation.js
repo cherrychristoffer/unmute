@@ -17,7 +17,7 @@ import { UploadIcon } from "../assets/icons/icon_audio";
 export const AudioBottomNavigation = ({
   isPaused = false,
   togglePauseResume = () => {},
-  stopRecording = () => {},
+  goAdd = () => {},
   goEditorPage = () => {},
   playAudio = () => {},
   pauseAudio = () => {},
@@ -29,12 +29,12 @@ export const AudioBottomNavigation = ({
 
   const NAVIGATION = [
     {
-      label: "Delete",
+      label: "Slet",
       action: deleteRecording,
       icon: <NavCloseIcon />,
     },
     {
-      label: "Play",
+      label: "Afspil",
       action: playAudio,
       icon: <NavPlayIcon />,
     },
@@ -44,9 +44,9 @@ export const AudioBottomNavigation = ({
       icon: <NavPauseIcon />,
     },
     {
-      label: "Add",
+      label: "Tilføj",
       icon: <NavCheckIcon />,
-      action: goEditorPage,
+      action: goAdd,
       // action: () => {
       //   // dispatch(setScrolltoActive());
       //   // navigate("/orientation");
@@ -70,12 +70,13 @@ export const AudioBottomNavigation = ({
     // },
     {
       label: "Upload",
-      to: "/edit-audio/:id",
+      // to: "/edit-audio/:id",
       icon: <UploadIcon />,
+      action: goEditorPage,
     },
 
     {
-      label: "Add",
+      label: "Færdig",
       // to: "/orientation",
       action: mergeAudio,
       icon: <NavAddIcon />,
@@ -83,7 +84,7 @@ export const AudioBottomNavigation = ({
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
+    <div className="fixed bottom-100 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
       <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (

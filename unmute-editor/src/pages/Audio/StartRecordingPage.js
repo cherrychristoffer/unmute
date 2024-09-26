@@ -37,14 +37,14 @@ export const StartRecordingPage = () => {
   } = useAudioRecorder({ downloadFileExtension: "wav" });
 
   const audioRef = useRef();
-  const { activeUnmute } = useActiveUnmute();
+
   const [isRecordingValidate, setIsRecordingValidate] = useState(0);
   const [countDown, setCountDown] = useState(3);
   const [time, setTime] = useState(0);
-
+  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const { id } = useParams();
+  const { id: unmuteId } = useParams();
   const getQueryParams = (url) => {
     const params = new URLSearchParams(
       new URL(url, window.location.origin).search
@@ -52,7 +52,9 @@ export const StartRecordingPage = () => {
     return params.get("seconds");
   };
   const seconds = getQueryParams(location);
-
+  const activeUnmute = unmutes?.find(
+    (item) => item.properties?._uuid === unmuteId
+  );
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);
@@ -122,7 +124,7 @@ export const StartRecordingPage = () => {
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
-          navigate(`/edit-audio/${id}`);
+          navigate(`/edit-audio/${unmuteId}`);
         });
       });
     }

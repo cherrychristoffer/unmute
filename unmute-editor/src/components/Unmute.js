@@ -110,7 +110,7 @@ const Unmute = ({
 
   return (
     <>
-      <div className="snap-center flex items-center py-4">
+      <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', "snap-center flex items-center py-4")}>
         <div
           className={clsx(
             "relative flex justify-center",
@@ -227,7 +227,7 @@ const Unmute = ({
           <label
             htmlFor={`mage-add-${unmute.key}`}
             onClick={() => onDelete(unmute.key)}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
+            className="text-label font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
           >
             For lav opløsning
             <br />

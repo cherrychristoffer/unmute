@@ -49,8 +49,11 @@ export const addUnmuteToCart = async ({
     sections: "cart-icon-bubble",
   });
 
-  document.querySelector("#cart-icon-bubble").innerHTML =
-    response.data.sections["cart-icon-bubble"];
+  const cartIconBubble = document.querySelector("#cart-icon-bubble");
+
+  if (cartIconBubble) {
+    cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
+  }
 
   return response;
 };

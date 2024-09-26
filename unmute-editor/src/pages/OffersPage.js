@@ -79,7 +79,7 @@ export const OffersPage = () => {
   ];
 
   return (
-    <div className={"offers-page flex items-center py-10 pb-[80px]"}>
+    <div className={"offers-page flex items-center py-10 pb-[80px] sm:pb-[110px]"}>
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
@@ -120,7 +120,7 @@ export const OffersPage = () => {
                   >
                     {item.title}
                   </p>
-                  <p className="text-lg text-white text-[12px] my-1">
+                  <p className="text-white text-[12px] my-1">
                     {item.inactive ? (
                       <span style={{display: 'inline-block'}}> </span>
                       ) : (

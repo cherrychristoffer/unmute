@@ -15,8 +15,13 @@
 }*/
 
 :root {
+  --typeBaseSize: 16px !important;
   --shopify-header-height: 66px;
   --shopify-announcement-height: 0px;
+}
+
+html {
+  font-size: 10px !important;
 }
 
 /*********/
@@ -324,4 +329,9 @@ input[type="range"]::range-progress {
 .coming-soon {
   top: 30%;
   position: absolute;
+}
+
+/* Swiper Slider */
+.swiper-wrapper {
+  align-items: center;
 }

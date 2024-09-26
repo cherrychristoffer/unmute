@@ -84,7 +84,7 @@ export const AudioBottomNavigation = ({
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
       <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (
@@ -92,7 +92,7 @@ export const AudioBottomNavigation = ({
               key={index}
               onClick={item.action}
               className={
-                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400"
+                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg"
               }
             >
               {item.icon}
@@ -106,7 +106,7 @@ export const AudioBottomNavigation = ({
               to={item.to}
               className={(active) =>
                 clsx(
-                  "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400",
+                  "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg",
                   active ? "bg-beige-400" : ""
                 )
               }

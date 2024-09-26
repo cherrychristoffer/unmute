@@ -17,7 +17,7 @@ export const AudioIllustrations = () => {
   ];
 
   return (
-    <div className={"pb-[20px]"}>
+    <div className={"pb-[20px] md:flex md:items-end md:gap-x-8"}>
       {ONBOARDING.map((item, index) => (
         <div key={index} className="text-center mt-8 max-w-sm mx-auto">
           <img src={item.image} alt="No headphones" className="w-full" />

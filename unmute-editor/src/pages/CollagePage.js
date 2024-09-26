@@ -44,7 +44,7 @@ export const CollagePage = () => {
   return (
     <div className={"offers-page flex items-center py-10"}>
       <div className="content">
-        <div className="grid grid-cols-2 gap-6 mx-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mx-4">
           {COLLAGES.map((item, index) => (
             <div
               key={index}

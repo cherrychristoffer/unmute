@@ -19,6 +19,7 @@ import { Loader } from "../../components/Loader";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
 import ProgressBar from "./progress";
+import { setScrolltoActive } from "../../features/image/imageSlice";
 
 export const EditAudioPage = () => {
   const {
@@ -42,15 +43,12 @@ export const EditAudioPage = () => {
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
   const allAudioRefs = useRef({});
-
-  const [rangeMap, setRangeMap] = useState({});
+  const [activateButton, setActivateButton] = useState(0);
 
   const activeUnmute = unmutes?.find(
     (item) => item.properties?._uuid === unmuteId
   );
   const audioFiles = activeUnmute?.properties?._audios || [];
-
-  const dontShowAddTrack = audioFiles?.find((item) => item.notRecorded);
 
   const handleAllPlayAudio = async () => {
     pauseAllAudios();
@@ -59,6 +57,16 @@ export const EditAudioPage = () => {
 
     const audios = { ...allAudioRefs.current };
     const audioData = audioBlob?.map((item) => item.uuid);
+
+    useEffect(() => {
+      if (audioFiles?.length > 0) {
+        const totalSeconds = audioFiles.reduce((total, item) => {
+          const [minutes, seconds] = item.countdown.split(":").map(Number);
+          return total + minutes * 60 + seconds;
+        }, 0);
+        setActivateButton(totalSeconds);
+      }
+    }, [audioFiles]);
 
     let currentAudioIndex = 0;
 
@@ -118,10 +126,6 @@ export const EditAudioPage = () => {
             const [minutes, seconds] = minuteData?.split(":")?.map(Number);
             const dataSeconds = minutes * 60 + seconds;
 
-            setRangeMap({
-              start: 0,
-              end: String(dataSeconds),
-            });
             const audio = {
               file: responseData.url,
               countdown: convertToTimeFormat(responseData.duration),
@@ -200,16 +204,6 @@ export const EditAudioPage = () => {
             index: i,
           };
 
-          setRangeMap((prev) => ({
-            ...prev,
-            start: 0,
-            end: Number(dataSeconds),
-            [id]: {
-              start: 0,
-              end: Number(dataSeconds) * 1000,
-            },
-          }));
-
           setAudioBlob((prev) => [...prev, newData]);
           setIsLoading((prev) => ({ ...prev, [item.file]: false }));
         })
@@ -276,16 +270,6 @@ export const EditAudioPage = () => {
     return false;
   };
 
-  function convertSeconds(seconds) {
-    seconds = Math.round(seconds);
-    if (seconds < 60) {
-      return `${seconds} sek`;
-    }
-
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
-  }
   const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
   const pauseAllAudios = () => {
@@ -296,7 +280,6 @@ export const EditAudioPage = () => {
     }
     setActiveAudio(null);
   };
-
   return (
     <div className={"pb-[90px]"}>
       <div className="flex flex-col items-center">
@@ -346,10 +329,10 @@ export const EditAudioPage = () => {
         <div className="mt-16 flex flex-row justify-center items-center gap-4">
           <button
             className={`font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer 
-              ${dontShowAddTrack ? " cursor-default" : ""}`}
+              ${activateButton > 600 ? " cursor-default" : ""}`}
             onClick={goAdd}
-            style={{ opacity: dontShowAddTrack ? "0.5" : "1" }}
-            disabled={dontShowAddTrack}
+            style={{ opacity: activateButton > 600 ? "0.5" : "1" }}
+            disabled={activateButton > 600 ? true : false}
           >
             Tilføj en optagelse mere
           </button>

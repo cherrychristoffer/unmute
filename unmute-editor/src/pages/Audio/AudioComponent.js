@@ -37,7 +37,7 @@ export const AudioComponent = ({
 
   const [rangeMap, setRangeMap] = useState({
     start: 0,
-    end: item.seconds * 1000,
+    end: item?.seconds * 1000,
   });
   const priceGap = 1;
 
@@ -93,35 +93,7 @@ export const AudioComponent = ({
     }
   };
 
-  const handleDeleteRecording = (item) => {
-    if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
-      deleteFile({
-        path: item?.fileData?.file,
-      }).then(() => {
-        updateUnmuteInCart({
-          key: activeUnmute.key,
-          properties: {
-            ...activeUnmute.properties,
-            _audios: activeUnmute.properties?._audios.filter(
-              (audio) => audio.file !== item.fileData.file
-            ),
-          },
-        }).then(({ data }) => {
-          const activeItem = data.items.find(
-            (item) => item.properties._uuid === activeUnmute.properties._uuid
-          );
-          dispatch(updateUnmute(activeItem));
-          // dispatch(updateUnmutes(data.items));
-          setAudioBlob((prev) =>
-            prev.filter((audio) => audio.uuid !== item.uuid)
-          );
-        });
-      });
-    }
-  };
-
   const cropAudio = async (blob, start, end) => {
-    console.log("blob, start, end", blob, start, end);
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
     const arrayBuffer = await blob.arrayBuffer();
@@ -233,6 +205,18 @@ export const AudioComponent = ({
     }
   };
 
+  function convertSeconds(seconds) {
+    if (!seconds) return null;
+    seconds = Math.round(seconds);
+    if (seconds < 60) {
+      return `${seconds} sek`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
+  }
+
   return (
     <>
       <AudioTag
@@ -256,7 +240,8 @@ export const AudioComponent = ({
             {...provided.dragHandleProps}
             className="audio-crop mb-5"
           >
-            {/* <div>Time {item.seconds}</div> */}
+            <div>{convertSeconds(item?.seconds)}</div>
+
             <div className="absolute top-0 bottom-0 -left-[40px] h-full">
               {activeAudio !== item.uuid ? (
                 <button onClick={() => handlePlayAudio()}>
@@ -307,10 +292,10 @@ export const AudioComponent = ({
                               </button> */}
             </div>
             <div className="handle">
-              {item.seconds !== undefined && (
+              {item?.seconds !== undefined && (
                 <Range
                   min={0}
-                  max={item.seconds * 1000}
+                  max={item?.seconds * 1000}
                   range={rangeMap}
                   handleChange={(e) => handleChange(e, item.uuid)}
                   startRef={(ref) => (startRef.current = ref)}

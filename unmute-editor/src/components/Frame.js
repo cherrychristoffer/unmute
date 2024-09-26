@@ -187,10 +187,10 @@ export const Frame = () => {
         {unmutes.map((unmute, index) => (
           <SwiperSlide
             key={index}
-            style={
+            className={
               unmute?.properties?._orientation === "landscape"
-                ? sliderLanscapedSize
-                : sliderSize
+                ? "sliderLanscapedSize"
+                : "sliderSize"
             }
           >
             <Unmute
@@ -203,7 +203,7 @@ export const Frame = () => {
             />
           </SwiperSlide>
         ))}
-        <SwiperSlide style={sliderSize}>
+        <SwiperSlide className={"sliderSize"}>
           <EmptyBox />
         </SwiperSlide>
       </Swiper>

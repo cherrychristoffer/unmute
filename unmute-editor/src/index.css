@@ -344,11 +344,6 @@ input[type="range"]::range-progress {
   position: relative;
 }
 
-#SiteHeader {
-  padding: 0 !important;
-  background-color: #d8d0c4;
-}
-
 @media screen and (max-width: 1024px) {
   #MainContent .page-width {
     padding: 0 12px;

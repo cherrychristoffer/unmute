@@ -295,11 +295,6 @@ body {
   position: absolute;
 }
 
-/* Swiper Slider */
-.swiper-wrapper {
-  align-items: center;
-}
-
 /* Input Range */
 input[type="range"]::range-track {
   width: 100%;
@@ -340,7 +335,7 @@ input[type="range"]::range-progress {
 }
 
 /* Template override */
-#shopify-section-footer {
+#shopify-section-footer, .announcement-bar-section {
   display: none;
 }
 

@@ -42,6 +42,7 @@ export const UnmuteBottomNavigation = () => {
       // to: "/replace", // upload-image
       label: <>Skift&nbsp;foto</>,
       icon: <NavReplaceIcon />,
+      disabled: true
     },
   ];
   return (
@@ -51,14 +52,14 @@ export const UnmuteBottomNavigation = () => {
           <Link
             key={index}
             style={{
-              opacity: disableAllExtions ? "0.5" : "1",
-              pointerEvents: disableAllExtions ? "none" : "unset",
+              opacity: disableAllExtions ? "0.5" : "",
+              pointerEvents: disableAllExtions ? "none" : "",
             }}
             to={item.to}
             className={(active) =>
               clsx(
                 "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg",
-                active ? "bg-beige-400" : ""
+                active ? "bg-beige-400" : "", item.disabled ? 'opacity-50 pointer-events-none' : '',
               )
             }
           >
@@ -70,7 +71,7 @@ export const UnmuteBottomNavigation = () => {
         ))}
         <button
           onClick={() => dispatch(setScrolltoExtra())}
-          className={"bottom-nav-add-btn"}
+          className={"inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg"}
         >
           <NavAddIcon />
           <p className="font-sans text-sm text-muld-1000 text-center mt-2">

@@ -193,7 +193,6 @@ export const Frame = () => {
               index={index}
               swiperRef={swiperRef}
             />
-            <div className="h-[24px]"/>
           </SwiperSlide>
         ))}
         <SwiperSlide className={"sliderSize"}>

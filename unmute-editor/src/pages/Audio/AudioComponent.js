@@ -43,16 +43,19 @@ export const AudioComponent = ({
   });
   const priceGap = 1;
 
-  const timeupdate = useCallback((e) => {
-    const element = e.target;
-    if (
-      element.currentTime >= rangeMap?.end / 1000 &&
-      rangeMap?.end !== item?.seconds * 1000
-    ) {
-      audioRef.current?.pause();
-      handleAudioEnded();
-    }
-  }, []);
+  const timeupdate = useCallback(
+    (e) => {
+      const element = e.target;
+      if (
+        element.currentTime >= rangeMap?.end / 1000 &&
+        rangeMap?.end !== item?.seconds * 1000
+      ) {
+        audioRef.current?.pause();
+        handleAudioEnded();
+      }
+    },
+    [rangeMap?.end]
+  );
 
   useEffect(() => {
     if (makeEmptyAllListeners && audioRef.current) {

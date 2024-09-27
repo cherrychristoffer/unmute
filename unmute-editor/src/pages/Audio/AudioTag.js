@@ -1,7 +1,15 @@
 import React, { memo } from "react";
 
 export const AudioTag = memo(
-  ({ audioRef, handleAudioEnded, setCanPlay, allAudioRefs, uuid, file }) => {
+  ({
+    audioRef,
+    onErrorHandle,
+    handleAudioEnded,
+    setCanPlay,
+    allAudioRefs,
+    uuid,
+    file,
+  }) => {
     return (
       <audio
         ref={(el) => {
@@ -12,9 +20,7 @@ export const AudioTag = memo(
           setCanPlay(true);
         }}
         onEnded={() => handleAudioEnded(uuid)}
-        onError={(e) => {
-          alert("Error in audio");
-        }}
+        onError={onErrorHandle}
         src={file}
       ></audio>
     );

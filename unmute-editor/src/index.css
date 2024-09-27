@@ -182,11 +182,11 @@ body {
 }
 
 .audio-crop .range-min {
-  left: -5px;
+  left: 0;
 }
 
 .audio-crop .range-max {
-  right: -5px;
+  right: 0;
 }
 
 .audio-crop input[type="range" i]::-webkit-slider-runnable-track {
@@ -332,6 +332,7 @@ input[type="range"]::range-progress {
 .app-wrapper input[type=range] {
   max-width: 240px;
   margin: 0;
+  border: 0;
 }
 
 /* Template override */

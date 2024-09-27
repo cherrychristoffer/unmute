@@ -258,59 +258,6 @@ export const AudioComponent = ({
           >
             <div>{convertSeconds(item?.seconds)}</div>
 
-            <div className="absolute top-0 bottom-0 -left-[40px] h-full">
-              {activeAudio[item.uuid] ? (
-                <button onClick={() => handlePauseAudio()}>
-                  <PauseIcon
-                    color={"fill-rose-100"}
-                    size={16}
-                    className={
-                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                    }
-                  />
-                </button>
-              ) : (
-                <button
-                  onClick={() => handlePlayAudio()}
-                  disabled={!canPlay}
-                  style={{ opacity: canPlay ? "1" : "0.5" }}
-                >
-                  <PlayIcon
-                    color={"fill-rose-100"}
-                    size={16}
-                    className={
-                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                    }
-                    // style={{ cursor: "pointer" }}
-                  />
-                </button>
-              )}
-            </div>
-            <div className="absolute top-0 bottom-0 -right-[40px] h-full flex flex-col justify-between">
-              {isCropping && (
-                <button onClick={() => handleCropAudio(item, item.uuid)}>
-                  <CheckIcon
-                    color={"fill-rose-100"}
-                    size={16}
-                    className={
-                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                    }
-                  />
-                </button>
-              )}
-
-              {/* <button
-                                onClick={() => handleDeleteRecording(item)}
-                              >
-                                <CloseIcon
-                                  color={"fill-rose-100"}
-                                  size={16}
-                                  className={
-                                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                                  }
-                                />
-                              </button> */}
-            </div>
             <div className="handle">
               {item?.seconds !== undefined && (
                 <Range
@@ -338,6 +285,59 @@ export const AudioComponent = ({
                   borderColor: "#B0928C",
                 }}
               />
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div className="relative">
+                {activeAudio[item.uuid] ? (
+                  <button onClick={() => handlePauseAudio()} className={'block'}>
+                    <PauseIcon
+                      color={"fill-rose-100"}
+                      size={16}
+                      className={
+                        "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                      }
+                    />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handlePlayAudio()}
+                    disabled={!canPlay}
+                    className={'block'}
+                    style={{opacity: canPlay ? "1" : "0.5"}}
+                  >
+                    <PlayIcon
+                      color={"fill-rose-100"}
+                      size={16}
+                      className={
+                        "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                      }
+                    />
+                  </button>
+                )}
+              </div>
+              <div className="ml-auto relative">
+                {isCropping && (
+                  <button
+                    className={'px-4 h-[25px] py-1 bg-rose-500 rounded-lg flex items-center justify-center text-white text-[12px]'}
+                    onClick={() => handleCropAudio(item, item.uuid)}
+                  >
+                    <span>OK</span>
+                  </button>
+                )}
+
+                {/* <button
+                onClick={() => handleDeleteRecording(item)}
+              >
+                <CloseIcon
+                  color={"fill-rose-100"}
+                  size={16}
+                  className={
+                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                  }
+                />
+              </button> */}
+              </div>
             </div>
           </div>
         )}

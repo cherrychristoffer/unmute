@@ -124,7 +124,8 @@ export const StartRecordingPage = () => {
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
-          navigate(`/edit-audio/${unmuteId}`);
+          window.location.href = `/pages/editor#/edit-audio/${unmuteId}`;
+          // navigate(`/edit-audio/${unmuteId}`);
         });
       });
     }

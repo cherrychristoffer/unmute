@@ -11,10 +11,9 @@ import getBlobDuration from "get-blob-duration";
 import { convertVideoToAudio } from "../../api/video";
 import { getFileUrl, uploadFile } from "../../api/aws";
 import { updateUnmuteInCart } from "../../api/cart";
-import { addUnmute, updateUnmutes } from "../../features/user/userSlice";
+import { updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
-import { useActiveUnmute } from "../../api/useUnmutes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Loader } from "../../components/Loader";
 
 AWS.config.update({
@@ -31,10 +30,11 @@ export const UploadAudioPage = () => {
   const [_location, navigate] = useLocation();
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { activeUnmute } = useActiveUnmute();
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { unmutes } = useSelector((state) => state.user);
 
+  const { id } = useParams();
+  const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
   const uploadFileToS3 = (file, path) => {
     const progressBar = document.querySelector("#progress-bar");
 

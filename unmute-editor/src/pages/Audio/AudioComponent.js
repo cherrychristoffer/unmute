@@ -44,12 +44,14 @@ export const AudioComponent = ({
   function timeupdate(e) {
     const element = e.target;
     if (element.currentTime >= rangeMap?.end / 1000) {
+      audioRef.current.currentTime = 0;
       audioRef.current?.pause();
       setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
     }
   }
 
   const handleAudioEnded = () => {
+    audioRef.current.currentTime = 0;
     setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
     audioRef.current?.removeEventListener("timeupdate", timeupdate);
   };
@@ -62,6 +64,7 @@ export const AudioComponent = ({
       audioRef.current.currentTime = rangeMap?.start
         ? rangeMap?.start / 1000
         : 0;
+
     audioRef.current.play();
     if (rangeMap?.end) {
       audioRef.current.addEventListener("timeupdate", timeupdate);

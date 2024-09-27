@@ -177,7 +177,6 @@ export const AudioComponent = ({
   };
 
   const onErrorHandle = (e) => {
-    console.log("eeee", e);
     setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
   };
 

@@ -77,7 +77,6 @@ export const UploadAudioPage = () => {
 
   const handleChange = async (event) => {
     const recordingBlob = event.target.files[0];
-    console.log("recordt", recordingBlob);
 
     if (!recordingBlob) return;
     if (!recordingBlob.type?.startsWith("audio"))
@@ -89,12 +88,11 @@ export const UploadAudioPage = () => {
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
     const dataSeconds = minutes * 60 + seconds;
-
     const newUuid = uuid();
     const nameAudio = recordingBlob.name.split(".").pop();
 
     const file = new File([recordingBlob], `${newUuid}.${nameAudio}`, {
-      type: nameAudio,
+      type: recordingBlob?.type,
     });
 
     uploadFile({

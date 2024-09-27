@@ -27,6 +27,7 @@ export const AudioComponent = ({
   setAudioBlob,
   updateRef,
   makeEmptyAllListeners,
+  playFromAll,
 }) => {
   const dispatch = useDispatch();
   const audioRef = useRef(null);
@@ -74,6 +75,7 @@ export const AudioComponent = ({
         ? rangeMap?.start / 1000
         : 0;
 
+    playFromAll.current = false;
     audioRef.current.play();
     if (rangeMap?.end && rangeMap?.end !== item?.seconds * 1000) {
       audioRef.current.addEventListener("timeupdate", timeupdate);

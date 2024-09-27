@@ -45,6 +45,7 @@ export const EditAudioPage = () => {
   const allAudioRefs = useRef({});
   const [makeEmptyAllListeners, setMakeEmptyAllListeners] = useState(0);
   const [activateButton, setActivateButton] = useState(0);
+  const playFromAll = useRef(false);
 
   const activeUnmute = unmutes?.find(
     (item) => item.properties?._uuid === unmuteId
@@ -64,6 +65,7 @@ export const EditAudioPage = () => {
       if (index >= audioData.length) {
         return pauseAllAudios();
       }
+      playFromAll.current = true;
 
       const item = audios[audioData[index]];
       if (item) {
@@ -72,7 +74,9 @@ export const EditAudioPage = () => {
         item.play();
 
         item.onended = () => {
-          playAudio(index + 1);
+          if (playFromAll.current) {
+            playAudio(index + 1);
+          }
         };
       }
     };
@@ -313,6 +317,7 @@ export const EditAudioPage = () => {
                       setAudioBlob={setAudioBlob}
                       updateRef={updateRef}
                       makeEmptyAllListeners={makeEmptyAllListeners}
+                      playFromAll={playFromAll}
                     />
                   ))}
                   {provided.placeholder}{" "}

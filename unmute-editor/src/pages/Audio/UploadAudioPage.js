@@ -11,9 +11,10 @@ import getBlobDuration from "get-blob-duration";
 import { convertVideoToAudio } from "../../api/video";
 import { getFileUrl, uploadFile } from "../../api/aws";
 import { updateUnmuteInCart } from "../../api/cart";
-import { updateUnmutes } from "../../features/user/userSlice";
+import { addUnmute, updateUnmutes } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
-import { useDispatch, useSelector } from "react-redux";
+import { useActiveUnmute } from "../../api/useUnmutes";
+import { useDispatch } from "react-redux";
 import { Loader } from "../../components/Loader";
 
 AWS.config.update({
@@ -30,11 +31,10 @@ export const UploadAudioPage = () => {
   const [_location, navigate] = useLocation();
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { activeUnmute } = useActiveUnmute();
   const dispatch = useDispatch();
-  const { unmutes } = useSelector((state) => state.user);
-
   const { id } = useParams();
-  const activeUnmute = unmutes?.find((item) => item.properties?._uuid === id);
+
   const uploadFileToS3 = (file, path) => {
     const progressBar = document.querySelector("#progress-bar");
 
@@ -77,8 +77,6 @@ export const UploadAudioPage = () => {
 
   const handleChange = async (event) => {
     const recordingBlob = event.target.files[0];
-    console.log("recordt", recordingBlob);
-
     if (!recordingBlob) return;
     if (!recordingBlob.type?.startsWith("audio"))
       return alert("Invalid file type. Please upload an audio file.");
@@ -89,19 +87,17 @@ export const UploadAudioPage = () => {
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
     const dataSeconds = minutes * 60 + seconds;
-
+    const formatAudio = recordingBlob.name.split(".").pop();
     const newUuid = uuid();
-    const nameAudio = recordingBlob.name.split(".").pop();
-
-    const file = new File([recordingBlob], `${newUuid}.${nameAudio}`, {
-      type: nameAudio,
+    const file = new File([recordingBlob], `${newUuid}.${formatAudio}`, {
+      type: recordingBlob.type,
     });
 
     uploadFile({
       file,
       path: id,
     }).then(() => {
-      const fileUrl = getFileUrl(`${id}/${newUuid}.${nameAudio}`);
+      const fileUrl = getFileUrl(`${id}/${newUuid}.${formatAudio}`);
 
       const audio = {
         file: fileUrl,

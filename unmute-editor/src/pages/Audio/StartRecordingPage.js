@@ -107,7 +107,6 @@ export const StartRecordingPage = () => {
         file,
         path: activeUnmute.properties._uuid,
       }).then(() => {
-        console.log("here");
         const fileUrl = getFileUrl(
           `${activeUnmute.properties._uuid}/${newUuid}.wav`
         );
@@ -118,7 +117,6 @@ export const StartRecordingPage = () => {
           notRecorded: isRecordingValidate >= 600 ? true : false,
         };
 
-        console.log("aaaaaaaa");
         updateUnmuteInCart({
           key: activeUnmute.key,
           properties: {

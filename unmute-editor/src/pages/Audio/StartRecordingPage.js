@@ -73,6 +73,7 @@ export const StartRecordingPage = () => {
 
     isRecording && !isPaused ? 1000 : null
   );
+  console.log("isREC", isRecording);
 
   useInterval(
     () => {

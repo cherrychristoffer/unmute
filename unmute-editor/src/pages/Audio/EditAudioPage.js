@@ -61,16 +61,17 @@ export const EditAudioPage = () => {
     let currentAudioIndex = 0;
 
     const playAudio = (index) => {
-      if (index >= audioData.length) {
-        return pauseAllAudios();
-      }
+      // if (index >= audioData.length) {
+      //   return pauseAllAudios();
+      // }
 
       const item = audios[audioData[index]];
-      setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
       if (item) {
+        setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
         item.play();
 
         item.onended = () => {
+          console.log("stex");
           playAudio(index + 1);
         };
       }
@@ -78,7 +79,6 @@ export const EditAudioPage = () => {
 
     playAudio(currentAudioIndex);
   };
-  console.log("activeAudio", activeAudio);
   useEffect(() => {
     if (audioFiles?.length > 0) {
       const totalSeconds = audioFiles.reduce((total, item) => {

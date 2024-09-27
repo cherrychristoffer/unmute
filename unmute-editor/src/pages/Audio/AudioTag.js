@@ -11,6 +11,9 @@ export const AudioTag = memo(
         className="hidden"
         controls="controls"
         onEnded={() => handleAudioEnded(uuid)}
+        onError={(e) => {
+          alert("Error in audio");
+        }}
         src={file}
       ></audio>
     );

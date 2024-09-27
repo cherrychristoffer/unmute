@@ -57,10 +57,10 @@ export const AudioComponent = ({
   const handlePlayAudio = () => {
     if (!audioRef.current) return;
     pauseAllAudios();
-    audioRef.current.load();
+    audioRef.current?.load();
     setActiveAudio((prev) => ({ ...prev, [item.uuid]: true }));
-    if (rangeMap?.start)
-      audioRef.current.currentTime = rangeMap?.start / 1000 ?? 0;
+    // if (rangeMap?.start)
+    audioRef.current.currentTime = rangeMap?.start ? rangeMap?.start / 1000 : 0;
     audioRef.current.play();
     if (rangeMap?.end) {
       audioRef.current.addEventListener("timeupdate", timeupdate);

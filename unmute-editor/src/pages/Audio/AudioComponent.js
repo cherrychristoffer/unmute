@@ -176,6 +176,11 @@ export const AudioComponent = ({
     return `${minutes}:${seconds}`;
   };
 
+  const onErrorHandle = (e) => {
+    console.log("eeee", e);
+    setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
+  };
+
   const handleCropAudio = async (item, id) => {
     if (Number(rangeMap.start) < Number(rangeMap.end)) {
       const startAudio = rangeMap.start / 1000;
@@ -240,6 +245,7 @@ export const AudioComponent = ({
         setCanPlay={setCanPlay}
         allAudioRefs={allAudioRefs}
         uuid={item.uuid}
+        onErrorHandle={onErrorHandle}
         handleAudioEnded={handleAudioEnded}
         file={`${item.fileData.file}?c=${cacheBust}`}
       />
@@ -291,7 +297,10 @@ export const AudioComponent = ({
             <div className="flex items-center justify-between py-2">
               <div className="relative">
                 {activeAudio[item.uuid] ? (
-                  <button onClick={() => handlePauseAudio()} className={'block'}>
+                  <button
+                    onClick={() => handlePauseAudio()}
+                    className={"block"}
+                  >
                     <PauseIcon
                       color={"fill-rose-100"}
                       size={16}
@@ -304,8 +313,8 @@ export const AudioComponent = ({
                   <button
                     onClick={() => handlePlayAudio()}
                     disabled={!canPlay}
-                    className={'block'}
-                    style={{opacity: canPlay ? "1" : "0.5"}}
+                    className={"block"}
+                    style={{ opacity: canPlay ? "1" : "0.5" }}
                   >
                     <PlayIcon
                       color={"fill-rose-100"}
@@ -320,7 +329,9 @@ export const AudioComponent = ({
               <div className="ml-auto relative">
                 {isCropping && (
                   <button
-                    className={'px-4 h-[25px] py-1 bg-rose-500 rounded-lg flex items-center justify-center text-white text-[12px]'}
+                    className={
+                      "px-4 h-[25px] py-1 bg-rose-500 rounded-lg flex items-center justify-center text-white text-[12px]"
+                    }
                     onClick={() => handleCropAudio(item, item.uuid)}
                   >
                     <span>OK</span>

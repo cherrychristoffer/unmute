@@ -58,16 +58,6 @@ export const EditAudioPage = () => {
     const audios = { ...allAudioRefs.current };
     const audioData = audioBlob?.map((item) => item.uuid);
 
-    useEffect(() => {
-      if (audioFiles?.length > 0) {
-        const totalSeconds = audioFiles.reduce((total, item) => {
-          const [minutes, seconds] = item.countdown.split(":").map(Number);
-          return total + minutes * 60 + seconds;
-        }, 0);
-        setActivateButton(totalSeconds);
-      }
-    }, [audioFiles]);
-
     let currentAudioIndex = 0;
 
     const playAudio = (index) => {
@@ -88,6 +78,16 @@ export const EditAudioPage = () => {
 
     playAudio(currentAudioIndex);
   };
+
+  useEffect(() => {
+    if (audioFiles?.length > 0) {
+      const totalSeconds = audioFiles.reduce((total, item) => {
+        const [minutes, seconds] = item.countdown.split(":").map(Number);
+        return total + minutes * 60 + seconds;
+      }, 0);
+      setActivateButton(totalSeconds);
+    }
+  }, [audioFiles]);
 
   function convertToTimeFormat(seconds) {
     const roundedSeconds = Math.floor(seconds);

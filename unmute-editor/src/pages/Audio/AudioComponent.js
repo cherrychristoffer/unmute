@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { AudioTag } from "./AudioTag";
 import { Draggable } from "react-beautiful-dnd";
 
@@ -26,6 +26,7 @@ export const AudioComponent = ({
   activeUnmute,
   setAudioBlob,
   updateRef,
+  makeEmptyAllListeners,
 }) => {
   const dispatch = useDispatch();
   const audioRef = useRef(null);
@@ -41,14 +42,22 @@ export const AudioComponent = ({
   });
   const priceGap = 1;
 
-  function timeupdate(e) {
+  const timeupdate = useCallback((e) => {
     const element = e.target;
-    if (element.currentTime >= rangeMap?.end / 1000) {
-      audioRef.current.currentTime = 0;
+    if (
+      element.currentTime >= rangeMap?.end / 1000 &&
+      rangeMap?.end !== item?.seconds * 1000
+    ) {
       audioRef.current?.pause();
-      setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
+      handleAudioEnded();
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (makeEmptyAllListeners && audioRef.current) {
+      audioRef.current?.removeEventListener("timeupdate", timeupdate);
+    }
+  }, [makeEmptyAllListeners, timeupdate]);
 
   const handleAudioEnded = () => {
     audioRef.current.currentTime = 0;
@@ -66,7 +75,7 @@ export const AudioComponent = ({
         : 0;
 
     audioRef.current.play();
-    if (rangeMap?.end) {
+    if (rangeMap?.end && rangeMap?.end !== item?.seconds * 1000) {
       audioRef.current.addEventListener("timeupdate", timeupdate);
     }
   };

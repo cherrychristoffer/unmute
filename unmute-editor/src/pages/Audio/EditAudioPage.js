@@ -43,6 +43,7 @@ export const EditAudioPage = () => {
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
   const allAudioRefs = useRef({});
+  const [makeEmptyAllListeners, setMakeEmptyAllListeners] = useState(0);
   const [activateButton, setActivateButton] = useState(0);
 
   const activeUnmute = unmutes?.find(
@@ -54,20 +55,20 @@ export const EditAudioPage = () => {
     pauseAllAudios();
 
     if (!allAudioRefs.current) return;
-
+    setMakeEmptyAllListeners((prev) => prev + 1);
     const audios = { ...allAudioRefs.current };
     const audioData = audioBlob?.map((item) => item.uuid);
 
     let currentAudioIndex = 0;
-
     const playAudio = (index) => {
-      // if (index >= audioData.length) {
-      //   return pauseAllAudios();
-      // }
+      if (index >= audioData.length) {
+        return pauseAllAudios();
+      }
 
       const item = audios[audioData[index]];
       if (item) {
         setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
+        item.currentTime = 0;
         item.play();
 
         item.onended = () => {
@@ -311,6 +312,7 @@ export const EditAudioPage = () => {
                       activeUnmute={activeUnmute}
                       setAudioBlob={setAudioBlob}
                       updateRef={updateRef}
+                      makeEmptyAllListeners={makeEmptyAllListeners}
                     />
                   ))}
                   {provided.placeholder}{" "}

@@ -113,7 +113,8 @@ export const UploadAudioPage = () => {
         },
       }).then(({ data }) => {
         dispatch(updateUnmutes(data.items));
-        navigate(`/edit-audio/${id}`);
+        window.location.href = `/pages/editor#/edit-audio/${id}`;
+        // navigate(`/edit-audio/${id}`);
       });
     });
   };
@@ -156,7 +157,8 @@ export const UploadAudioPage = () => {
           dispatch(updateUnmutes(data.items));
 
           setLoading(false);
-          navigate(`/edit-audio/${id}`);
+          window.location.href = `/pages/editor#/edit-audio/${id}`;
+          // navigate(`/edit-audio/${id}`);
         });
       });
     } catch (error) {

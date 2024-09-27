@@ -77,6 +77,8 @@ export const UploadAudioPage = () => {
 
   const handleChange = async (event) => {
     const recordingBlob = event.target.files[0];
+    console.log("recordt", recordingBlob);
+
     if (!recordingBlob) return;
     if (!recordingBlob.type?.startsWith("audio"))
       return alert("Invalid file type. Please upload an audio file.");
@@ -89,15 +91,17 @@ export const UploadAudioPage = () => {
     const dataSeconds = minutes * 60 + seconds;
 
     const newUuid = uuid();
-    const file = new File([recordingBlob], `${newUuid}.wav`, {
-      type: "audio/wav",
+    const nameAudio = recordingBlob.name.split(".").pop();
+
+    const file = new File([recordingBlob], `${newUuid}.${nameAudio}`, {
+      type: nameAudio,
     });
 
     uploadFile({
       file,
       path: id,
     }).then(() => {
-      const fileUrl = getFileUrl(`${id}/${newUuid}.wav`);
+      const fileUrl = getFileUrl(`${id}/${newUuid}.${nameAudio}`);
 
       const audio = {
         file: fileUrl,

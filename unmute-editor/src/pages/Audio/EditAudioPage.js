@@ -71,7 +71,6 @@ export const EditAudioPage = () => {
         item.play();
 
         item.onended = () => {
-          console.log("stex");
           playAudio(index + 1);
         };
       }

@@ -12,9 +12,6 @@ export const AudioTag = memo(
           setCanPlay(true);
         }}
         onEnded={() => handleAudioEnded(uuid)}
-        onError={(e) => {
-          alert("Error in audio");
-        }}
         src={file}
       ></audio>
     );

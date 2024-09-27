@@ -157,7 +157,7 @@ export const StartRecordingPage = () => {
               </h1>
               {!isPaused && (
                 <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-                  Recording
+                  Օptager
                 </h2>
               )}
               {isPaused && (
@@ -186,7 +186,10 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio ref={audioRef} className="hidden">
+      <audio
+        ref={audioRef}
+        className="hidden"
+      >
         <source />
       </audio>
 

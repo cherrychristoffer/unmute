@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import { Link } from "wouter";
 
-import { NavAddIcon } from "../assets/icons/icon_nav_add";
+import { NavAddIcon } from "../assets/icons/icon_nav_add_image";
 import { NavCropIcon } from "../assets/icons/icon_nav_crop";
 import { NavFrameIcon } from "../assets/icons/icon_nav_frame";
 import { NavOrientationIcon } from "../assets/icons/icon_nav_orientation";
@@ -39,13 +39,13 @@ export const UnmuteBottomNavigation = () => {
       icon: <NavCropIcon />,
     },
     {
-      to: "/replace", // upload-image
+      // to: "/replace", // upload-image
       label: <>Skift&nbsp;foto</>,
       icon: <NavReplaceIcon />,
     },
   ];
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
+    <div className="fixed bottom-100 left-0 z-50 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
       <div className="grid sm:gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) => (
           <Link

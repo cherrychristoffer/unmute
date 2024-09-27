@@ -34,6 +34,7 @@ export const AudioComponent = ({
   const endRef = useRef(null);
   const [isCropping, setIsCropping] = useState(false);
   const { id: unmuteId } = useParams();
+  const [canPlay, setCanPlay] = useState(false);
 
   const [rangeMap, setRangeMap] = useState({
     start: 0,
@@ -235,6 +236,7 @@ export const AudioComponent = ({
     <>
       <AudioTag
         audioRef={audioRef}
+        setCanPlay={setCanPlay}
         allAudioRefs={allAudioRefs}
         uuid={item.uuid}
         handleAudioEnded={handleAudioEnded}
@@ -268,7 +270,11 @@ export const AudioComponent = ({
                   />
                 </button>
               ) : (
-                <button onClick={() => handlePlayAudio()}>
+                <button
+                  onClick={() => handlePlayAudio()}
+                  disabled={!canPlay}
+                  style={{ opacity: canPlay ? "1" : "0.5" }}
+                >
                   <PlayIcon
                     color={"fill-rose-100"}
                     size={16}

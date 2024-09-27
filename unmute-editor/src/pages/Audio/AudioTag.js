@@ -1,23 +1,12 @@
 import React, { memo } from "react";
 
 export const AudioTag = memo(
-  ({
-    audioRef,
-    onErrorHandle,
-    handleAudioEnded,
-    setCanPlay,
-    allAudioRefs,
-    uuid,
-    file,
-  }) => {
+  ({ audioRef, onErrorHandle, handleAudioEnded, allAudioRefs, uuid, file }) => {
     return (
       <audio
         ref={(el) => {
           audioRef.current = el;
           allAudioRefs.current[uuid] = el;
-        }}
-        onCanPlay={(e) => {
-          setCanPlay(true);
         }}
         onEnded={() => handleAudioEnded(uuid)}
         onError={onErrorHandle}

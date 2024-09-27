@@ -45,23 +45,24 @@ export const AudioComponent = ({
     const element = e.target;
     if (element.currentTime >= rangeMap?.end / 1000) {
       audioRef.current?.pause();
-      // setActiveAudio(null);
+      setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
     }
   }
 
   const handleAudioEnded = () => {
-    setActiveAudio(null);
+    setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
     audioRef.current?.removeEventListener("timeupdate", timeupdate);
   };
 
   const handlePlayAudio = () => {
     if (!audioRef.current) return;
     pauseAllAudios();
-    setActiveAudio(item.uuid);
+    setActiveAudio((prev) => ({ ...prev, [item.uuid]: true }));
+    if (rangeMap?.start)
+      audioRef.current.currentTime = rangeMap?.start / 1000 ?? 0;
     audioRef.current.play();
     if (rangeMap?.end) {
       audioRef.current.addEventListener("timeupdate", timeupdate);
-      console.log(audioRef);
     }
   };
 
@@ -70,7 +71,7 @@ export const AudioComponent = ({
     audioRef.current.pause();
     audioRef?.current?.removeEventListener("timeupdate", timeupdate);
 
-    setActiveAudio(null);
+    setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
   };
 
   function calculateValues(startValue, endValue, max, id) {
@@ -255,7 +256,17 @@ export const AudioComponent = ({
             <div>{convertSeconds(item?.seconds)}</div>
 
             <div className="absolute top-0 bottom-0 -left-[40px] h-full">
-              {activeAudio !== item.uuid ? (
+              {activeAudio[item.uuid] ? (
+                <button onClick={() => handlePauseAudio()}>
+                  <PauseIcon
+                    color={"fill-rose-100"}
+                    size={16}
+                    className={
+                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                    }
+                  />
+                </button>
+              ) : (
                 <button onClick={() => handlePlayAudio()}>
                   <PlayIcon
                     color={"fill-rose-100"}
@@ -264,16 +275,6 @@ export const AudioComponent = ({
                       "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
                     }
                     // style={{ cursor: "pointer" }}
-                  />
-                </button>
-              ) : (
-                <button onClick={() => handlePauseAudio()}>
-                  <PauseIcon
-                    color={"fill-rose-100"}
-                    size={16}
-                    className={
-                      "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                    }
                   />
                 </button>
               )}

@@ -39,7 +39,7 @@ export const EditAudioPage = () => {
   const [audioBlob, setAudioBlob] = useState([]);
   const { id: unmuteId } = useParams();
   const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
-  const [activeAudio, setActiveAudio] = useState(null);
+  const [activeAudio, setActiveAudio] = useState({});
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
   const allAudioRefs = useRef({});
@@ -62,11 +62,12 @@ export const EditAudioPage = () => {
 
     const playAudio = (index) => {
       if (index >= audioData.length) {
-        pauseAllAudios();
+        return pauseAllAudios();
       }
 
+      console.log("audioData[index]", audioData[index]);
       const item = audios[audioData[index]];
-      setActiveAudio(audioData[index]);
+      setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
       if (item) {
         item.play();
 
@@ -78,7 +79,7 @@ export const EditAudioPage = () => {
 
     playAudio(currentAudioIndex);
   };
-
+  console.log("activeAudio", activeAudio);
   useEffect(() => {
     if (audioFiles?.length > 0) {
       const totalSeconds = audioFiles.reduce((total, item) => {
@@ -278,7 +279,7 @@ export const EditAudioPage = () => {
     for (let key in audios) {
       allAudioRefs.current?.[key]?.pause();
     }
-    setActiveAudio(null);
+    setActiveAudio({});
   };
   return (
     <div className={"pb-[90px]"}>

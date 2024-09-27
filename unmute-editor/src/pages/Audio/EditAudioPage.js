@@ -65,7 +65,6 @@ export const EditAudioPage = () => {
         return pauseAllAudios();
       }
 
-      console.log("audioData[index]", audioData[index]);
       const item = audios[audioData[index]];
       setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
       if (item) {
@@ -276,9 +275,9 @@ export const EditAudioPage = () => {
   const pauseAllAudios = () => {
     if (!allAudioRefs.current) return;
     const audios = { ...allAudioRefs.current };
-    // for (let key in audios) {
-    //   allAudioRefs.current?.[key]?.pause();
-    // }
+    for (let key in audios) {
+      allAudioRefs.current?.[key]?.pause();
+    }
     setActiveAudio({});
   };
   return (

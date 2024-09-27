@@ -8,7 +8,7 @@ export const AudioTag = memo(
           audioRef.current = el;
           allAudioRefs.current[uuid] = el;
         }}
-        // className="hidden"
+        className="hidden"
         controls="controls"
         onEnded={() => handleAudioEnded(uuid)}
         src={file}

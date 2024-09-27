@@ -45,7 +45,8 @@ export const AudioBottomNavigation = ({
     },
     {
       label: "Tilføj",
-      icon: <NavCheckIcon />,
+
+      icon: <NavAddIcon />,
       action: goAdd,
       // action: () => {
       //   // dispatch(setScrolltoActive());
@@ -79,7 +80,7 @@ export const AudioBottomNavigation = ({
       label: "Færdig",
       // to: "/orientation",
       action: mergeAudio,
-      icon: <NavAddIcon />,
+      icon: <NavCheckIcon />,
     },
   ];
 

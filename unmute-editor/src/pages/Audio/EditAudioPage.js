@@ -276,9 +276,9 @@ export const EditAudioPage = () => {
   const pauseAllAudios = () => {
     if (!allAudioRefs.current) return;
     const audios = { ...allAudioRefs.current };
-    for (let key in audios) {
-      allAudioRefs.current?.[key]?.pause();
-    }
+    // for (let key in audios) {
+    //   allAudioRefs.current?.[key]?.pause();
+    // }
     setActiveAudio({});
   };
   return (

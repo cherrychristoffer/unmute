@@ -7,11 +7,18 @@ const cartUrl = `${window.Shopify.routes.root}cart`;
 
 export const fetchCartData = async () => axios.get(`${cartUrl}.js`);
 
-export const updateUnmuteInCart = async ({ key, properties }) =>
-  await axios.post(`${cartUrl}/change.js`, {
+export const updateUnmuteInCart = async ({ key, properties }) => {
+  const res = await axios.post(`${cartUrl}/change.js`, {
     id: key,
     properties,
   });
+
+  if (window.theme?.cart?.rerenderCart) {
+    window.theme.cart.rerenderCart()
+  }
+
+  return res
+}
 
 export const addUnmuteToCart = async ({
   quantity,
@@ -53,6 +60,10 @@ export const addUnmuteToCart = async ({
 
   if (cartIconBubble) {
     cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
+  }
+
+  if (window.theme?.cart?.rerenderCart) {
+    window.theme.cart.rerenderCart()
   }
 
   return response;

@@ -96,7 +96,7 @@ export const ReplacePage = () => {
     return (
             <div className={clsx("pb-[80px] sm:pb-[110px]", {'hidden': !replaceMode})}>
                 <style>{`.audio-hidden-replace {display: none;}`}</style>
-                <div className="mt-16 flex flex-row justify-center items-center gap-4">
+                <div className="mt-[20px] flex flex-row justify-center items-center gap-4">
                     <button
                         onClick={removeReplaceMode}
                         className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">

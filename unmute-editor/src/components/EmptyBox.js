@@ -86,7 +86,7 @@ export const EmptyBox = ({ orientation }) => {
           )}
         </div>
       </div>
-      <div className="extra-box text-rose-500 text-center h-[24px]">
+      <div className="extra-box text-rose-500 text-center text-[14px] -mt-[5px]">
         Tilføj ekstra UNMUTE og spar penge
       </div>
     </>

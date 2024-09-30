@@ -54,11 +54,11 @@ export const FramePage = () => {
   return (
     <div className={'pb-[80px] sm:pb-[110px]'}>
       <div className="flex flex-col items-center">
-        <div className="mt-16 flex flex-row justify-center items-center gap-6 max-w-sm">
+        <div className="mt-[20px] flex flex-row justify-center items-center gap-6 max-w-sm">
           {OAK_FRAMES.map((item, index) =>
             <div key={index} className={'text-center'}>
               <button onClick={() => handleClick(item.value)} className={'relative'}>
-                <img src={item.image} className="w-[70px] h-[70px] rounded-md" alt={item.value}/>
+                <img src={item.image} className="w-[60px] h-[60px] rounded-md" alt={item.value}/>
                 {activeUnmute?.properties?._frame === item.value && <CheckIcon color={'fill-rose-100'} size={16}
                                                                                className={'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'}/>}
               </button>

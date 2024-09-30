@@ -161,7 +161,7 @@ export const Frame = () => {
 
   return (
     <div
-      className={"pt-8"}
+      className={"pt-2"}
       onTouchMoveCapture={(e) => {
         swiperRef.current.swiper.allowTouchMove = true;
       }}
@@ -201,7 +201,7 @@ export const Frame = () => {
       </Swiper>
       <div className="flex flex-col items-center">
         {activeUnmute?.properties?._audios?.length > 0 ? (
-          <div className="flex flex-row items-center mt-12">
+          <div className="flex flex-row items-center">
             <Link
               to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
               className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
@@ -235,7 +235,7 @@ export const Frame = () => {
         ) : (
           <Link
             to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
-            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
+            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
             style={{
               opacity: !activeUnmute || disableAllExtions ? "0.5" : "1",
               pointerEvents:

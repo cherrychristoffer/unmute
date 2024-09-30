@@ -227,11 +227,11 @@ const Unmute = ({
           <div className="text-rose-500 text-center pt-8">
             For lav opløsning
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-8">
             <label
               htmlFor={`mage-add-${unmute.key}`}
               onClick={() => onDelete(unmute.key)}
-              className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
+              className="text-label font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
             >
               Tilføj nyt foto
             </label>

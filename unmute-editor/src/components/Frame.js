@@ -22,17 +22,6 @@ import "../assets/styles/swiperCustom.css";
 import { EmptyBox } from "./EmptyBox";
 import { useActiveUnmute } from "../api/useUnmutes";
 
-const sliderSize = {
-  width: "50%",
-  minWidth: "290px",
-  padding: "0 20px",
-};
-const sliderLanscapedSize = {
-  minWidth: "340px",
-  width: "55%",
-  padding: "0 20px",
-};
-
 export const Frame = () => {
   const cacheBust = Date.now();
   const audioRef = useRef();
@@ -41,7 +30,6 @@ export const Frame = () => {
   const dispatch = useDispatch();
 
   const [playing, setPlaying] = useState(false);
-  const [showExtra, setShowExtra] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
 
@@ -54,30 +42,34 @@ export const Frame = () => {
     (state) => state.user.activeUnmuteIndex
   );
 
+  const sortUnmutes = () => {
+    if (unmutes?.length !== 1) {
+      const sortedUnmutes = [...unmutes]?.sort((a, b) => {
+        const a_created = a.properties?._created;
+        const b_created = b.properties?._created;
+
+        if (a_created?.date !== b_created?.date)
+          return new Date(a_created?.date) - new Date(b_created?.date);
+
+        return a_created?.index - b_created?.index;
+      });
+      const itemsWithImage = sortedUnmutes.filter(
+        (item) => item.properties._images?.length > 0
+      );
+      setEditSlider((prev) => prev + 1);
+      setInitialSlide(itemsWithImage.length - 1);
+      const itemsWithoutImages = sortedUnmutes.filter(
+        (item) => !item.properties._images?.length
+      );
+
+      dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
+    }
+  };
+
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
       isAlreadyRendered.current = true;
-      if (unmutes?.length !== 1) {
-        const sortedUnmutes = [...unmutes]?.sort((a, b) => {
-          const a_created = a.properties?._created;
-          const b_created = b.properties?._created;
-
-          if (a_created?.date !== b_created?.date)
-            return new Date(a_created?.date) - new Date(b_created?.date);
-
-          return a_created?.index - b_created?.index;
-        });
-        const itemsWithImage = sortedUnmutes.filter(
-          (item) => item.properties._images?.length > 0
-        );
-        setEditSlider((prev) => prev + 1);
-        setInitialSlide(itemsWithImage.length - 1);
-        const itemsWithoutImages = sortedUnmutes.filter(
-          (item) => !item.properties._images?.length
-        );
-
-        dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
-      }
+      sortUnmutes();
     }
   }, [unmutes]);
 
@@ -119,7 +111,7 @@ export const Frame = () => {
     }
   }, [activeUnmuteIndex]);
 
-  const handlePlayAudio = (item) => {
+  const handlePlayAudio = () => {
     setPlaying(true);
     const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
     const parts = time.split(":");
@@ -169,7 +161,7 @@ export const Frame = () => {
 
   return (
     <div
-      className={"pt-8"}
+      className={"pt-2"}
       onTouchMoveCapture={(e) => {
         swiperRef.current.swiper.allowTouchMove = true;
       }}
@@ -187,10 +179,10 @@ export const Frame = () => {
         {unmutes.map((unmute, index) => (
           <SwiperSlide
             key={index}
-            style={
+            className={
               unmute?.properties?._orientation === "landscape"
-                ? sliderLanscapedSize
-                : sliderSize
+                ? "sliderLanscapedSize"
+                : "sliderSize"
             }
           >
             <Unmute
@@ -203,13 +195,13 @@ export const Frame = () => {
             />
           </SwiperSlide>
         ))}
-        <SwiperSlide style={sliderSize}>
+        <SwiperSlide className={"sliderSize"}>
           <EmptyBox />
         </SwiperSlide>
       </Swiper>
       <div className="flex flex-col items-center">
         {activeUnmute?.properties?._audios?.length > 0 ? (
-          <div className="flex flex-row items-center mt-12">
+          <div className="flex flex-row items-center">
             <Link
               to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
               className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
@@ -243,7 +235,7 @@ export const Frame = () => {
         ) : (
           <Link
             to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
-            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 mt-12 cursor-pointer"
+            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
             style={{
               opacity: !activeUnmute || disableAllExtions ? "0.5" : "1",
               pointerEvents:

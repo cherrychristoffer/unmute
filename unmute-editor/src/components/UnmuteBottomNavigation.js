@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import { Link } from "wouter";
 
-import { NavAddIcon } from "../assets/icons/icon_nav_add";
+import { NavAddIcon } from "../assets/icons/icon_nav_add_image";
 import { NavCropIcon } from "../assets/icons/icon_nav_crop";
 import { NavFrameIcon } from "../assets/icons/icon_nav_frame";
 import { NavOrientationIcon } from "../assets/icons/icon_nav_orientation";
@@ -39,38 +39,39 @@ export const UnmuteBottomNavigation = () => {
       icon: <NavCropIcon />,
     },
     {
-      to: "/replace", // upload-image
+      // to: "/replace", // upload-image
       label: <>Skift&nbsp;foto</>,
       icon: <NavReplaceIcon />,
+      disabled: true
     },
   ];
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full bg-beige-300 border-t border-beige-200">
-      <div className="grid gap-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
+    <div className="fixed bottom-0 left-0 z-10 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
+      <div className="grid sm:gap-y-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
         {NAVIGATION.map((item, index) => (
           <Link
             key={index}
             style={{
-              opacity: disableAllExtions ? "0.5" : "1",
-              pointerEvents: disableAllExtions ? "none" : "unset",
+              opacity: disableAllExtions ? "0.5" : "",
+              pointerEvents: disableAllExtions ? "none" : "",
             }}
             to={item.to}
             className={(active) =>
               clsx(
-                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400",
-                active ? "bg-beige-400" : ""
+                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg",
+                active ? "bg-beige-400" : "", item.disabled ? 'opacity-50 pointer-events-none' : '',
               )
             }
           >
             {item.icon}
-            <p className="font-sans text-sm text-muld-1000 text-center mt-2">
+            <p className="font-sans text-[10px] text-muld-1000 text-center mt-2">
               {item.label}
             </p>
           </Link>
         ))}
         <button
           onClick={() => dispatch(setScrolltoExtra())}
-          className={"bottom-nav-add-btn"}
+          className={"inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg"}
         >
           <NavAddIcon />
           <p className="font-sans text-sm text-muld-1000 text-center mt-2">

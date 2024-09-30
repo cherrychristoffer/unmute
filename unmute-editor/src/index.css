@@ -2,21 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/*@font-face {
-  font-family: 'Optima nova LT Pro';
-  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot');
-  src: url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.eot?#iefix') format('embedded-opentype'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff2') format('woff2'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.woff') format('woff'),
-  url('./assets/fonts/Optima-nova/OptimaNovaLTPro-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}*/
-
 :root {
-  --shopify-header-height: 66px;
+  --typeBaseSize: 16px !important;
+  --shopify-header-height: 68px;
   --shopify-announcement-height: 0px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --shopify-header-height: 56px;
+  }
+}
+
+html {
+  font-size: 10px !important;
 }
 
 /*********/
@@ -30,9 +29,8 @@
 }
 
 #root {
-  /*height: 100%;*/
   height: calc(
-    var(--app-height) - var(--header-height) -
+    var(--app-height) - var(--shopify-header-height) -
       var(--shopify-announcement-height)
   );
   letter-spacing: normal;
@@ -45,18 +43,12 @@
 }
 
 .app-wrapper.with-navigation {
-  height: calc(100% - 67px);
+  height: calc(100% - 110px);
 }
 
 @media (min-width: 769px) {
   .app-wrapper {
     max-width: 1200px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-wrapper {
-    max-width: 600px;
   }
 }
 
@@ -101,10 +93,11 @@
 /* Normalize */
 body {
   overflow: hidden;
-  /*
-  font-family: 'Optima nova LT Pro', sans-serif;
-  */
   background-color: #fafafa !important;
+}
+
+.app-wrapper .label-info, .app-wrapper label {
+  margin-bottom: 0;
 }
 
 /* Page height modifications */
@@ -138,30 +131,6 @@ body {
 
 #gtx-trans {
   display: none;
-}
-
-input[type="range"]::range-track {
-  width: 100%;
-  height: 20px;
-  border-radius: 10px;
-  background-color: #eee;
-  border: 2px solid #ccc;
-}
-
-input[type="range"]::range-thumb {
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  background-color: white;
-  border: 2px solid #1976d2;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-}
-
-input[type="range"]::range-progress {
-  height: 20px;
-  border-radius: 10px 0 0 10px;
-  background-color: #2196f3;
-  border: 2px solid #1976d2;
 }
 
 .audio-crop {
@@ -213,11 +182,11 @@ input[type="range"]::range-progress {
 }
 
 .audio-crop .range-min {
-  left: -5px;
+  left: 0;
 }
 
 .audio-crop .range-max {
-  right: -5px;
+  right: 0;
 }
 
 .audio-crop input[type="range" i]::-webkit-slider-runnable-track {
@@ -278,7 +247,8 @@ input[type="range"]::range-progress {
   width: 100%;
 }
 
-.image-compare .before, .image-compare .after {
+.image-compare .before,
+.image-compare .after {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -313,7 +283,7 @@ input[type="range"]::range-progress {
 }
 
 .opacity-2 {
-  opacity: 0.2
+  opacity: 0.2;
 }
 
 .position-relative {
@@ -323,4 +293,68 @@ input[type="range"]::range-progress {
 .coming-soon {
   top: 30%;
   position: absolute;
+}
+
+/* Input Range */
+input[type="range"]::range-track {
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #eee;
+  border: 2px solid #ccc;
+}
+
+input[type="range"]::range-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background-color: white;
+  border: 2px solid #1976d2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+input[type="range"]::range-progress {
+  height: 20px;
+  border-radius: 10px 0 0 10px;
+  background-color: #2196f3;
+  border: 2px solid #1976d2;
+}
+
+.app-wrapper input[type=range]::-webkit-slider-runnable-track {
+  height: auto;
+  background: transparent;
+}
+
+.app-wrapper input[type=range]::-webkit-slider-thumb {
+  margin-top: 0;
+}
+
+.app-wrapper input[type=range] {
+  max-width: 240px;
+  margin: 0;
+  border: 0;
+}
+
+/* Template override */
+#shopify-section-footer, .announcement-bar-section {
+  display: none;
+}
+
+#HeaderWrapper.header-wrapper--sticky {
+  position: relative;
+}
+
+#SiteHeader {
+  padding: 0;
+}
+
+@media screen and (max-width: 1024px) {
+  #MainContent .page-width {
+    padding: 0 12px;
+  }
+}
+
+/* Cropper styles */
+.cropper-crop-box:before {
+  display: none;
 }

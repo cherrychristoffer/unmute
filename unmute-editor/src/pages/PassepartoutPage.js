@@ -62,8 +62,8 @@ export const PassepartoutPage = () => {
   ];
 
   return (
-    <div className={"pb-[80px] flex justify-center"}>
-      <div className="mt-16 mx-6 flex flex-row justify-center items-center gap-6 max-w-sm">
+    <div className={"pb-[80px] sm:pb-[110px] flex justify-center"}>
+      <div className="mt-[20px] mx-6 flex flex-row justify-center items-center gap-6 max-w-sm">
         {PASSEPARTOUT.map((item, index) => (
           <div key={index} className={'text-center'}>
             <button

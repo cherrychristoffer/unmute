@@ -57,7 +57,7 @@ export const InspirationPage = () => {
         <TextareaAutosize
           ref={inspirationRef}
           minRows={4}
-          className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
+          className="w-full mt-12 p-4 h-36 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light max-w-[500px]"
           defaultValue={activeUnmute?.properties?._inspiration}
           placeholder="Skriv din tekst her..."
         />

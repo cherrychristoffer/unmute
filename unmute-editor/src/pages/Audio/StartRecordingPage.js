@@ -37,14 +37,14 @@ export const StartRecordingPage = () => {
   } = useAudioRecorder({ downloadFileExtension: "wav" });
 
   const audioRef = useRef();
-  const { activeUnmute } = useActiveUnmute();
   const [isRecordingValidate, setIsRecordingValidate] = useState(0);
   const [countDown, setCountDown] = useState(3);
-  const [time, setTime] = useState(0);
+  const { unmutes } = useSelector((state) => state.user);
 
+  const [time, setTime] = useState(0);
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
-  const { id } = useParams();
+  const { id: unmuteId } = useParams();
   const getQueryParams = (url) => {
     const params = new URLSearchParams(
       new URL(url, window.location.origin).search
@@ -52,7 +52,9 @@ export const StartRecordingPage = () => {
     return params.get("seconds");
   };
   const seconds = getQueryParams(location);
-
+  const activeUnmute = unmutes?.find(
+    (item) => item.properties?._uuid === unmuteId
+  );
   useEffect(() => {
     setIsRecordingValidate(Number(seconds));
   }, []);
@@ -122,7 +124,8 @@ export const StartRecordingPage = () => {
           },
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items));
-          navigate(`/edit-audio/${id}`);
+          window.location.href = `/pages/editor#/edit-audio/${unmuteId}`;
+          // navigate(`/edit-audio/${unmuteId}`);
         });
       });
     }
@@ -131,7 +134,7 @@ export const StartRecordingPage = () => {
   }, [recordingBlob]);
 
   return (
-    <div className={"pb-[80px] pt-10"}>
+    <div className={"pb-[80px] sm:pb-[110px] pt-10"}>
       <div className="flex flex-col items-center">
         <div className="mt-6">
           {!isRecording && (
@@ -152,7 +155,7 @@ export const StartRecordingPage = () => {
               </h1>
               {!isPaused && (
                 <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-                  Recording
+                  Օptager
                 </h2>
               )}
               {isPaused && (
@@ -169,7 +172,7 @@ export const StartRecordingPage = () => {
         <TextareaAutosize
           disabled
           minRows={4}
-          className="w-full mt-12 p-4 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light"
+          className="w-full mt-12 p-4 border border-rose-200 text-center bg-[#f3f3f3] rounded-lg text-muld-1000 font-light max-w-[500px]"
           defaultValue={activeUnmute?.properties?._inspiration}
         />
 
@@ -181,10 +184,7 @@ export const StartRecordingPage = () => {
         </button>
       </div>
 
-      <audio
-        ref={audioRef}
-        className="hidden"
-      >
+      <audio ref={audioRef} className="hidden">
         <source />
       </audio>
 

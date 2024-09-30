@@ -77,24 +77,27 @@ export const UploadAudioPage = () => {
 
   const handleChange = async (event) => {
     const recordingBlob = event.target.files[0];
-
     if (!recordingBlob) return;
+    if (!recordingBlob.type?.startsWith("audio"))
+      return alert("Invalid file type. Please upload an audio file.");
 
     const duration = await getBlobDuration(recordingBlob);
+    if (duration > 600) return alert("Audio length limit is 10 minutes.");
+
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
     const dataSeconds = minutes * 60 + seconds;
-
+    const formatAudio = recordingBlob.name.split(".").pop();
     const newUuid = uuid();
-    const file = new File([recordingBlob], `${newUuid}.wav`, {
-      type: "audio/wav",
+    const file = new File([recordingBlob], `${newUuid}.${formatAudio}`, {
+      type: recordingBlob.type,
     });
 
     uploadFile({
       file,
       path: id,
     }).then(() => {
-      const fileUrl = getFileUrl(`${id}/${newUuid}.wav`);
+      const fileUrl = getFileUrl(`${id}/${newUuid}.${formatAudio}`);
 
       const audio = {
         file: fileUrl,
@@ -110,13 +113,16 @@ export const UploadAudioPage = () => {
         },
       }).then(({ data }) => {
         dispatch(updateUnmutes(data.items));
-        navigate(`/edit-audio/${id}`);
+        window.location.href = `/pages/editor#/edit-audio/${id}`;
+        // navigate(`/edit-audio/${id}`);
       });
     });
   };
   const handleVideoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+    if (!file.type?.startsWith("video"))
+      return alert("Invalid file type. Please upload an video file.");
 
     try {
       setLoading(true);
@@ -151,7 +157,8 @@ export const UploadAudioPage = () => {
           dispatch(updateUnmutes(data.items));
 
           setLoading(false);
-          navigate(`/edit-audio/${id}`);
+          window.location.href = `/pages/editor#/edit-audio/${id}`;
+          // navigate(`/edit-audio/${id}`);
         });
       });
     } catch (error) {
@@ -186,7 +193,7 @@ export const UploadAudioPage = () => {
         <form className={"mt-5"}>
           <label
             htmlFor="image"
-            className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+            className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
             Upload lydfil
           </label>
@@ -202,7 +209,7 @@ export const UploadAudioPage = () => {
         <form className="mt-5">
           <label
             htmlFor="videoUpload"
-            className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+            className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
             Video til lyd
           </label>

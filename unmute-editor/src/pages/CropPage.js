@@ -37,8 +37,8 @@ export const CropPage = () => {
   };
 
   return (
-    <div className={"pb-[67px]"}>
-      <div className="mt-16 flex flex-row justify-center items-center gap-4">
+    <div className={"pb-[80px] sm:pb-[110px]"}>
+      <div className="mt-[20px] flex flex-row justify-center items-center gap-4">
         <button
           onClick={handleDecrease}
           className="w-[34px] h-[34px] bg-beige-600 rounded-full flex items-center justify-center"
@@ -63,7 +63,7 @@ export const CropPage = () => {
 
       <p
         className={
-          "font-serif text-rose-500 text-[12px] text-center leading-tight mt-6"
+          "font-serif text-rose-500 text-[12px] text-center leading-tight mt-4"
         }
       >
         Knip for at zoome, træk for at flytte

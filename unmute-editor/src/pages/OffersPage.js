@@ -30,8 +30,10 @@ export const OffersPage = () => {
   }, [unmutes]);
 
   // @ToDo: This function can be reverted once the Collage feature is implemented
-  // const navigateToCollage = () => navigate("/collage");
-  const navigateToCollage = () => { console.log('coming soon.') };
+  const navigateToCollage = () => navigate("/collage");
+  // const navigateToCollage = () => {
+  //   console.log("coming soon.");
+  // };
 
   if (isLoadingUnmutes || unmutes?.length !== 0)
     return (
@@ -42,7 +44,8 @@ export const OffersPage = () => {
 
   const UNMUTE = [
     {
-      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png",
+      image:
+        "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png",
       quantity: 1,
       title: "En UNMUTE",
       price: "499",
@@ -50,7 +53,8 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png",
+      image:
+        "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png",
       quantity: 2,
       title: "Mest populær",
       price: "898",
@@ -59,15 +63,17 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png",
+      image:
+        "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png",
       quantity: 1,
       title: "Collage",
       price: "399",
       onClick: navigateToCollage,
-      inactive: true, // @ToDo: inactive flag can be removed once the Collage feature is implemented
+      inactive: false, // @ToDo: inactive flag can be removed once the Collage feature is implemented
     },
     {
-      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png",
+      image:
+        "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png",
       quantity: 3,
       title: "Bedste tilbud",
       price: "1.257",
@@ -79,7 +85,9 @@ export const OffersPage = () => {
   ];
 
   return (
-    <div className={"offers-page flex items-center py-10 pb-[80px] sm:pb-[110px]"}>
+    <div
+      className={"offers-page flex items-center py-10 pb-[80px] sm:pb-[110px]"}
+    >
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
@@ -95,22 +103,24 @@ export const OffersPage = () => {
             <div
               key={index}
               onClick={() => item.onClick({ quantity: item.quantity })}
-              className={`flex flex-col items-center my-2 cursor-pointer ${item.inactive && 'pointer-events-none position-relative'}`}
+              className={`flex flex-col items-center my-2 cursor-pointer ${
+                item.inactive && "pointer-events-none position-relative"
+              }`}
             >
               <img
                 src={item.image}
-                className={`rounded-[3px] aspect-square object-cover ${item.inactive && 'opacity-2'}`}
+                className={`rounded-[3px] aspect-square object-cover ${
+                  item.inactive && "opacity-2"
+                }`}
                 alt={item.title}
               />
-              {item.inactive &&
-              <span className="coming-soon text-[20px]">
-                Kommer snart
-              </span>
-              }
+              {item.inactive && (
+                <span className="coming-soon text-[20px]">Kommer snart</span>
+              )}
               <div
                 className={`-mt-12 px-2.5 py-2 w-5/6 rounded-[4px] ${
                   item.special ? "bg-rose-500" : "bg-muld-1000"
-                } ${item.inactive && 'bg-[#a9a9a9] z-[1] pointer-events-none'}`}
+                } ${item.inactive && "bg-[#a9a9a9] z-[1] pointer-events-none"}`}
               >
                 <div className="font-light text-gray-700">
                   <p
@@ -122,28 +132,29 @@ export const OffersPage = () => {
                   </p>
                   <p className="text-white text-[12px] my-1">
                     {item.inactive ? (
-                      <span style={{display: 'inline-block'}}> </span>
-                      ) : (
+                      <span style={{ display: "inline-block" }}> </span>
+                    ) : (
                       `${item.price} DKK`
-                      )
-                    }
+                    )}
                   </p>
                   <p className="text-[10px] text-beige-200">
                     {item.inactive ? (
-                        <span style={{display: 'inline-block'}}> </span>
-                      ) : (
-                        <>
-                          Antal: {item.quantity}
-                          {item.saving && (
-                            <span className={
-                                    item.special ? "text-white" : "text-rose-500"
-                                  }
-                              > (Spar {item.saving} DKK)
-                            </span>
-                          )}
-                        </>
-                      )
-                    }
+                      <span style={{ display: "inline-block" }}> </span>
+                    ) : (
+                      <>
+                        Antal: {item.quantity}
+                        {item.saving && (
+                          <span
+                            className={
+                              item.special ? "text-white" : "text-rose-500"
+                            }
+                          >
+                            {" "}
+                            (Spar {item.saving} DKK)
+                          </span>
+                        )}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>

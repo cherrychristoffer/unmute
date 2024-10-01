@@ -6,6 +6,7 @@ export const useActiveUnmute = () => {
   );
 
   const unmutes = useSelector((state) => state.user.unmutes);
+  console.log("unmutes", unmutes);
 
   return {
     activeUnmuteIndex,

@@ -8,6 +8,7 @@ import { Loader } from "../components/Loader";
 import { updateUnmuteInCart } from "../api/cart";
 import { updateUnmutes } from "../features/user/userSlice";
 import { useActiveUnmute } from "../api/useUnmutes";
+import { v4 as uuid } from "uuid";
 
 import { getFileUrl, uploadFile } from "../api/aws";
 
@@ -38,12 +39,28 @@ export const UploadImagePage = () => {
           _original_images: [fileUrl], // TODO: Add to existing list of images
         },
       });
+
       dispatch(updateUnmutes(cart.data.items));
     } catch (err) {
       console.log(err);
     }
   };
 
+  const uploadImageUnmute = async (file) => {
+    try {
+      const uuid = activeUnmute.properties._uuid;
+      await uploadFile({
+        path: uuid,
+        file,
+      });
+      const fileUrl = await getFileUrl(`${uuid}/${file.name}`);
+
+      return fileUrl;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
   const handleChange = async (event) => {
     setLoading(true);
     const file = event.target.files[0];
@@ -56,13 +73,31 @@ export const UploadImagePage = () => {
   const handleCollageChange = async (event) => {
     setLoading(true);
     const files = event.target.files;
-    for (var i = 0; i < unmutes.length; i++) {
+    const localCollageImages = [];
+
+    for (let i = 0; i < files.length; i++) {
       if (files[i]) {
-        await uploadImage(unmutes[i], files[i]);
+        const fileUrl = await uploadImageUnmute(files[i]);
+        if (fileUrl) {
+          const data = { file: fileUrl, id: uuid() };
+          localCollageImages.push(data);
+        }
       }
     }
+
     setLoading(false);
-    navigate("/orientation");
+    console.log("localCollageImages", localCollageImages);
+
+    const cart = await updateUnmuteInCart({
+      key: activeUnmute.key,
+      properties: {
+        ...activeUnmute.properties,
+        _images: localCollageImages,
+      },
+    });
+
+    dispatch(updateUnmutes(cart.data.items));
+    navigate("/collage");
   };
 
   return (

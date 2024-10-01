@@ -84,7 +84,7 @@ export const ReplacePage = () => {
     }
 
     return (
-            <div className={clsx("flex flex-col items-center", {'hidden': !activeUnmute})}>
+            <div className={clsx("flex flex-col items-center", {'hidden': !activeUnmute?.properties?._images?.length})}>
                 <style>{`.audio-hidden-replace {display: none;}`}</style>
                 <label
                     className="text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"

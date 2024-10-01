@@ -5,10 +5,6 @@ import { addUnmute } from "../features/user/userSlice";
 import { addUnmuteToCart } from "../api/cart";
 import { useDispatch, useSelector } from "react-redux";
 
-import offer1 from "../assets/images/offers/offer1.jpg";
-import offer2 from "../assets/images/offers/offer2.jpg";
-import offer3 from "../assets/images/offers/offer3.jpg";
-import offer4 from "../assets/images/offers/offer4.jpg";
 import { Loader } from "../components/Loader";
 
 export const OffersPage = () => {
@@ -46,24 +42,24 @@ export const OffersPage = () => {
 
   const UNMUTE = [
     {
-      image: offer1,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png",
       quantity: 1,
-      title: "Unmute",
-      price: "399",
+      title: "En UNMUTE",
+      price: "499",
       onClick: handleClick,
       inactive: false,
     },
     {
-      image: offer2,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png",
       quantity: 2,
-      title: "Todays special",
-      price: "699",
+      title: "Mest populær",
+      price: "898",
       saving: 100,
       onClick: handleClick,
       inactive: false,
     },
     {
-      image: offer3,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png",
       quantity: 1,
       title: "Collage",
       price: "399",
@@ -71,11 +67,11 @@ export const OffersPage = () => {
       inactive: true, // @ToDo: inactive flag can be removed once the Collage feature is implemented
     },
     {
-      image: offer4,
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png",
       quantity: 3,
-      title: "Best offer",
-      price: "999",
-      saving: 200,
+      title: "Bedste tilbud",
+      price: "1.257",
+      saving: 240,
       special: true,
       onClick: handleClick,
       inactive: false,
@@ -83,18 +79,18 @@ export const OffersPage = () => {
   ];
 
   return (
-    <div className={"offers-page flex items-center py-10 pb-[80px]"}>
+    <div className={"offers-page flex items-center py-10 pb-[80px] sm:pb-[110px]"}>
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
           <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-            Choose 3 and
+            Vælg antal
             <br />
-            save 100 DKK
+            Lav flere og spar penge
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mx-4 mt-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mx-4 mt-14">
           {UNMUTE.map((item, index) => (
             <div
               key={index}
@@ -107,8 +103,8 @@ export const OffersPage = () => {
                 alt={item.title}
               />
               {item.inactive &&
-              <span className="coming-soon text-[25px]">
-                Coming Soon
+              <span className="coming-soon text-[20px]">
+                Kommer snart
               </span>
               }
               <div
@@ -124,20 +120,30 @@ export const OffersPage = () => {
                   >
                     {item.title}
                   </p>
-                  <p className="text-lg text-white text-[12px] my-1">
-                    {item.price} DKK
+                  <p className="text-white text-[12px] my-1">
+                    {item.inactive ? (
+                      <span style={{display: 'inline-block'}}> </span>
+                      ) : (
+                      `${item.price} DKK`
+                      )
+                    }
                   </p>
                   <p className="text-[10px] text-beige-200">
-                    {item.quantity} unmute {item.quantity === 1 && "frame"}
-                    {item.saving && (
-                      <span
-                        className={
-                          item.special ? "text-white" : "text-rose-500"
-                        }
-                      >
-                        (Save {item.saving} DKK)
-                      </span>
-                    )}
+                    {item.inactive ? (
+                        <span style={{display: 'inline-block'}}> </span>
+                      ) : (
+                        <>
+                          Antal: {item.quantity}
+                          {item.saving && (
+                            <span className={
+                                    item.special ? "text-white" : "text-rose-500"
+                                  }
+                              > (Spar {item.saving} DKK)
+                            </span>
+                          )}
+                        </>
+                      )
+                    }
                   </p>
                 </div>
               </div>

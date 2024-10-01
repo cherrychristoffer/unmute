@@ -20,7 +20,7 @@ import { PassepartoutPage } from "./pages/PassepartoutPage";
 import { ReplacePage } from "./pages/ReplacePage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
-import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
+// import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
 // import { AudioPage } from "./pages/Audio/AudioPage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
@@ -110,10 +110,10 @@ function App() {
         {/*  path="/audio/:id"*/}
         {/*  component={AudioPage}*/}
         {/*/>*/}
-        <Route
-          path="/audio-approach"
-          component={AudioApproachPage}
-        />
+        {/*<Route*/}
+        {/*  path="/audio-approach"*/}
+        {/*  component={AudioApproachPage}*/}
+        {/*/>*/}
         <Route
           path="/audio-upload/:id"
           component={UploadAudioPage}

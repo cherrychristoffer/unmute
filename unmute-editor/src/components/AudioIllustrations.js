@@ -1,28 +1,23 @@
 import { React } from "react";
 
-import distance from "../assets/images/audio/distance.png";
-import inspiration from "../assets/images/audio/inspiration.png";
-import no_headphones from "../assets/images/audio/no_headphones.png";
-
-
 export const AudioIllustrations = () => {
   const ONBOARDING = [
     {
-      image: no_headphones,
-      label: "Do not use in-ears to record",
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/no_headphones.png",
+      label: "Brug ikke headset til at optage",
     },
     {
-      image: distance,
-      label: "Min. distance to phone 15 cm",
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/distance.png",
+      label: "Hold ca. 15 cm fra mikrofonen.",
     },
     {
-      image: inspiration,
-      label: "Write some inpiration text",
+      image: "https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/inspiration.png",
+      label: "Skriv stikord til din optagelse",
     },
   ];
 
   return (
-    <div className={"pb-[20px]"}>
+    <div className={"pb-[20px] md:flex md:items-end md:gap-x-8"}>
       {ONBOARDING.map((item, index) => (
         <div key={index} className="text-center mt-8 max-w-sm mx-auto">
           <img src={item.image} alt="No headphones" className="w-full" />

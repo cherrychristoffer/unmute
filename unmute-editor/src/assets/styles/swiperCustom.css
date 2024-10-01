@@ -1,3 +1,15 @@
 .swiper {
   padding-bottom: 15px;
 }
+
+.sliderSize {
+  width: 25%;
+  min-width: 290px;
+  padding: 0 20px;
+}
+
+.sliderLanscapedSize {
+  min-width: 340px;
+  width: 30%;
+  padding: 0 20px;
+}

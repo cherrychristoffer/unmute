@@ -1,11 +1,11 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import clsx from 'clsx'
-import { setReplaceIndex, setImages, setReplaceMode } from "../features/replace/replaceSlice";
+import { setReplaceIndex, setReplaceMode } from "../features/replace/replaceSlice";
 import { photosEnhance } from '../api/image'
 import {useActiveUnmute} from "../api/useUnmutes";
-import {duplicateUnmuteToCart, removeUnmuteInCart} from "../api/cart";
-import {replaceUnmute} from "../features/user/userSlice";
+import {duplicateUnmuteToCart, removeUnmuteInCart, updateUnmuteInCart} from "../api/cart";
+import {replaceUnmute, updateUnmutes} from "../features/user/userSlice";
 import {getFileUrl, uploadFile} from "../api/aws";
 
 function base64ToFile(base64String, filename) {
@@ -27,18 +27,11 @@ function base64ToFile(base64String, filename) {
 
 
 export const ReplacePage = () => {
+    const [loading, setLoading] = useState(false)
     const dispatch = useDispatch();
     const {activeUnmute} = useActiveUnmute()
     const activeUnmuteIndex = useSelector(state => state.user.activeUnmuteIndex)
-    const replaceIndex = useSelector(state => state.replace.replaceIndex)
     const replaceMode = useSelector(state => state.replace.replaceMode)
-    const afterImage = useSelector(state => state.replace.afterImage)
-
-    useEffect(() => {
-        if (activeUnmute && replaceIndex !== activeUnmuteIndex && replaceMode && !activeUnmute.properties._enhanced) {
-            handleEnhance()
-        }
-    }, [activeUnmute, replaceIndex, activeUnmuteIndex, replaceMode])
 
     useEffect(() => {
         if (activeUnmute && !activeUnmute.properties._enhanced) {
@@ -52,70 +45,59 @@ export const ReplacePage = () => {
     }, [activeUnmuteIndex, activeUnmute])
 
     // Function to simulate the image enhancement process
-    const handleEnhance = async () => {
-        if (activeUnmute.properties._images.length) {
-            dispatch(setReplaceIndex(activeUnmuteIndex))
-            const img = activeUnmute.properties._images[0]
-            const key = img.split('/').slice(-2).join('/')
-            const afterImage = await photosEnhance(key)
-            dispatch(setImages({
-                beforeImage: img,
-                afterImage
-            }))
-        }
-    };
+    // const handleEnhance = async () => {
+    //     if (activeUnmute.properties._images.length) {
+    //         dispatch(setReplaceIndex(activeUnmuteIndex))
+    //         const img = activeUnmute.properties._images[0]
+    //         const key = img.split('/').slice(-2).join('/')
+    //         return await photosEnhance(key)
+    //     }
+    // };
 
     const removeReplaceMode = () => {
         dispatch(setReplaceMode(false))
         dispatch(setReplaceIndex(-1))
     }
 
-    const onYes = async () => {
-        const file = base64ToFile(afterImage, 'image-enhance.png')
-        const uuid = activeUnmute.properties._uuid
-        await uploadFile({
-            file,
-            path: uuid,
-        })
-        const imgUrl = getFileUrl(
-            `${uuid}/image-enhance.png`
-        );
+    const handleChange = async (event) => {
+        const uuid = activeUnmute._uuid;
+        const file = event.target.files[0];
+        setLoading(true)
 
-        removeUnmuteInCart(activeUnmute.key).then(() => {
-            duplicateUnmuteToCart({
+        uploadFile({
+            path: uuid,
+            file,
+        }).then(() => {
+            const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+            updateUnmuteInCart({
                 key: activeUnmute.key,
                 properties: {
                     ...activeUnmute.properties,
-                    _images: [imgUrl],
-                    _enhanced: true,
+                    _images: [fileUrl],
+                    _original_images: [fileUrl],
                 },
-            }).then(({data}) => {
-                dispatch(replaceUnmute({index: data.items[0].properties._created.index, unmute: data.items[0]}))
-                removeReplaceMode()
+            }).then(({ data }) => {
+                dispatch(updateUnmutes(data.items));
+                setLoading(false)
             });
         });
     }
 
     return (
-            <div className={clsx("pb-[80px]", {'hidden': !replaceMode})}>
+            <div className={clsx("flex flex-col items-center", {'hidden': !activeUnmute})}>
                 <style>{`.audio-hidden-replace {display: none;}`}</style>
-                <div className="mt-16 flex flex-row justify-center items-center gap-4">
-                    <button
-                        onClick={removeReplaceMode}
-                        className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
-                        No thanks
-                    </button>
-                    <button
-                        className="font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer"
-                        onClick={onYes}
-                    >
-                        Yes (+49DKK)
-                    </button>
-                </div>
-
-                <p className={"font-serif text-rose-500 text-2xl text-center leading-tight mt-10"}>
-                    AI-Enhance your photo
-                </p>
+                <label
+                    className="text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
+                    htmlFor={`upload-nyt-oto-${activeUnmute?.key}`}>
+                    {loading ? 'Loading...' : 'Upload nyt foto'}
+                </label>
+                <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    id={`upload-nyt-oto-${activeUnmute?.key}`}
+                    onChange={handleChange}
+                />
             </div>
         )
 };

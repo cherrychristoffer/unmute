@@ -24,17 +24,16 @@ const frame_padding = (scale, landscape) => {
   // for landscape it was 17
 
   return {
-    paddingTop: `${13 * scale}px`,
-    paddingRight: `${13 * scale}px`,
-    paddingBottom: `${13 * scale}px`,
-    paddingLeft: `${13 * scale}px`,
+    paddingTop: `${10 * scale}px`,
+    paddingRight: `${10 * scale}px`,
+    paddingBottom: `${10 * scale}px`,
+    paddingLeft: `${10 * scale}px`,
   };
 };
 
 const Unmute = ({
   unmute,
   onDelete,
-  length,
   activeUnmute,
   index,
   swiperRef,
@@ -44,10 +43,6 @@ const Unmute = ({
   const [loading, setLoading] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false)
-  const replaceIndex = useSelector((state) => state.replace.replaceIndex);
-  const replaceMode = useSelector((state) => state.replace.replaceMode);
-  const beforeImage = useSelector((state) => state.replace.beforeImage);
-  const afterImage = useSelector((state) => state.replace.afterImage);
 
   const [frameWidth, setFrameWidth] = useState();
   const frameRef = useRef();
@@ -85,7 +80,7 @@ const Unmute = ({
     },
   } = unmute;
 
-  const scale = { none: 1, small: 1.7, medium: 2, large: 3 }[passepartout];
+  const scale = { none: 1, small: 3.5, medium: 5.5, large: 7 }[passepartout];
   const isLandscape = orientation === "landscape";
 
   const frame = isLandscape ? frame_landscape_image : frame_image;
@@ -112,7 +107,7 @@ const Unmute = ({
 
   return (
     <>
-      <div className="snap-center flex items-center py-4">
+      <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', "snap-center flex items-center py-4")}>
         <div
           className={clsx(
             "relative flex justify-center",
@@ -136,46 +131,7 @@ const Unmute = ({
           />
           {images && images.length > 0 ? (
             <>
-              {replaceIndex === index &&
-                activeUnmute &&
-                afterImage &&
-                beforeImage && (
-                  <div
-                    className={clsx(
-                      frame_width,
-                      "absolute h-full object-cover overflow-hidden"
-                    )}
-                  >
-                    {/*<ImgComparisonSlider className="slider-example-split-line">
-                      <img slot="first" src={beforeImage}/>
-                      <img slot="second" src={afterImage}/>
-                    </ImgComparisonSlider>*/}
-
-                    <div className="image-compare">
-                      <div className="before-wrapper">
-                        <div
-                          className={"before"}
-                          style={{
-                            backgroundImage: `url(${beforeImage})`,
-                            width: frameWidth,
-                          }}
-                        />
-                      </div>
-                      <img src={afterImage} className={"after-image"} alt="" />
-                    </div>
-
-                    <div
-                      className="img-info flex justify-between absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-serif z-[2]"
-                      style={{ width: "calc(100% - 34px)" }}
-                    >
-                      <span className={"w-1/2 text-center"}>Before</span>
-                      <span className={"w-1/2 text-center"}>After</span>
-                    </div>
-                  </div>
-                )}
-
-              {(replaceIndex !== index || !replaceMode) && (
-                <CropperComponent
+              <CropperComponent
                   images={images}
                   frame_padding={frame_padding}
                   scale={scale}
@@ -185,8 +141,7 @@ const Unmute = ({
                   activeUnmute={activeUnmute}
                   index={index}
                   swiperRef={swiperRef}
-                />
-              )}
+              />
               {smallImage ? (
                 <button
                   onClick={() => setOpenConfirm(true)}
@@ -225,21 +180,26 @@ const Unmute = ({
       </div>
 
       {smallImage && (
-        <div className="flex justify-center pt-8">
-          <label
-            htmlFor={`mage-add-${unmute.key}`}
-            onClick={() => setOpenConfirm(true)}
-            className="font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
-          >
-            Low resolution - Add new photo
-          </label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg"
-            className="hidden"
-            id={`mage-add-${unmute.key}`}
-            onChange={handleChange}
-          />
+        <div>
+          <div className="text-rose-500 text-center pt-8">
+            For lav opløsning
+          </div>
+          <div className="flex justify-center">
+            <label
+              htmlFor={`mage-add-${unmute.key}`}
+              onClick={() => setOpenConfirm(true)}
+              className="text-label font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
+            >
+              Tilføj nyt foto
+            </label>
+            <input
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              className="hidden"
+              id={`mage-add-${unmute.key}`}
+              onChange={handleChange}
+            />
+          </div>
         </div>
       )}
 

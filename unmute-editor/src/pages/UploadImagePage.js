@@ -66,20 +66,17 @@ export const UploadImagePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-24">
+    <div className="flex flex-col items-center py-24">
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Upload</h1>
           <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-            Choose your favorite photo
-            <br /> or create a collage of your
-            <br />
-            favorite moments.
+            Vælg dit ønskede foto
           </h2>
 
           {loading && (
             <h2 className="mt-56 font-serif text-rose-500 text-3xl text-center flex flex-col items-center justify-center">
-              Uploading...
+              Uploader...
               <Loader size={"w-24 h-24"} />
             </h2>
           )}
@@ -90,9 +87,9 @@ export const UploadImagePage = () => {
                 <form>
                   <label
                     htmlFor="image"
-                    className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+                    className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
                   >
-                    Choose photo from Phone
+                    Vælg fotos
                   </label>
                   <input
                     type="file"
@@ -106,7 +103,7 @@ export const UploadImagePage = () => {
                 <form className="mt-5">
                   <label
                     htmlFor="image"
-                    className="block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+                    className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
                   >
                     Create Collage Choose photos
                   </label>

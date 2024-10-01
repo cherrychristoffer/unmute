@@ -72,7 +72,7 @@ export const EmptyBox = ({ orientation }) => {
             </div>
           ) : (
             <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <label htmlFor={`mage-add-key`}>
+              <label htmlFor={`mage-add-key`} className={'mb-0'}>
                 <PlusIcon size={20} className={"fill-white"} />
               </label>
               <input
@@ -86,8 +86,8 @@ export const EmptyBox = ({ orientation }) => {
           )}
         </div>
       </div>
-      <div className="extra-box text-rose-500 text-center">
-        Add extra photo and save money
+      <div className="extra-box text-rose-500 text-center text-[14px] -mt-[5px]">
+        Tilføj ekstra UNMUTE og spar penge
       </div>
     </>
   );

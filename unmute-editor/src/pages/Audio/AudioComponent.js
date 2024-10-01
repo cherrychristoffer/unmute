@@ -28,6 +28,7 @@ export const AudioComponent = ({
   updateRef,
   makeEmptyAllListeners,
   playFromAll,
+  handleDeleteRecording,
 }) => {
   const dispatch = useDispatch();
   const audioRef = useRef(null);
@@ -324,7 +325,10 @@ export const AudioComponent = ({
                     />
                   </button>
                 ) : (
-                  <button onClick={() => handlePlayAudio()} className={"block"}>
+                  <button
+                    onClick={() => handleDeleteRecording(item)}
+                    className={"block"}
+                  >
                     <PlayIcon
                       color={"fill-rose-100"}
                       size={16}
@@ -335,6 +339,7 @@ export const AudioComponent = ({
                   </button>
                 )}
               </div>
+
               <div className="ml-auto relative">
                 {isCropping && (
                   <button
@@ -360,6 +365,7 @@ export const AudioComponent = ({
               </button> */}
               </div>
             </div>
+            {/* <div onClick={() => handleDeleteRecording(item)}>jnjel</div> */}
           </div>
         )}
       </Draggable>

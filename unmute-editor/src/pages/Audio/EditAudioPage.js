@@ -1,15 +1,15 @@
-import { Fragment, React, memo, useEffect, useRef, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 
 import axios from "axios";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { deleteFile } from "../../api/aws";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "wouter";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 
 import { updateUnmuteInCart } from "../../api/cart";
-import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
+import { updateUnmute } from "../../features/user/userSlice";
 import { v4 as uuid } from "uuid";
 import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
 
@@ -18,7 +18,7 @@ import { useActiveUnmute } from "../../api/useUnmutes";
 import { Loader } from "../../components/Loader";
 import { mergeAudio } from "../../api/inspiration";
 import { AudioComponent } from "./AudioComponent";
-import ProgressBar from "./progress";
+
 import { setScrolltoActive } from "../../features/image/imageSlice";
 
 export const EditAudioPage = () => {
@@ -239,7 +239,32 @@ export const EditAudioPage = () => {
   const goEditorPage = () => {
     navigate(`audio-upload/${unmuteId}`);
   };
-
+  const handleDeleteRecording = (item) => {
+    if (confirm("Slet LYDFIL? Dette kan ikke gøres om")) {
+      deleteFile({
+        path: item?.fileData?.file,
+      }).then(() => {
+        updateUnmuteInCart({
+          key: activeUnmute.key,
+          properties: {
+            ...activeUnmute.properties,
+            _audios: activeUnmute.properties?._audios.filter(
+              (audio) => audio.file !== item.fileData.file
+            ),
+          },
+        }).then(({ data }) => {
+          const activeItem = data.items.find(
+            (item) => item.properties._uuid === activeUnmute.properties._uuid
+          );
+          dispatch(updateUnmute(activeItem));
+          // dispatch(updateUnmutes(data.items));
+          setAudioBlob((prev) =>
+            prev.filter((audio) => audio.uuid !== item.uuid)
+          );
+        });
+      });
+    }
+  };
   const onDragEnd = (result) => {
     const { destination, source } = result;
     if (!destination) return;
@@ -296,7 +321,10 @@ export const EditAudioPage = () => {
         <div className="w-full flex flex-col items-center pt-24">
           {!audioBlob && <Loader size={"w-24 h-24"} />}
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
+            <Droppable
+              type="group"
+              droppableId="audioList"
+            >
               {(provided) => (
                 <div
                   {...provided.droppableProps}
@@ -318,6 +346,7 @@ export const EditAudioPage = () => {
                       updateRef={updateRef}
                       makeEmptyAllListeners={makeEmptyAllListeners}
                       playFromAll={playFromAll}
+                      handleDeleteRecording={handleDeleteRecording}
                     />
                   ))}
                   {provided.placeholder}{" "}

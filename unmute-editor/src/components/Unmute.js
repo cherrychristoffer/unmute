@@ -233,8 +233,6 @@ const Unmute = ({
               onClick={() => onDelete(unmute.key)}
               className="text-label font-serif text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer text-center"
             >
-              For lav opløsning
-              <br />
               Tilføj nyt foto
             </label>
             <input

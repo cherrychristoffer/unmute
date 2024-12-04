@@ -1,38 +1,82 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-import { UNMUTE_PRODUCT_VARIANT_ID, UNMUTE_ENHANCED_PRODUCT_VARIANT_ID } from "../app/const";
+import { collageProductItem, shopifyCollageVariants, shopifyVariants } from '../app/const';
 
 const cartUrl = `${window.Shopify.routes.root}cart`;
 
 export const fetchCartData = async () => axios.get(`${cartUrl}.js`);
 
 export const updateUnmuteInCart = async ({ key, properties }) => {
-  const res = await axios.post(`${cartUrl}/change.js`, {
-    id: key,
-    properties,
-  })
+  let response;
+
+  const collage = properties._collage;
+
+  // check if properties._orientation and properties._passepartout are matches shopifyVariants
+  let variant;
+  if (collage) {
+    variant = shopifyCollageVariants.find((variant) => {
+      return variant.orientation === properties._orientation && variant.passpartout === properties._passepartout;
+    });
+  } else {
+    variant = shopifyVariants.find((variant) => {
+      return variant.orientation === properties._orientation && variant.passpartout === properties._passepartout;
+    });
+  }
+
+  if (variant.id !== Number(key.split(":")[0])) {
+    // remove the item from the cart
+    await axios.post(`${cartUrl}/change.js`, {
+      id: key,
+      quantity: 0,
+    });
+
+    // add the item with the correct variant
+    response = await axios.post(`${cartUrl}/add.js`, {
+      items: [
+        {
+          id: variant.id,
+          quantity: 1,
+          properties,
+        },
+      ],
+    });
+  } else {
+    response = await axios.post(`${cartUrl}/change.js`, {
+      id: key,
+      properties,
+    });
+  }
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()
+  } else {
+    // demo dawn
+    document.querySelector('cart-drawer-items').onCartUpdate();
   }
 
-  return res
+  return response
 };
 
 export const removeUnmuteInCart = async (key) => {
   const response = await axios.post(`${cartUrl}/change.js`, {
     id: key,
     quantity: 0,
-    sections: "cart-icon-bubble",
+    //sections: "cart-icon-bubble",
   });
 
-  document.querySelector("#cart-icon-bubble").innerHTML =
-      response.data.sections["cart-icon-bubble"];
+  const cartIconBubble = document.querySelector("#cart-icon-bubble");
+
+  if (response?.data?.sections?.['cart-icon-bubble'] && cartIconBubble) {
+    cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
+  }
 
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()
+  } else {
+    // demo dawn
+    document.querySelector('cart-drawer-items').onCartUpdate();
   }
 
   return response
@@ -42,30 +86,43 @@ export const addUnmuteToCart = async ({
   quantity,
   extra = false,
   collage = false,
+  collageType = null,
+  maxItems = 1,
 }) => {
   const items = [...Array(quantity)].map((_, index) => {
     // Apply uuid to each Unmute to make Shopify treat them as different products
     const uuid = uuidv4();
 
+    let properties = {
+      _collage: collage,
+      _extra: extra,
+      _uuid: uuid,
+      _images: [],
+      _audios: [],
+      _frame: "oak",
+      _orientation: "portrait",
+      _passepartout: "none",
+      _inspiration: null,
+      _countdown: "",
+      _created: {
+        date: new Date(),
+        index: index,
+      }
+    };
+
+    if (collage) {
+      properties = {
+        ...properties,
+        _collage_type: collageType,
+        _collage_image_states: Array.from({ length: maxItems }, () => ({})),
+        _collage_max_items: maxItems,
+      };
+    }
+
     return {
-      id: UNMUTE_PRODUCT_VARIANT_ID,
+      id: collage ? shopifyCollageVariants[0].id : shopifyVariants[0].id,
       quantity: 1,
-      properties: {
-        _collage: collage,
-        _extra: extra,
-        _uuid: uuid,
-        _images: [],
-        _audios: [],
-        _frame: "oak",
-        _orientation: "portrait",
-        _passepartout: "none",
-        _inspiration: null,
-        _countdown: "",
-        _created: {
-          date: new Date(),
-          index: index,
-        },
-      },
+      properties,
     };
   });
 
@@ -76,12 +133,15 @@ export const addUnmuteToCart = async ({
 
   const cartIconBubble = document.querySelector("#cart-icon-bubble");
 
-  if (cartIconBubble) {
+  if (response?.data?.sections?.['cart-icon-bubble'] && cartIconBubble) {
     cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
   }
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()
+  } else {
+    // demo dawn
+    document.querySelector('cart-drawer-items').onCartUpdate();
   }
 
   return response;
@@ -100,11 +160,17 @@ export const duplicateUnmuteToCart = async (unmute) => {
     sections: "cart-icon-bubble",
   });
 
-  document.querySelector("#cart-icon-bubble").innerHTML =
-      response.data.sections["cart-icon-bubble"];
+  const cartIconBubble = document.querySelector("#cart-icon-bubble");
+
+  if (response?.data?.sections?.['cart-icon-bubble'] && cartIconBubble) {
+    cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
+  }
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()
+  } else {
+    // demo dawn
+    document.querySelector('cart-drawer-items').onCartUpdate();
   }
 
   return response;

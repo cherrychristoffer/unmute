@@ -44,10 +44,10 @@ export const AudioBottomNavigation = ({
       icon: <NavPauseIcon />,
     },
     {
-      label: "Tilføj",
+      label: "Tilføj lyd",
 
       icon: <NavAddIcon />,
-      action: goAdd,
+      action: goEditorPage,
       // action: () => {
       //   // dispatch(setScrolltoActive());
       //   // navigate("/orientation");
@@ -69,12 +69,12 @@ export const AudioBottomNavigation = ({
     //   action: isPaused ? togglePauseResume : stopRecording,
     //   icon: <NavRecordingIcon color={isPaused ? "#231F20" : "#d5695a"} />,
     // },
-    {
+    /*{
       label: "Upload",
       // to: "/edit-audio/:id",
       icon: <UploadIcon />,
       action: goEditorPage,
-    },
+    },*/
 
     {
       label: "Færdig",
@@ -86,14 +86,14 @@ export const AudioBottomNavigation = ({
 
   return (
     <div className="fixed bottom-0 left-0 z-10 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
-      <div className="grid sm:gap-y-2 h-full max-w-2xl grid-cols-6 mx-auto font-medium">
+      <div className="grid sm:gap-y-2 h-full max-w-2xl grid-cols-5 mx-auto font-medium">
         {NAVIGATION.map((item, index) =>
           item.action ? (
             <button
               key={index}
               onClick={item.action}
               className={
-                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg"
+                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg"
               }
             >
               {item.icon}
@@ -107,7 +107,7 @@ export const AudioBottomNavigation = ({
               to={item.to}
               className={(active) =>
                 clsx(
-                  "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg",
+                  "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg",
                   active ? "bg-beige-400" : ""
                 )
               }

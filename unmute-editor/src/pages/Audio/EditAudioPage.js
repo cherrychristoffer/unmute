@@ -1,25 +1,26 @@
-import { Fragment, React, memo, useEffect, useRef, useState } from "react";
+import { Fragment, React, memo, useEffect, useRef, useState } from 'react';
 
-import axios from "axios";
+import axios from 'axios';
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "wouter";
-import { useAudioRecorder } from "react-audio-voice-recorder";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { deleteFile, getFileUrl, uploadFile } from '../../api/aws';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useParams } from 'wouter';
+import { useAudioRecorder } from 'react-audio-voice-recorder';
 
-import { updateUnmuteInCart } from "../../api/cart";
-import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
-import { v4 as uuid } from "uuid";
-import { AudioBottomNavigation } from "../../components/AudioBottomNavigation";
+import { updateUnmuteInCart } from '../../api/cart';
+import { updateUnmute, updateUnmutes } from '../../features/user/userSlice';
+import { v4 as uuid } from 'uuid';
+import { AudioBottomNavigation } from '../../components/AudioBottomNavigation';
 
-import { useActiveUnmute } from "../../api/useUnmutes";
+import { useActiveUnmute } from '../../api/useUnmutes';
 
-import { Loader } from "../../components/Loader";
-import { mergeAudio } from "../../api/inspiration";
-import { AudioComponent } from "./AudioComponent";
-import ProgressBar from "./progress";
-import { setScrolltoActive } from "../../features/image/imageSlice";
+import { Loader } from '../../components/Loader';
+import { mergeAudio } from '../../api/inspiration';
+import { AudioComponent } from './AudioComponent';
+import ProgressBar from './progress';
+import { setScrolltoActive } from '../../features/image/imageSlice';
+import { ConfirmModal } from '../../components/ConfirmModal';
 
 export const EditAudioPage = () => {
   const {
@@ -46,9 +47,10 @@ export const EditAudioPage = () => {
   const [makeEmptyAllListeners, setMakeEmptyAllListeners] = useState(0);
   const [activateButton, setActivateButton] = useState(0);
   const playFromAll = useRef(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const activeUnmute = unmutes?.find(
-    (item) => item.properties?._uuid === unmuteId
+    (item) => item.properties?._uuid === unmuteId,
   );
   const audioFiles = activeUnmute?.properties?._audios || [];
 
@@ -86,7 +88,7 @@ export const EditAudioPage = () => {
   useEffect(() => {
     if (audioFiles?.length > 0) {
       const totalSeconds = audioFiles.reduce((total, item) => {
-        const [minutes, seconds] = item.countdown.split(":").map(Number);
+        const [minutes, seconds] = item.countdown.split(':').map(Number);
         return total + minutes * 60 + seconds;
       }, 0);
       setActivateButton(totalSeconds);
@@ -99,8 +101,8 @@ export const EditAudioPage = () => {
     const minutes = Math.floor(roundedSeconds / 60);
     const remainingSeconds = roundedSeconds % 60;
 
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
 
     return `${formattedMinutes}:${formattedSeconds}`;
   }
@@ -111,7 +113,7 @@ export const EditAudioPage = () => {
       const sortedData = audioBlob.sort((a, b) => a.index - b.index);
 
       const result = sortedData.map((item) => {
-        const fileParts = item.fileData.file.split("/");
+        const fileParts = item.fileData.file.split('/');
 
         const folder = fileParts[fileParts.length - 2];
         const fileName = fileParts[fileParts.length - 1];
@@ -123,11 +125,11 @@ export const EditAudioPage = () => {
 
         axios
           .get(`${responseData.url}?c=${cacheBust}`, {
-            responseType: "blob",
+            responseType: 'blob',
           })
           .then(({ data }) => {
             const minuteData = convertToTimeFormat(responseData.duration);
-            const [minutes, seconds] = minuteData?.split(":")?.map(Number);
+            const [minutes, seconds] = minuteData?.split(':')?.map(Number);
             const dataSeconds = minutes * 60 + seconds;
 
             const audio = {
@@ -154,22 +156,41 @@ export const EditAudioPage = () => {
               setAudioBlob(dataArray);
               const activeItem = data.items.find(
                 (item) =>
-                  item.properties._uuid === activeUnmute.properties._uuid
+                  item.properties._uuid === activeUnmute.properties._uuid,
               );
               dispatch(updateUnmute(activeItem));
-              navigate("/orientation");
+              navigate('/orientation');
             });
           })
 
           .catch((error) => {
-            console.error("Error fetching audio:", error);
+            console.error('Error fetching audio:', error);
             setIsLoading((prev) => ({ ...prev, isMerged: true }));
           });
-      } catch (e) {}
+      } catch (e) {
+      }
     } else {
-      navigate("/orientation");
+      navigate('/orientation');
     }
     dispatch(setScrolltoActive());
+  };
+
+  const handleDeleteRecording = (path) => {
+    updateUnmuteInCart({
+      key: activeUnmute.key,
+      properties: {
+        ...activeUnmute.properties,
+        _audios: activeUnmute.properties._audios.filter(
+          (item) => item.file !== path,
+        ),
+      },
+    }).then(({ data }) => {
+      const activeItem = data.items.find(
+        (item) => item.properties._uuid === activeUnmute.properties._uuid,
+      );
+      dispatch(updateUnmute(activeItem));
+      setAudioBlob((prev) => prev.filter((item) => item.fileData.file !== path));
+    });
   };
 
   const handleAllDeleteRecording = () => {
@@ -181,7 +202,7 @@ export const EditAudioPage = () => {
       },
     }).then(({ data }) => {
       const activeItem = data.items.find(
-        (item) => item.properties._uuid === activeUnmute.properties._uuid
+        (item) => item.properties._uuid === activeUnmute.properties._uuid,
       );
       dispatch(updateUnmute(activeItem));
       setAudioBlob([]);
@@ -194,10 +215,10 @@ export const EditAudioPage = () => {
       setIsLoading((prev) => ({ ...prev, [item.file]: true }));
       axios
         .get(`${item.file}?c=${cacheBust}`, {
-          responseType: "blob",
+          responseType: 'blob',
         })
         .then(({ data }) => {
-          const [minutes, seconds] = item.countdown?.split(":")?.map(Number);
+          const [minutes, seconds] = item.countdown?.split(':')?.map(Number);
           const dataSeconds = minutes * 60 + seconds;
 
           const id = uuid();
@@ -215,7 +236,7 @@ export const EditAudioPage = () => {
         })
         .catch((error) => {
           setIsLoading((prev) => ({ ...prev, [item.file]: false }));
-          console.error("Error fetching audio:", error);
+          console.error('Error fetching audio:', error);
         });
     });
   };
@@ -233,7 +254,7 @@ export const EditAudioPage = () => {
   const newSecond = audioBlob.reduce((acc, item) => acc + item.seconds, 0);
 
   const goAdd = () => {
-    navigate(`start-recording/${unmuteId}?seconds=${newSecond}`);
+    navigate(`inspiration/${unmuteId}`);
   };
 
   const goEditorPage = () => {
@@ -261,7 +282,7 @@ export const EditAudioPage = () => {
       },
     }).then(({ data }) => {
       const activeItem = data.items.find(
-        (item) => item.properties._uuid === activeUnmute.properties._uuid
+        (item) => item.properties._uuid === activeUnmute.properties._uuid,
       );
       dispatch(updateUnmute(activeItem));
     });
@@ -287,78 +308,80 @@ export const EditAudioPage = () => {
     setActiveAudio({});
   };
   return (
-    <div className={"pb-[90px]"}>
+    <div className={'pb-[150px]'}>
       <div className="flex flex-col items-center">
         <h1 className="font-serif text-muld-500 text-6xl mb-4 mt-24">
           Rediger
         </h1>
-        <p className="font-serif text-muld-400 text-3xl mb-4">(max 10min)</p>
-        <div className="w-full flex flex-col items-center pt-24">
-          {!audioBlob && <Loader size={"w-24 h-24"} />}
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable type="group" droppableId="audioList">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ padding: "10px" }}
-                >
-                  {sortedData.map((item, index) => (
-                    <AudioComponent
-                      cacheBust={cacheBust}
-                      activeAudio={activeAudio}
-                      setActiveAudio={setActiveAudio}
-                      item={item}
-                      allAudioRefs={allAudioRefs}
-                      index={index}
-                      key={item.uuid}
-                      pauseAllAudios={pauseAllAudios}
-                      activeUnmute={activeUnmute}
-                      setAudioBlob={setAudioBlob}
-                      updateRef={updateRef}
-                      makeEmptyAllListeners={makeEmptyAllListeners}
-                      playFromAll={playFromAll}
-                    />
-                  ))}
-                  {provided.placeholder}{" "}
-                  {/* Ensures space is reserved when dragging */}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </div>
+        {audioFiles?.length > 1 && (
+          <p className="font-serif text-muld-500 text-2xl text-center leading-tight">
+            Træk i dine lydfiler for at ændre rækkefølge
+          </p>
+        )}
 
-        {showLoading() && (
+
+        {showLoading() ? (
           <div>
-            <Loader size={"w-24 h-24"} />
+            <Loader size={'w-24 h-24'} />
+          </div>
+        ) : (
+          <div className="w-full flex flex-col items-center pt-24">
+            {!audioBlob && <Loader size={'w-24 h-24'} />}
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable type="group" droppableId="audioList">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={{ padding: '10px' }}
+                  >
+                    {sortedData.map((item, index) => (
+                      <AudioComponent
+                        cacheBust={cacheBust}
+                        activeAudio={activeAudio}
+                        setActiveAudio={setActiveAudio}
+                        item={item}
+                        allAudioRefs={allAudioRefs}
+                        index={index}
+                        key={item.uuid}
+                        pauseAllAudios={pauseAllAudios}
+                        activeUnmute={activeUnmute}
+                        setAudioBlob={setAudioBlob}
+                        updateRef={updateRef}
+                        makeEmptyAllListeners={makeEmptyAllListeners}
+                        playFromAll={playFromAll}
+                        onDelete={handleDeleteRecording}
+                      />
+                    ))}
+                    {provided.placeholder}{' '}
+                    {/* Ensures space is reserved when dragging */}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         )}
 
-        <div className="mt-16 flex flex-row justify-center items-center gap-4">
-          <button
-            className={`font-serif text-white bg-black border border-rose transition duration-200 ease-out focus:outline-none hover:bg-gray-800 focus:ring-4 focus:ring-rose font-medium rounded-lg px-4 py-2.5 cursor-pointer 
-              ${activateButton > 600 ? " cursor-default" : ""}`}
-            onClick={goAdd}
-            style={{ opacity: activateButton > 600 ? "0.5" : "1" }}
-            disabled={activateButton > 600 ? true : false}
-          >
-            Tilføj en optagelse mere
-          </button>
-        </div>
       </div>
 
       <AudioBottomNavigation
         isRecording={startRecording}
         isPaused={false}
-        togglePauseResume={() => {}}
+        togglePauseResume={() => {
+        }}
         goAdd={goAdd}
         stopRecording={stopRecording}
         playAudio={handleAllPlayAudio}
         pauseAudio={pauseAllAudios}
-        deleteRecording={handleAllDeleteRecording}
+        deleteRecording={() => setOpenConfirm(true)}
         goEditorPage={goEditorPage}
         mergeAudio={mergeAudioData}
       />
+
+      {openConfirm && <ConfirmModal type={'alle lyde'} onConfirm={() => {
+        handleAllDeleteRecording();
+        setOpenConfirm(false);
+      }} onCancel={() => setOpenConfirm(false)} />}
     </div>
   );
 };

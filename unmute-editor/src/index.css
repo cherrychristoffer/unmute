@@ -25,14 +25,14 @@ html {
 #MainContent > section,
 #MainContent > section > div,
 #MainContent > section > div > div {
-  height: 100%;
+  //height: 100%;
 }
 
 #root {
-  height: calc(
+  /*height: calc(
     var(--app-height) - var(--shopify-header-height) -
       var(--shopify-announcement-height)
-  );
+  );*/
   letter-spacing: normal;
 }
 
@@ -92,7 +92,6 @@ html {
 
 /* Normalize */
 body {
-  overflow: hidden;
   background-color: #fafafa !important;
 }
 
@@ -138,12 +137,12 @@ body {
 }
 
 .audio-crop .slider .progress {
-  height: 5px;
-  border-radius: 5px;
-  background-color: #17a2b8;
+  height: 100%;
+  border-radius: 0;
   position: absolute;
-  left: 0%;
-  right: 0%;
+  left: 0;
+  right: 0;
+  border-left: 2px solid #66544f;
 }
 
 .audio-crop .range-input {
@@ -176,9 +175,11 @@ body {
 }
 
 .audio-crop .slider {
-  opacity: 0;
   position: absolute;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .audio-crop .range-min {
@@ -194,13 +195,21 @@ body {
 }
 
 .audio-crop .wrapper [type="range"]::-webkit-slider-thumb {
-  background: #a48179 url("./assets/images/range-dots.png") no-repeat center
-    center;
+  background-image: url("./assets/images/range-dots.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #a48179;
   height: 84px;
   width: 13px;
   border-radius: 3px;
   pointer-events: auto;
   appearance: none;
+}
+
+@media (hover: none) {
+  .audio-crop .wrapper [type="range"]::-webkit-slider-thumb {
+    width: 20px;
+  }
 }
 
 /* For Firefox */
@@ -209,8 +218,10 @@ body {
 }
 
 .audio-crop .wrapper [type="range"]::-moz-range-thumb {
-  background: #a48179 url("./assets/images/range-dots.png") no-repeat center
-    center;
+  background-image: url("./assets/images/range-dots.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #a48179;
   height: 84px;
   width: 13px;
   border-radius: 3px;

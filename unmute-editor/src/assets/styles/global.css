@@ -14,3 +14,28 @@
   flex-direction: column;
   justify-content: center;
 }
+
+
+.app-wrapper div:empty {
+  display: inherit !important;
+}
+
+.reactEasyCrop_Container img {
+  max-width: none;
+}
+
+.filepond--root {
+  font-family: inherit;
+  font-weight: 400;
+}
+
+.pintura-editor {
+  --color-primary: #a58279;
+  --color-primary-dark: #96756c;
+  --color-primary-text: #fff;
+}
+
+
+.collage-container:after {
+  display: none !important;
+}

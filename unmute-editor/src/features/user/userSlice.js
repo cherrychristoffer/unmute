@@ -73,10 +73,17 @@ export const userSlice = createSlice({
     isLoadingUnmutes: true,
     activeUnmuteIndex: 0,
     audioBlob: [],
+    blankFrames: 1,
   },
   reducers: {
     setIsLoadingUnmutes: (state, action) => {
       state.isLoadingUnmutes = action.payload;
+    },
+    addBlankFrame: (state, action) => {
+      state.blankFrames++;
+    },
+    removeBlankFrame: (state, action) => {
+      state.blankFrames--;
     },
     addUnmute: (state, action) => {
       const newUnmutes = uniqBy(
@@ -175,6 +182,8 @@ export const userSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  addBlankFrame,
+  removeBlankFrame,
   addUnmute,
   updateAllUnmutes,
   deleteUnmute,

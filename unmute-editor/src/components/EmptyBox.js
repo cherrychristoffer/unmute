@@ -1,24 +1,27 @@
-import React, { useState } from "react";
-import frame_image from "../assets/images/frame.png";
-import frame_landscape_image from "../assets/images/frame_landscape.png";
-import clsx from "clsx";
-import { useDispatch } from "react-redux";
-
-import { PlusIcon } from "../assets/icons/icon_plus";
-import { Loader } from "./Loader";
-import { addUnmuteToCart, updateUnmuteInCart } from "../api/cart";
-import { addUnmute, updateUnmutes } from "../features/user/userSlice";
-import { getFileUrl, uploadFile } from "../api/aws";
+import React, { useState } from 'react';
+import frame_image from '../assets/images/frame.png';
+import frame_landscape_image from '../assets/images/frame_landscape.png';
+import clsx from 'clsx';
+import { useDispatch } from 'react-redux';
+import { PlusIcon } from '../assets/icons/icon_plus';
+import { Loader } from './Loader';
+import { addUnmuteToCart, updateUnmuteInCart } from '../api/cart';
+import { addUnmute, updateUnmutes } from '../features/user/userSlice';
+import { getFileUrl, uploadFile } from '../api/aws';
+import FileUpload from './FileUpload';
+import { Link, useLocation } from 'wouter';
 
 export const EmptyBox = ({ orientation }) => {
   const dispatch = useDispatch();
+  const [_location, navigate] = useLocation();
   const [loading, setLoading] = useState(false);
+  const [key, setKey] = useState(0);
 
-  const isLandscape = orientation === "landscape";
+  const isLandscape = orientation === 'landscape';
   const frame = isLandscape ? frame_landscape_image : frame_image;
   const frame_width = isLandscape
-    ? "min-w-[300px] w-[55%]"
-    : "min-w-[250px] w-1/2";
+    ? 'min-w-[300px] w-[55%]'
+    : 'min-w-[250px] w-1/2';
 
   const handleChange = async (event) => {
     setLoading(true);
@@ -27,13 +30,13 @@ export const EmptyBox = ({ orientation }) => {
       if (!unmute) return;
       dispatch(addUnmute(unmute));
 
-      const uuid = unmute._uuid;
+      const uuid = unmute.properties._uuid;
       const file = event.target.files[0];
       uploadFile({
         path: uuid,
         file,
-      }).then(() => {
-        const fileUrl = getFileUrl(`${uuid}/${file.name}`);
+      }).then((path) => {
+        const fileUrl = getFileUrl(path);
         updateUnmuteInCart({
           key: unmute.key,
           properties: {
@@ -54,8 +57,8 @@ export const EmptyBox = ({ orientation }) => {
       <div className="snap-center flex items-center py-4">
         <div
           className={clsx(
-            "relative flex justify-center",
-            isLandscape ? "mt-0" : "mt-0"
+            'relative flex justify-center',
+            isLandscape ? 'mt-0' : 'mt-0',
           )}
         >
           <img
@@ -63,27 +66,19 @@ export const EmptyBox = ({ orientation }) => {
             alt="Frame"
             className={clsx(
               frame_width,
-              "relative top-0 z-[1] pointer-events-none"
+              'relative top-0 z-[1] pointer-events-none',
             )}
           />
-          {loading ? (
-            <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <Loader size={"w-24 h-24"} />
+          <Link key={key} className={'absolute inset-[16px]'} to="/?stay=true">
+            <div className={'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'}>
+              <PlusIcon size={40} />
+              <span className={'absolute top-[80px] text-center !text-[16px]'}>Vælg foto</span>
             </div>
-          ) : (
-            <button className="w-[34px] h-[34px] bg-rose-500 rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <label htmlFor={`mage-add-key`} className={'mb-0'}>
-                <PlusIcon size={20} className={"fill-white"} />
-              </label>
-              <input
-                type="file"
-                accept="image/png, image/jpeg, image/jpg"
-                className="hidden"
-                id={`mage-add-key`}
-                onChange={handleChange}
-              />
-            </button>
-          )}
+            {/*<FileUpload newUnmute={true} uploading={() => setLoading(true)} uploaded={() => {
+              setKey(key + 1);
+              setLoading(false);
+            }} />*/}
+          </Link>
         </div>
       </div>
       <div className="extra-box text-rose-500 text-center text-[14px] -mt-[5px]">

@@ -12,7 +12,6 @@ import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
 import { UploadAudioPage } from "./pages/Audio/UploadAudioPage";
 
 import { FramePage } from "./pages/FramePage";
-// import { InspirationsPage } from "./pages/InspirationsPage";
 import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
 import { OffersPage } from "./pages/OffersPage";
 import { OrientationPage } from "./pages/OrientationPage";
@@ -20,14 +19,12 @@ import { PassepartoutPage } from "./pages/PassepartoutPage";
 import { ReplacePage } from "./pages/ReplacePage";
 import { UploadImagePage } from "./pages/UploadImagePage";
 
-// import { AudioApproachPage } from "./pages/Audio/AudioApproachPage";
-// import { AudioPage } from "./pages/Audio/AudioPage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
 
 import { addUnmute, setIsLoadingUnmutes } from "./features/user/userSlice";
-import { UNMUTE_PRODUCT_VARIANT_ID, UNMUTE_ENHANCED_PRODUCT_VARIANT_ID } from "./app/const";
+import { shopifyCollageVariants, shopifyVariants } from './app/const';
 
 import "./assets/styles/global.css";
 
@@ -54,8 +51,8 @@ function App() {
         navigate("/");
       } else {
         data.items
-          .filter(
-            (cartItem) => (cartItem.variant_id === UNMUTE_PRODUCT_VARIANT_ID || cartItem.variant_id === UNMUTE_ENHANCED_PRODUCT_VARIANT_ID)
+          .filter((cartItem) =>
+            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
           )
           .forEach((unmute) => {
             dispatch(addUnmute(unmute));
@@ -72,7 +69,7 @@ function App() {
   const isSpecialRoute = specialRoutesRegex.test(location.pathname);
 
   return (
-    <div className={`app-wrapper ${isSpecialRoute ? "with-navigation" : ""}`}>
+    <div className={`app-wrapper ${isSpecialRoute ? "with-navigation" : ""} pt-[10px] sm:pt-[30px] pb-[110px] sm:pb-[130px]`}>
       <progress id="progress-bar"></progress>
 
       <Switch>
@@ -86,6 +83,7 @@ function App() {
         {/* Starting page */}
         {/*<Route path="/" component={StartPage}></Route>*/}
         <Route
+          name="home"
           path="/"
           component={OffersPage}
         />

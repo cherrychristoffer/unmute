@@ -16,6 +16,7 @@ import { v4 as uuid } from "uuid";
 import { useActiveUnmute } from "../../api/useUnmutes";
 import { useDispatch } from "react-redux";
 import { Loader } from "../../components/Loader";
+import slugify from 'slugify';
 
 AWS.config.update({
   accessKeyId: AWS_KEY_ID,
@@ -38,12 +39,18 @@ export const UploadAudioPage = () => {
   const uploadFileToS3 = (file, path) => {
     const progressBar = document.querySelector("#progress-bar");
 
+    const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
+    const fileKey = `${path}/${sanitizedFileName}`;
+
+    let contentType = file.type;
+
     return s3
       .putObject({
         Bucket: S3_BUCKET,
-        Key: `${path}/${file.name}`,
+        Key: fileKey,
         Body: file,
-      })
+        ContentType: contentType,
+})
       .on("httpUploadProgress", (evt) => {
         const progress = Math.round((evt.loaded * 100) / evt.total);
         setProgress(progress);
@@ -82,7 +89,7 @@ export const UploadAudioPage = () => {
       return alert("Invalid file type. Please upload an audio file.");
 
     const duration = await getBlobDuration(recordingBlob);
-    if (duration > 600) return alert("Audio length limit is 10 minutes.");
+    if (duration > 600) return alert("Lydfilen må maksimalt vare 10 minutter");
 
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
@@ -96,8 +103,8 @@ export const UploadAudioPage = () => {
     uploadFile({
       file,
       path: id,
-    }).then(() => {
-      const fileUrl = getFileUrl(`${id}/${newUuid}.${formatAudio}`);
+    }).then((path) => {
+      const fileUrl = getFileUrl(path);
 
       const audio = {
         file: fileUrl,
@@ -138,8 +145,8 @@ export const UploadAudioPage = () => {
       uploadFile({
         file: audio,
         path: id,
-      }).then(() => {
-        const fileUrl = getFileUrl(`${id}/video-to-audio.mp3`);
+      }).then((path) => {
+        const fileUrl = getFileUrl(path);
 
         const audio = {
           file: fileUrl,
@@ -181,7 +188,7 @@ export const UploadAudioPage = () => {
           <Loader size="w-16 h-16" />
         </div>
       )}
-      <div className={"mt-auto text-center"}>
+      <div className={"mt-32 text-center"}>
         <Link
           to={`/inspiration/${id}`}
           className={
@@ -195,7 +202,7 @@ export const UploadAudioPage = () => {
             htmlFor="image"
             className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
-            Upload lydfil
+            Upload lydfil <span className={'text-[12px] opacity-75'}>(max. 10 minutter)</span>
           </label>
           <input
             type="file"
@@ -206,7 +213,7 @@ export const UploadAudioPage = () => {
           />
         </form>
 
-        <form className="mt-5">
+        {/*<form className="mt-5">
           <label
             htmlFor="videoUpload"
             className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
@@ -225,7 +232,12 @@ export const UploadAudioPage = () => {
             className="progress-bar"
             style={{ width: `${progress}%` }}
           ></div>
-        </form>
+        </form>*/}
+
+        <Link to="/orientation" className={'mt-8 flex justify-center'}>
+          Tilbage til Unmute-editoren
+        </Link>
+
       </div>
     </div>
   );

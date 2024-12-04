@@ -1,34 +1,36 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
-import { AudioTag } from "./AudioTag";
-import { Draggable } from "react-beautiful-dnd";
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { AudioTag } from './AudioTag';
+import { Draggable } from 'react-beautiful-dnd';
 
-import { PauseIcon } from "../../assets/icons/icon_pause";
-import { PlayIcon } from "../../assets/icons/icon_play";
-import Range from "./Range";
-import { AudioVisualizer } from "react-audio-visualize";
-import { CheckIcon } from "../../assets/icons/icon_check";
-import { CloseIcon } from "../../assets/icons/icon_close";
-import { deleteFile, getFileUrl, uploadFile } from "../../api/aws";
-import audioBufferToWav from "./AudioBuffer";
-import { useParams } from "wouter";
-import { updateUnmuteInCart } from "../../api/cart";
-import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
-import { useDispatch } from "react-redux";
+import { PauseIcon } from '../../assets/icons/icon_pause';
+import { PlayIcon } from '../../assets/icons/icon_play';
+import Range from './Range';
+import { AudioVisualizer } from 'react-audio-visualize';
+import { CheckIcon } from '../../assets/icons/icon_check';
+import { CloseIcon } from '../../assets/icons/icon_close';
+import { deleteFile, getFileUrl, uploadFile } from '../../api/aws';
+import audioBufferToWav from './AudioBuffer';
+import { useParams } from 'wouter';
+import { updateUnmuteInCart } from '../../api/cart';
+import { updateUnmute, updateUnmutes } from '../../features/user/userSlice';
+import { useDispatch } from 'react-redux';
+import { ConfirmModal } from '../../components/ConfirmModal';
 
 export const AudioComponent = ({
-  item,
-  pauseAllAudios,
-  index,
-  allAudioRefs,
-  cacheBust,
-  setActiveAudio,
-  activeAudio,
-  activeUnmute,
-  setAudioBlob,
-  updateRef,
-  makeEmptyAllListeners,
-  playFromAll,
-}) => {
+                                 item,
+                                 pauseAllAudios,
+                                 index,
+                                 allAudioRefs,
+                                 cacheBust,
+                                 setActiveAudio,
+                                 activeAudio,
+                                 activeUnmute,
+                                 setAudioBlob,
+                                 updateRef,
+                                 makeEmptyAllListeners,
+                                 playFromAll,
+                                 onDelete,
+                               }) => {
   const dispatch = useDispatch();
   const audioRef = useRef(null);
   const progressRefs = useRef(null);
@@ -46,6 +48,18 @@ export const AudioComponent = ({
   const timeupdate = useCallback(
     (e) => {
       const element = e.target;
+
+      // Update the progress bar based on the current time
+      const progressElement = progressRefs.current;
+      if (progressElement && audioRef.current) {
+        const currentTime = audioRef.current.currentTime;
+        const duration = audioRef.current.duration;
+
+        // Update the progress bar width based on the current playback time
+        const percentage = (currentTime / duration) * 100;
+        progressElement.style.left = `${percentage}%`;
+      }
+
       if (
         element.currentTime >= rangeMap?.end / 1000 &&
         rangeMap?.end !== item?.seconds * 1000
@@ -54,19 +68,19 @@ export const AudioComponent = ({
         handleAudioEnded();
       }
     },
-    [rangeMap?.end]
+    [rangeMap?.end],
   );
 
   useEffect(() => {
     if (makeEmptyAllListeners && audioRef.current) {
-      audioRef.current?.removeEventListener("timeupdate", timeupdate);
+      audioRef.current?.removeEventListener('timeupdate', timeupdate);
     }
   }, [makeEmptyAllListeners, timeupdate]);
 
   const handleAudioEnded = () => {
     audioRef.current.currentTime = 0;
     setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
-    audioRef.current?.removeEventListener("timeupdate", timeupdate);
+    audioRef.current?.removeEventListener('timeupdate', timeupdate);
   };
 
   const handlePlayAudio = () => {
@@ -80,15 +94,15 @@ export const AudioComponent = ({
 
     playFromAll.current = false;
     audioRef.current.play();
-    if (rangeMap?.end && rangeMap?.end !== item?.seconds * 1000) {
-      audioRef.current.addEventListener("timeupdate", timeupdate);
-    }
+    //if (rangeMap?.end && rangeMap?.end !== item?.seconds * 1000) {
+      audioRef.current.addEventListener('timeupdate', timeupdate);
+    //}
   };
 
   const handlePauseAudio = () => {
     if (!audioRef.current) return;
     audioRef.current.pause();
-    audioRef?.current?.removeEventListener("timeupdate", timeupdate);
+    audioRef?.current?.removeEventListener('timeupdate', timeupdate);
 
     setActiveAudio((prev) => ({ ...prev, [item.uuid]: false }));
   };
@@ -97,8 +111,8 @@ export const AudioComponent = ({
     const progressElement = progressRefs.current;
 
     if (progressElement) {
-      progressElement.style.left = (startValue / max) * 100 + "%";
-      progressElement.style.right = 100000 - (endValue / max) * 100 + "%";
+      progressElement.style.left = (startValue / max) * 100 + '%';
+      progressElement.style.right = 100000 - (endValue / max) * 100 + '%';
     }
   }
 
@@ -111,7 +125,7 @@ export const AudioComponent = ({
     let updatedEndValue = endValue;
 
     if (endValue - startValue < priceGap) {
-      if (name === "start") {
+      if (name === 'start') {
         updatedStartValue = endValue - priceGap;
       } else {
         updatedEndValue = startValue + priceGap;
@@ -119,12 +133,12 @@ export const AudioComponent = ({
     }
 
     setRangeMap((prev) => ({
-      start: name === "start" ? updatedStartValue : startValue,
-      end: name === "end" ? updatedEndValue : endValue,
+      start: name === 'start' ? updatedStartValue : startValue,
+      end: name === 'end' ? updatedEndValue : endValue,
     }));
 
     if (progressRefs.current) {
-      calculateValues(updatedStartValue, updatedEndValue, item?.seconds, id);
+      //calculateValues(updatedStartValue, updatedEndValue, item?.seconds * 1000, id);
     }
   };
 
@@ -144,13 +158,13 @@ export const AudioComponent = ({
           const croppedBuffer = audioContext.createBuffer(
             audioBuffer.numberOfChannels,
             endSample - startSample,
-            sampleRate
+            sampleRate,
           );
 
           for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
             croppedBuffer.copyToChannel(
               audioBuffer.getChannelData(i).subarray(startSample, endSample),
-              i
+              i,
             );
           }
 
@@ -159,7 +173,7 @@ export const AudioComponent = ({
           const offlineAudioContext = new OfflineAudioContext(
             croppedBuffer.numberOfChannels,
             croppedBuffer.length,
-            croppedBuffer.sampleRate
+            croppedBuffer.sampleRate,
           );
 
           const source = offlineAudioContext.createBufferSource();
@@ -172,14 +186,14 @@ export const AudioComponent = ({
             resolve(wavBlob);
           });
         },
-        reject
+        reject,
       );
     });
   };
 
   const bufferToWaveBlob = (buffer) => {
     const wavBuffer = audioBufferToWav(buffer);
-    return new Blob([wavBuffer], { type: "audio/wav" });
+    return new Blob([wavBuffer], { type: 'audio/wav' });
   };
   const formatTime = (time) => {
     let minutes = Math.floor(time / 60);
@@ -205,13 +219,11 @@ export const AudioComponent = ({
       uploadFile({
         file: new File(
           [croppedAudioBlob],
-          item.fileData.file.split("/").at(-1)
+          item.fileData.file.split('/').at(-1),
         ),
         path: unmuteId,
-      }).then(() => {
-        const fileUrl = getFileUrl(
-          `${unmuteId}/${item.fileData.file.split("/").at(-1)}`
-        );
+      }).then((path) => {
+        const fileUrl = getFileUrl(path);
 
         const audios = activeUnmute.properties._audios?.map((state) => {
           if (item.fileData.file === state.file) {
@@ -250,8 +262,18 @@ export const AudioComponent = ({
 
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}min ${remainingSeconds.toString().padStart(2, "0")}sek`;
+    return `${minutes}min ${remainingSeconds.toString().padStart(2, '0')}sek`;
   }
+
+  const [fileToDelete, setFileToDelete] = useState(null);
+  const [openSave, setOpenSave] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  const handleDeleteRecording = async () => {
+    await deleteFile({ path: fileToDelete.fileData.file });
+    onDelete(fileToDelete.fileData.file);
+    setFileToDelete(null);
+  };
 
   return (
     <>
@@ -279,7 +301,7 @@ export const AudioComponent = ({
           >
             <div>{convertSeconds(item?.seconds)}</div>
 
-            <div className="handle">
+            <div className="handle relative">
               {item?.seconds !== undefined && (
                 <Range
                   min={0}
@@ -301,9 +323,9 @@ export const AudioComponent = ({
                 barColor="#B0928C"
                 style={{
                   borderRadius: 4,
-                  maxWidth: "100%",
-                  borderWidth: "1px",
-                  borderColor: "#B0928C",
+                  maxWidth: '100%',
+                  borderWidth: '1px',
+                  borderColor: '#B0928C',
                 }}
               />
             </div>
@@ -313,56 +335,58 @@ export const AudioComponent = ({
                 {activeAudio[item.uuid] ? (
                   <button
                     onClick={() => handlePauseAudio()}
-                    className={"block"}
+                    className={'w-[25px] h-[25px] bg-rose-500 hover:bg-rose-700 fill-white rounded-full flex items-center justify-center'}
                   >
                     <PauseIcon
-                      color={"fill-rose-100"}
                       size={16}
-                      className={
-                        "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                      }
                     />
                   </button>
                 ) : (
-                  <button onClick={() => handlePlayAudio()} className={"block"}>
+                  <button onClick={() => handlePlayAudio()} className={'w-[25px] h-[25px] bg-rose-500 hover:bg-rose-700 fill-white rounded-full flex items-center justify-center'}>
                     <PlayIcon
-                      color={"fill-rose-100"}
                       size={16}
-                      className={
-                        "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                      }
                     />
                   </button>
                 )}
               </div>
-              <div className="ml-auto relative">
+              <div className="ml-auto relative flex items-center gap-4">
+                <button
+                  className={'w-[25px] h-[25px] bg-red-500 hover:bg-red-700 fill-white rounded-full flex items-center justify-center'}
+                  onClick={() => {
+                    setFileToDelete(item)
+                    setOpenConfirm(true)
+                  }}
+                >
+                  <CloseIcon
+                    size={16}
+                  />
+                </button>
+
                 {isCropping && (
                   <button
                     className={
-                      "px-4 h-[25px] py-1 bg-rose-500 rounded-lg flex items-center justify-center text-white text-[12px]"
+                      'px-4 h-[25px] py-1 bg-rose-500 rounded-lg flex items-center justify-center text-white text-[12px]'
                     }
-                    onClick={() => handleCropAudio(item, item.uuid)}
+                    onClick={() => {
+                      setOpenSave(true);
+                    }}
                   >
-                    <span>OK</span>
+                    <span>Gem</span>
                   </button>
                 )}
-
-                {/* <button
-                onClick={() => handleDeleteRecording(item)}
-              >
-                <CloseIcon
-                  color={"fill-rose-100"}
-                  size={16}
-                  className={
-                    "w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
-                  }
-                />
-              </button> */}
               </div>
             </div>
           </div>
         )}
       </Draggable>
+      {openSave && <ConfirmModal title={'Gem og opdatér'} text={'Vil du gemme dine ændringer? Lyden vil bliver beskåret og gemt.'} buttonText={'Gem lyd'} onConfirm={() => {
+        handleCropAudio(item, item.uuid).then()
+        setOpenSave(false);
+      }} onCancel={() => setOpenSave(false)} />}
+      {openConfirm && <ConfirmModal type={'lydfilen'} onConfirm={() => {
+        handleDeleteRecording();
+        setOpenConfirm(false)
+      }} onCancel={() => setOpenConfirm(false)} />}
     </>
   );
 };

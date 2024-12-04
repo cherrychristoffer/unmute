@@ -2,9 +2,8 @@ import { React, useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { CloseIcon } from '../assets/icons/icon_close';
-import { ExclamationIcon } from '../assets/icons/icon_exclamation';
 import { PlusIcon } from '../assets/icons/icon_plus';
 
 import { Loader } from './Loader';
@@ -17,29 +16,38 @@ import frame_image from '../assets/images/frame.png';
 import frame_landscape_image from '../assets/images/frame_landscape.png';
 
 import CropperComponent from './Cropper';
-import { setDisableAllActions } from '../features/image/imageSlice';
 import { ConfirmModal } from './ConfirmModal';
 import VButton from './VButton';
+import ImageCropper from './ImageCropper';
+import FileUpload from './FileUpload';
 
-const frame_padding = (scale, landscape) => {
-  return 16 + scale;
+const frame_padding = (scale) => {
+  return 7 * scale;
 };
 
-const Unmute = ({
-                  unmute,
-                  onDelete,
-                  activeUnmute,
-                  index,
-                  swiperRef,
-                  showChangeImageButton,
-                }) => {
+const Unmute2 = ({
+                   unmute,
+                   onDelete,
+                   isActive,
+                   index,
+                   swiperRef,
+                   showChangeImageButton,
+                 }) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+  const [loadingNewImage, setLoadingNewImage] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
+  useEffect(() => {
+    console.log('loadingNewImage state:', loadingNewImage);
+  }, [loadingNewImage]);
+
+  const [cropperOpen, setCropperOpen] = useState(false);
+
   const [frameWidth, setFrameWidth] = useState();
+  const pondRef = useRef();
   const frameRef = useRef();
 
   const handleChange = async (event) => {
@@ -80,30 +88,31 @@ const Unmute = ({
       setSmallImage(false);
       dispatch(updateUnmutes(data.items));
     });
-  }
+  };
 
   const {
     properties: {
       _passepartout: passepartout,
       _orientation: orientation,
-      _original_images: images,
+      _images: images,
       _ignore_small_image: ignoreSmallImage,
+      _crop_data: cropData,
     },
   } = unmute;
 
-  const scale = { none: 0, 2: 16, 5: 30, 7: 40 }[passepartout];
+  const scale = { none: 0, 2: 2, 5: 5, 7: 7 }[passepartout];
   const isLandscape = orientation === 'landscape';
 
   const frame = isLandscape ? frame_landscape_image : frame_image;
   const frame_width = isLandscape
-    ? 'min-w-[300px] w-[55%]'
-    : 'min-w-[250px] w-1/2';
+    ? 'w-[300px]'
+    : 'w-[250px]';
 
   /*useEffect(() => {
-    if (activeUnmute) {
+    if (isActive) {
       dispatch(setDisableAllActions(smallImage));
     }
-  }, [activeUnmute, smallImage]);*/
+  }, [isActive, smallImage]);*/
 
   const handleImageLoad = (event) => {
     const { naturalWidth, naturalHeight } = event.target;
@@ -142,59 +151,41 @@ const Unmute = ({
             onLoad={handleImageLoad}
             className={'hidden'}
           />
-          {images && images.length > 0 ? (
-            <div className={'absolute inset-0 p-[16px]'}>
-              <CropperComponent
-                images={images}
-                frame_padding={frame_padding(scale, isLandscape)}
-                scale={scale}
-                frame_width={frame_width}
-                isLandscape={isLandscape}
-                unmute={unmute}
-                activeUnmute={activeUnmute}
-                index={index}
-                swiperRef={swiperRef}
-              />
-              <button
-                onClick={() => setOpenConfirm(true)}
-                className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-[20000000]"
-              >
-                <CloseIcon />
-              </button>
-              {/*{smallImage ? (
+
+          <div
+            className={`absolute inset-[16px]`}
+            style={{
+              padding: `${frame_padding(scale)}px`,
+            }}
+          >
+            <div className={`${images && images.length > 0 ? 'hidden' : 'block'}`}>
+              <FileUpload ref={pondRef} isActive={isActive} uploading={() => {
+                setLoadingNewImage(true);
+              }} uploaded={() => {
+                setLoadingNewImage(false);
+              }} />
+            </div>
+            {images && images.length > 0 ? (
+              <>
                 <button
                   onClick={() => setOpenConfirm(true)}
-                  className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-[20000000]"
-                >
-                  <ExclamationIcon size={20} />
-                </button>
-              ) : (
-                <button
-                  onClick={() => setOpenConfirm(true)}
-                  className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-[20000000]"
+                  className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-10 -right-10 z-[20000000]"
                 >
                   <CloseIcon />
                 </button>
-              )}*/}
-            </div>
-          ) : loading ? (
-            <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <Loader size={'w-24 h-24'} />
-            </div>
-          ) : (
-            <>
-              <label className={'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'} htmlFor={`mage-add-${unmute.key}`}>
-                <PlusIcon size={40} />
-              </label>
-              <input
-                type="file"
-                accept="image/png, image/jpeg, image/jpg"
-                className="hidden"
-                id={`mage-add-${unmute.key}`}
-                onChange={handleChange}
-              />
-            </>
-          )}
+                <div className={'w-full h-full'}>
+                  <img src={images[0]} alt="Frame" className={'w-full h-full object-cover'} />
+                </div>
+              </>
+            ) : null}
+            {loadingNewImage && (
+              <div className="absolute inset-0 bg-white bg-opacity-90 z-10">
+                <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+                  <Loader size={'w-24 h-24'} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -247,4 +238,4 @@ const Unmute = ({
   );
 };
 
-export default Unmute;
+export default Unmute2;

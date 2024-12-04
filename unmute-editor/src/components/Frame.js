@@ -1,26 +1,27 @@
-import { React, useEffect, useRef, useState } from "react";
+import { React, useEffect, useRef, useState } from 'react';
 
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "wouter";
-import { PauseIcon } from "../assets/icons/icon_pause";
-import { PlayIcon } from "../assets/icons/icon_play";
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams } from 'wouter';
+import { PauseIcon } from '../assets/icons/icon_pause';
+import { PlayIcon } from '../assets/icons/icon_play';
 
-import { Loader } from "./Loader";
+import { Loader } from './Loader';
 
-import { deleteFile } from "../api/aws";
-import {removeUnmuteInCart} from "../api/cart";
-import { updateAllUnmutes, deleteUnmute } from "../features/user/userSlice";
+import { deleteFile } from '../api/aws';
+import { removeUnmuteInCart } from '../api/cart';
+import { updateAllUnmutes, deleteUnmute } from '../features/user/userSlice';
 
-import { setActiveUnmuteIndex } from "../features/user/userSlice";
+import { setActiveUnmuteIndex } from '../features/user/userSlice';
 
-import frame_image from "../assets/images/frame.png";
-import Unmute from "./Unmute";
+import frame_image from '../assets/images/frame.png';
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "../assets/styles/swiperCustom.css";
-import { EmptyBox } from "./EmptyBox";
-import { useActiveUnmute } from "../api/useUnmutes";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import '../assets/styles/swiperCustom.css';
+import { EmptyBox } from './EmptyBox';
+import { useActiveUnmute } from '../api/useUnmutes';
+import CollageUnmute from './CollageUnmute';
+import Unmute2 from './Unmute2';
 
 export const Frame = () => {
   const cacheBust = Date.now();
@@ -28,18 +29,20 @@ export const Frame = () => {
   const swiperRef = useRef(null);
   const isAlreadyRendered = useRef();
   const dispatch = useDispatch();
+  const params = useParams()
 
   const [playing, setPlaying] = useState(false);
   const [editSlider, setEditSlider] = useState(0);
   const { activeUnmute } = useActiveUnmute();
 
   const { unmutes } = useSelector((state) => state.user);
+  const blankFrames = useSelector((state) => state.user.blankFrames);
   const { scrollToExtra, scrollToActive, disableAllExtions } = useSelector(
-    (state) => state.image
+    (state) => state.image,
   );
   const [initialSlide, setInitialSlide] = useState(0);
   const activeUnmuteIndex = useSelector(
-    (state) => state.user.activeUnmuteIndex
+    (state) => state.user.activeUnmuteIndex,
   );
 
   const sortUnmutes = () => {
@@ -54,12 +57,12 @@ export const Frame = () => {
         return a_created?.index - b_created?.index;
       });
       const itemsWithImage = sortedUnmutes.filter(
-        (item) => item.properties._images?.length > 0
+        (item) => item.properties._images?.length > 0,
       );
       setEditSlider((prev) => prev + 1);
       setInitialSlide(itemsWithImage.length - 1);
       const itemsWithoutImages = sortedUnmutes.filter(
-        (item) => !item.properties._images?.length
+        (item) => !item.properties._images?.length,
       );
 
       dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
@@ -76,7 +79,7 @@ export const Frame = () => {
   useEffect(() => {
     if (scrollToExtra > 0) {
       const isExtraExists = unmutes?.find(
-        (item) => item.properties._extra || item.properties._collage
+        (item) => item.properties._extra || item.properties._collage,
       );
       if (!isExtraExists) {
         setEditSlider((prev) => prev + 1);
@@ -114,7 +117,7 @@ export const Frame = () => {
   const handlePlayAudio = () => {
     setPlaying(true);
     const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
-    const parts = time.split(":");
+    const parts = time.split(':');
     const result = parseInt(parts[1], 10);
     setTimeout(() => {
       setPlaying(false);
@@ -131,8 +134,8 @@ export const Frame = () => {
       path: unmuteToUpdate.properties._images[0],
     }).then(() => {
       removeUnmuteInCart(unmuteToUpdate.key).then(() => {
-        dispatch(deleteUnmute(unmuteToUpdate.key))
-      })
+        dispatch(deleteUnmute(unmuteToUpdate.key));
+      });
     });
   };
 
@@ -143,7 +146,7 @@ export const Frame = () => {
           <img src={frame_image} alt="Frame" className="relative top-0 w-1/2" />
           <div className="absolute h-full object-cover">
             <div className="flex flex-col items-center justify-center h-full">
-              <Loader size={"w-24 h-24"} />
+              <Loader size={'w-24 h-24'} />
             </div>
           </div>
         </div>
@@ -153,7 +156,6 @@ export const Frame = () => {
 
   return (
     <div
-      className={"pt-2"}
       onTouchMoveCapture={(e) => {
         swiperRef.current.swiper.allowTouchMove = true;
       }}
@@ -161,9 +163,10 @@ export const Frame = () => {
       <Swiper
         key={editSlider}
         ref={swiperRef}
-        slidesPerView={"auto"}
+        slidesPerView={'auto'}
         centeredSlides={true}
         initialSlide={initialSlide}
+        slideToClickedSlide={true}
         onSlideChange={(event) => {
           dispatch(setActiveUnmuteIndex(event.activeIndex));
         }}
@@ -172,26 +175,47 @@ export const Frame = () => {
           <SwiperSlide
             key={index}
             className={
-              unmute?.properties?._orientation === "landscape"
-                ? "sliderLanscapedSize"
-                : "sliderSize"
+              unmute?.properties?._orientation === 'landscape'
+                ? 'sliderLanscapedSize'
+                : 'sliderSize'
             }
           >
-            <Unmute
-              unmute={unmute}
-              onDelete={handleDelete}
-              length={unmutes?.length}
-              activeUnmute={activeUnmuteIndex === index}
-              index={index}
-              swiperRef={swiperRef}
-            />
+            {unmute?.properties?._collage ? (
+              <CollageUnmute
+                unmute={unmute}
+                onDelete={handleDelete}
+                isActive={activeUnmuteIndex === index}
+                index={index}
+                swiperRef={swiperRef}
+              />
+            ) : (
+              <Unmute2
+                unmute={unmute}
+                onDelete={handleDelete}
+                length={unmutes?.length}
+                isActive={activeUnmuteIndex === index}
+                index={index}
+                swiperRef={swiperRef}
+              />
+              /*<Unmute
+                unmute={unmute}
+                onDelete={handleDelete}
+                length={unmutes?.length}
+                activeUnmute={activeUnmuteIndex === index}
+                index={index}
+                swiperRef={swiperRef}
+              />*/
+            )}
           </SwiperSlide>
         ))}
-        <SwiperSlide className={"sliderSize"}>
-          <EmptyBox />
-        </SwiperSlide>
+        {Array.from({ length: blankFrames }).map((_, index) => (
+          <SwiperSlide key={index} className={'sliderSize'}>
+            <EmptyBox />
+          </SwiperSlide>
+        ))}
       </Swiper>
-      <div className="flex flex-col items-center">
+      {params[0] !== 'crop' ? (
+      <div className="sm:mt-4 flex flex-col items-center">
         {activeUnmute?.properties?._audios?.length > 0 ? (
           <div className="flex flex-row items-center">
             <Link
@@ -227,17 +251,18 @@ export const Frame = () => {
         ) : (
           <Link
             to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
-            className="audio-hidden-replace text-white bg-rose-500 border border-rose focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
+            className="audio-hidden-replace flex justify-center text-white bg-rose-500 border border-rose-600 focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-xl tracking-tight px-6 py-2.5 cursor-pointer text-center w-[270px]"
             style={{
-              opacity: !activeUnmute || disableAllExtions ? "0.5" : "1",
+              opacity: !activeUnmute || disableAllExtions ? '0.5' : '1',
               pointerEvents:
-                !activeUnmute || disableAllExtions ? "none" : "unset",
+                !activeUnmute || disableAllExtions ? 'none' : 'unset',
             }}
           >
             Tilføj lydfil
           </Link>
         )}
       </div>
+      ) : null}
     </div>
   );
 };

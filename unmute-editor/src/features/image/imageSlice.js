@@ -3,14 +3,18 @@ import { createSlice } from "@reduxjs/toolkit";
 export const userSlice = createSlice({
   name: "image",
   initialState: {
-    zoomValue: 0,
+    zoomValue: 1,
     imageRef: null,
-    minValue: 0,
-    ratio: 0,
+    minValue: 1,
+    ratio: 1,
     mustCropAsNumber: 0,
     scrollToExtra: 0,
     scrollToActive: 0,
     disableAllExtions: false,
+    lastSaved: null,
+    orientationChanged: false,
+    chooseNewImage: false,
+    collageChangeImage: false
   },
   reducers: {
     updateZoomValue: (state, action) => {
@@ -37,6 +41,18 @@ export const userSlice = createSlice({
     setDisableAllActions: (state, action) => {
       state.disableAllExtions = action.payload;
     },
+    setLastSaved: (state, action) => {
+      state.lastSaved = action.payload;
+    },
+    setOrientationChanged: (state, action) => {
+      state.orientationChanged = action.payload;
+    },
+    setChooseNewImage: (state, action) => {
+      state.chooseNewImage = action.payload;
+    },
+    setCollageChangeImage: (state, action) => {
+      state.collageChangeImage = action.payload;
+    }
   },
 });
 
@@ -50,6 +66,10 @@ export const {
   setScrolltoExtra,
   setDisableAllActions,
   setScrolltoActive,
+  setLastSaved,
+  setOrientationChanged,
+  setChooseNewImage,
+  setCollageChangeImage
 } = userSlice.actions;
 
 export default userSlice.reducer;

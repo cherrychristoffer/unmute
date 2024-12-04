@@ -52,7 +52,7 @@ export const FramePage = () => {
   ];
 
   return (
-    <div className={'pb-[80px] sm:pb-[110px]'}>
+    <div className={'pb-[100px] sm:pb-[140px]'}>
       <div className="flex flex-col items-center">
         <div className="mt-[20px] flex flex-row justify-center items-center gap-6 max-w-sm">
           {OAK_FRAMES.map((item, index) =>

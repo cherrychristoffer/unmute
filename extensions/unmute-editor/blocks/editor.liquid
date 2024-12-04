@@ -1,12 +1,72 @@
 <div id="root"></div>
 
+<script>
+    window.unmuteEditorSettings = {
+        price_1: '{{ block.settings.price_1 }}',
+        savings_1: '{{ block.settings.savings_1 }}',
+        price_2: '{{ block.settings.price_2 }}',
+        savings_2: '{{ block.settings.savings_2 }}',
+        price_3: '{{ block.settings.price_3 }}',
+        savings_3: '{{ block.settings.savings_3 }}',
+        price_4: '{{ block.settings.price_4 }}',
+        savings_4: '{{ block.settings.savings_4 }}',
+    };
+</script>
+
 {% # theme-check-disable AssetSizeAppBlockJavaScript %}
 {% schema %}
   {
     "name": "Unmute Editor",
     "target": "section",
     "javascript": "unmute-editor.js",
-    "settings": []
+    "settings": [
+      {
+        "type": "number",
+        "id": "price_1",
+        "label": "Price 1",
+        "default": 499
+      },
+      {
+        "type": "number",
+        "id": "savings_1",
+        "label": "Savings 1",
+      },
+      {
+        "type": "number",
+        "id": "price_2",
+        "label": "Price 2",
+        "default": 898
+      },
+      {
+        "type": "number",
+        "id": "savings_2",
+        "label": "Savings 2",
+        "default": 100
+      },
+      {
+        "type": "number",
+        "id": "price_3",
+        "label": "Price 3",
+        "default": 799
+      },
+      {
+        "type": "number",
+        "id": "savings_3",
+        "label": "Savings 3",
+      },
+      {
+        "type": "number",
+        "id": "price_4",
+        "label": "Price 4",
+        "default": 1257
+      },
+      {
+        "type": "number",
+        "id": "savings_4",
+        "label": "Savings 4",
+        "default": 240
+      }
+    ]
   }
 {% endschema %}
 {% # theme-check-enable AssetSizeAppBlockJavaScript %}

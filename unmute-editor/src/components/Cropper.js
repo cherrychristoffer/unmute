@@ -1,4 +1,4 @@
-import { Cropper } from "react-cropper";
+//import { Cropper } from "react-cropper";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setImageRef,
@@ -12,10 +12,9 @@ import { getFileUrl, uploadFile } from "../api/aws";
 import { updateUnmuteInCart } from "../api/cart";
 import { updateUnmutes } from "../features/user/userSlice";
 
-import "cropperjs/dist/cropper.css";
+//import "cropperjs/dist/cropper.css";
 import "../assets/styles/custom-cropper.css";
 import { useParams } from "wouter";
-import { useDebouncedCallback } from "use-debounce";
 
 const estimateZoomCount = (value, count = 0, values = {}) => {
   values[count] = value;
@@ -47,7 +46,7 @@ const CropperComponent = ({
   const max = useRef(null);
   const prevPage = useRef(null);
   const prevActive = useRef(null);
-  const [update, setUpdate] = useState(0);
+  const [update, setUpdate] = useState(Math.floor(Date.now() / 1000));
   const zoomStep = useRef(0);
   const zoomValues = useRef({});
   const [isImageLoaded, setIsEmageLoaded] = useState(false);
@@ -76,6 +75,7 @@ const CropperComponent = ({
   }, [mustCropAsNumber]);
 
   useEffect(() => {
+    setUpdate(Math.floor(Date.now() / 1000));
     if (cropperRef.current && activeUnmute) {
       dispatch(setImageRef(cropperRef.current));
       dispatch(setRatio(0));
@@ -86,7 +86,7 @@ const CropperComponent = ({
       zoomStep.current = 0;
       zoomValues.current = 0;
     }
-  }, [update, activeUnmute]);
+  }, [scale, activeUnmute]);
 
   useEffect(() => {
     if (
@@ -125,7 +125,7 @@ const CropperComponent = ({
         })
           .then(({ data }) => {
             dispatch(updateUnmutes(data.items));
-            if (refresh) setUpdate((prev) => prev + 1);
+            if (refresh) setUpdate(Math.floor(Date.now() / 1000));
           })
           .catch((err) => console.log(err));
       });
@@ -183,12 +183,17 @@ const CropperComponent = ({
     const { _original_images } = unmute?.properties;
     return _original_images[_original_images?.length - 1];
   };
+
   return (
     <div
-      className={clsx(
-        frame_width,
-        "absolute h-full object-cover overflow-hidden"
-      )}
+      key={String(index) + update}
+      className={`w-full h-full`}
+      /*style={{
+        top: `${frame_padding}px`,
+        left: `${frame_padding}px`,
+        right: `${frame_padding}px`,
+        bottom: `${frame_padding}px`,
+      }}*/
       onMouseOver={() => {
         if (params[0] === "crop")
           swiperRef.current.swiper.allowTouchMove = false;
@@ -207,23 +212,21 @@ const CropperComponent = ({
         <div className="disable-zoom">Empty Box</div>
       )}
       <Cropper
-        key={String(index) + update}
         ref={cropperRef}
         src={showImage()}
         className={clsx(
-          frame_width,
-          "absolute h-full object-cover overflow-hidden"
+          //frame_width,
+          `bg-green-500 w-full h-full object-cover overflow-hidden`
         )}
-        style={frame_padding(scale, isLandscape)}
         crossOrigin="anonymous"
         checkCrossOrigin={true}
         checkOrientation={false}
         modal={false}
         highlight={false}
         background={false}
-        guides={false}
+        guides={true}
         cropBoxResizable={false}
-        center={false}
+        center={true}
         cropBoxMovable={true}
         viewMode={3}
         dragMode="move"

@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useState } from 'react';
 
 import { CheckIcon } from "../assets/icons/icon_check";
 
@@ -11,15 +11,20 @@ import { useActiveUnmute } from "../api/useUnmutes";
 
 import landscape from "../assets/images/orientation/landscape.png";
 import portrait from "../assets/images/orientation/portrait.png";
-import { setMustCrop } from "../features/image/imageSlice";
+import { setMustCrop, setOrientationChanged } from '../features/image/imageSlice';
 
 export const OrientationPage = () => {
   const dispatch = useDispatch();
   const { activeUnmute } = useActiveUnmute();
   const { disableAllExtions } = useSelector((state) => state.image);
+  const [loading, setLoading] = useState(false);
 
   const handleClick = (orientation) => {
     if (!activeUnmute) return;
+    if (activeUnmute.properties._collage) {
+      return;
+    }
+    setLoading(true);
     dispatch(
       updateUnmute({
         ...activeUnmute,
@@ -29,7 +34,6 @@ export const OrientationPage = () => {
         },
       })
     );
-
     updateUnmuteInCart({
       key: activeUnmute.key,
       properties: {
@@ -39,10 +43,12 @@ export const OrientationPage = () => {
     })
       .catch((err) => {
         console.error(err);
+        setLoading(false)
       })
       .then(({ data }) => {
-        dispatch(setMustCrop());
+        dispatch(setOrientationChanged(true));
         dispatch(updateUnmutes(data.items));
+        setLoading(false)
       });
   };
 
@@ -58,19 +64,19 @@ export const OrientationPage = () => {
   ];
 
   return (
-    <div className={"pb-[80px] sm:pb-[110px]"}>
+    <div className={"pb-[100px] sm:pb-[140px]"}>
       <div className="flex flex-col items-center">
-        <div className="mt-[20px] flex flex-row justify-center items-center gap-8 w-2/3 max-w-xs">
+        <div className="mt-[20px] flex flex-row justify-center items-center gap-8 w-2/3 max-w-[160px]">
           {ORIENTATION.map((item, index) => (
             <button
               key={index}
-              disabled={disableAllExtions}
+              disabled={(disableAllExtions || loading || activeUnmute?.properties?._collage)}
               onClick={() => handleClick(item.value)}
-              className={"relative"}
+              className={`relative ${(activeUnmute?.properties?._collage && index > 0) ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <img
                 src={item.image}
-                style={{ opacity: disableAllExtions ? "0.5" : "1" }}
+                style={{ opacity: (disableAllExtions || loading || (activeUnmute?.properties?._collage && index > 0)) ? "0.5" : "1" }}
                 className=""
                 alt={item.value}
               />

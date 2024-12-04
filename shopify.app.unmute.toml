@@ -6,10 +6,6 @@ handle = "unmute-2"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
-[build]
-dev_store_url = "unmuteframes.myshopify.com"
-include_config_on_deploy = true
-
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = ""

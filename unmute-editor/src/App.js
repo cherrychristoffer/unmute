@@ -1,7 +1,7 @@
 import { React, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchCartData } from "./api/cart";
+import { fetchCartData, updateUnmuteInCart, removeUnmuteInCart } from "./api/cart";
 
 import { Route, Switch, useLocation } from "wouter";
 import { CollagePage } from "./pages/CollagePage";
@@ -23,7 +23,7 @@ import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
 
-import { addUnmute, setIsLoadingUnmutes } from "./features/user/userSlice";
+import { addUnmute, setIsLoadingUnmutes, updateUnmutes } from "./features/user/userSlice";
 import { shopifyCollageVariants, shopifyVariants } from './app/const';
 
 import "./assets/styles/global.css";
@@ -50,6 +50,7 @@ function App() {
       if (data.items.length === 0) {
         navigate("/");
       } else {
+        console.log(data.items);
         data.items
           .filter((cartItem) =>
             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
@@ -61,6 +62,86 @@ function App() {
       dispatch(setIsLoadingUnmutes(false));
     });
   }, [dispatch]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCartData().then(({ data }) => {
+        const items = data.items
+          .filter((cartItem) =>
+            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
+          );
+        dispatch(updateUnmutes(items));
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  // Check cart regularly for changes to detect the removed items
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchCartData().then(({ data }) => {
+  //       const savedCart = localStorage.getItem("cart");
+  //       let unmutes = [];
+  //       if (savedCart) {
+  //         unmutes = JSON.parse(savedCart);
+  //       }
+
+  //       // Compare the cart items with the previous state and get the removed items
+  //       let removedItems = []
+  //       if (unmutes) {
+  //         removedItems = unmutes.filter(
+  //           (unmute) => !data.items.some((cartItem) => cartItem.key === unmute.key)
+  //         );
+  //       }
+
+  //       console.log("Removed items", removedItems);
+
+  //       if (data.items.length === 0) {
+  //         navigate("/");
+  //       } else {
+  //         console.log(data.items);
+  //         const newItems = data.items
+  //           .filter((cartItem) =>
+  //             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
+  //           )
+  //           .map((unmute) => {
+  //             for (let i = 0; i < removedItems.length; i++) {
+  //               if (unmute.properties.uuid === removedItems[i].properties.uuid && removedItems[i].properties._enhanced) {
+  //                 const properties = { ...unmute.properties };
+  //                 properties._images = [unmute.properties._touched_images[0]];
+  //                 delete properties._touched_images
+
+  //                 updateUnmuteInCart({
+  //                   key: unmute.key,
+  //                   properties: properties,
+  //                 });
+
+  //                 return {
+  //                   ...unmute,
+  //                   properties: properties,
+  //                 }
+  //               } else if (unmute.properties.uuid === removedItems[i].properties.uuid && !removedItems[i].properties._enhanced) {
+  //                 // Remove the unmute from the cart
+  //                 removeUnmuteInCart(unmute.key);
+  //               }
+  //             }
+
+  //             return unmute;
+  //           });
+
+  //         console.log('newItems', newItems)
+  //         dispatch(updateUnmutes(newItems));
+  //       }
+
+  //       // Save cart items to localstorage and compare it every time
+  //       localStorage.setItem("cart", JSON.stringify(data.items));
+
+  //       dispatch(setIsLoadingUnmutes(false));
+  //     });
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  // }, [dispatch]);
 
   const location = useLocation();
   const specialRoutesRegex = /\/(orientation|frame|passepartout|crop)/;

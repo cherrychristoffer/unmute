@@ -2,9 +2,12 @@ const shop = new URLSearchParams(window.location).get('host');
 
 let spacesBucket, s3Bucket, variants, collageVariants;
 
+let AIEnhancedVariants = [];
+
 if (shop === 'unmuteframes.myshopify.com') {
   s3Bucket = 'unmute-stage';
   spacesBucket = 'unmute-test';
+  AIEnhanceVariantID = 50462064771336;
 
   collageVariants = [
     {
@@ -86,6 +89,49 @@ if (shop === 'unmuteframes.myshopify.com') {
     },
     {
       id: 50334471454984,
+      passpartout: 7,
+      orientation: 'landscape',
+    },
+  ];
+
+  AIEnhancedVariants = [
+    {
+      id: 50462587060488,
+      passpartout: 'none',
+      orientation: 'portrait',
+    },
+    {
+      id: 50462589550856,
+      passpartout: 'none',
+      orientation: 'landscape',
+    },
+    {
+      id: 50462622908680,
+      passpartout: 2,
+      orientation: 'portrait',
+    },
+    {
+      id: 50462631264520,
+      passpartout: 2,
+      orientation: 'landscape',
+    },
+    {
+      id: 50462661902600,
+      passpartout: 5,
+      orientation: 'portrait',
+    },
+    {
+      id: 50334471913736,
+      passpartout: 5,
+      orientation: 'landscape',
+    },
+    {
+      id: 50462671274248,
+      passpartout: 7,
+      orientation: 'portrait',
+    },
+    {
+      id: 50462671831304,
       passpartout: 7,
       orientation: 'landscape',
     },
@@ -183,6 +229,8 @@ if (shop === 'unmuteframes.myshopify.com') {
 
 export const shopifyCollageVariants = collageVariants;
 export const shopifyVariants = variants;
+
+export const enhancedVariants = AIEnhancedVariants;
 
 export const SPACES_BUCKET = spacesBucket;
 export const SPACES_KEY_SECRET = 'kb8jVWbVSiCcSymuwjaKLcK24Xe9A0/tkz2B3TKcCcM';

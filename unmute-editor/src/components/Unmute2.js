@@ -11,7 +11,9 @@ import { Loader } from './Loader';
 import { getFileUrl, uploadFile } from '../api/aws';
 import { updateUnmuteInCart } from '../api/cart';
 import { updateUnmutes } from '../features/user/userSlice';
+import { photosEnhance } from '../api/image';
 
+import { base64ToFile } from '../hooks/helper';
 import frame_image from '../assets/images/frame.png';
 import frame_landscape_image from '../assets/images/frame_landscape.png';
 
@@ -89,6 +91,35 @@ const Unmute2 = ({
       dispatch(updateUnmutes(data.items));
     });
   };
+
+  const handleEnhanceSmallImage = async () => {
+    setLoading(true);
+    const imageUrl = unmute.properties._images[0];
+    const extractedPath = imageUrl.split('.com/')[1];
+    const res = await photosEnhance(extractedPath);
+    const file = base64ToFile(res, 'enhanced.png');
+    const uuid = unmute.properties._uuid;
+    uploadFile({
+      path: uuid,
+      file,
+    }).then((path) => {
+      const fileUrl = getFileUrl(path);
+      updateUnmuteInCart({
+        key: unmute.key,
+        properties: {
+          ...unmute.properties,
+          _images: [fileUrl],
+          _touched_images: [imageUrl],
+          _original_images: [unmute.properties._original_images[0]],
+        },
+        enhanced: true
+      }).then(({ data }) => {
+        setLoading(false);
+        setSmallImage(false);
+        dispatch(updateUnmutes(data.items));
+      });
+    });
+  }
 
   const {
     properties: {
@@ -205,6 +236,9 @@ const Unmute2 = ({
             <div className="flex mt-3 p-3">
               <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
             </div>
+            {/* <div className="flex mt-3 p-3">
+              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={handleEnhanceSmallImage} className={'w-full'} />
+            </div> */}
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
             For lav opløsning

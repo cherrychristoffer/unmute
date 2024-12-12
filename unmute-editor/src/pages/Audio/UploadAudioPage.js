@@ -136,7 +136,8 @@ export const UploadAudioPage = () => {
       const s3Path = "videos";
       await uploadFileToS3(file, s3Path);
 
-      const videoKey = `${s3Path}/${file.name}`;
+      const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
+      const videoKey = `${s3Path}/${sanitizedFileName}`;
 
       const audio = await convertVideoToAudio(videoKey);
       const duration = await getBlobDuration(audio);
@@ -197,6 +198,28 @@ export const UploadAudioPage = () => {
         >
           Optag lyd
         </Link>
+
+        <form className="mt-5">
+          <label
+            htmlFor="videoUpload"
+            className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
+          >
+            Video til lyd
+          </label>
+          <input
+            type="file"
+            accept="video/mp4"
+            onChange={handleVideoUpload}
+            className="hidden"
+            id="videoUpload"
+          />
+          {/* <div
+            id="progress-bar"
+            className="progress-bar"
+            style={{ width: `${progress}%` }}
+          ></div> */}
+        </form>
+
         <form className={"mt-5"}>
           <label
             htmlFor="image"
@@ -212,27 +235,6 @@ export const UploadAudioPage = () => {
             id="image"
           />
         </form>
-
-        {/*<form className="mt-5">
-          <label
-            htmlFor="videoUpload"
-            className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
-          >
-            Video til lyd
-          </label>
-          <input
-            type="file"
-            accept="video/mp4"
-            onChange={handleVideoUpload}
-            className="hidden"
-            id="videoUpload"
-          />
-          <div
-            id="progress-bar"
-            className="progress-bar"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </form>*/}
 
         <Link to="/orientation" className={'mt-8 flex justify-center'}>
           Tilbage til Unmute-editoren

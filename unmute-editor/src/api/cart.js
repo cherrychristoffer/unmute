@@ -1,19 +1,19 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-import { collageProductItem, shopifyCollageVariants, shopifyVariants } from '../app/const';
+import { collageProductItem, shopifyCollageVariants, shopifyVariants, enhancedVariants } from '../app/const';
 
 const cartUrl = `${window.Shopify.routes.root}cart`;
 
 export const fetchCartData = async () => axios.get(`${cartUrl}.js`);
 
-export const updateUnmuteInCart = async ({ key, properties }) => {
+export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) => {
   let response;
 
   const collage = properties._collage;
 
   // check if properties._orientation and properties._passepartout are matches shopifyVariants
-  let variant;
+  let variant, enhancedVariant;
   if (collage) {
     variant = shopifyCollageVariants.find((variant) => {
       return variant.orientation === properties._orientation && variant.passpartout === properties._passepartout;
@@ -24,29 +24,49 @@ export const updateUnmuteInCart = async ({ key, properties }) => {
     });
   }
 
-  if (variant.id !== Number(key.split(":")[0])) {
+  if (enhanced) {
+    enhancedVariant = enhancedVariants.find((variant) => {
+      return variant.orientation === properties._orientation && variant.passpartout === properties._passepartout;
+    });
+  }
+
+  console.log('enhancedVariant', enhancedVariant);
+
+  // if (variant.id !== Number(key.split(":")[0])) {
     // remove the item from the cart
     await axios.post(`${cartUrl}/change.js`, {
       id: key,
       quantity: 0,
     });
 
+    const items = [
+      {
+        id: variant.id,
+        quantity: 1,
+        properties,
+      },
+    ]
+
+    if (enhancedVariant) {
+      items.push({
+        id: enhancedVariant.id,
+        quantity: 1,
+        properties: {...properties, _enhanced: true},
+      });
+    }
+
+    console.log('items', items);
+
     // add the item with the correct variant
     response = await axios.post(`${cartUrl}/add.js`, {
-      items: [
-        {
-          id: variant.id,
-          quantity: 1,
-          properties,
-        },
-      ],
+      items: items,
     });
-  } else {
-    response = await axios.post(`${cartUrl}/change.js`, {
-      id: key,
-      properties,
-    });
-  }
+  // } else {
+  //   response = await axios.post(`${cartUrl}/change.js`, {
+  //     id: key,
+  //     properties,
+  //   });
+  // }
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()

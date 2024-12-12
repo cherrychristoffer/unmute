@@ -57,15 +57,6 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
-      quantity: 2,
-      title: 'Mest populær',
-      price: window.unmuteEditorSettings?.price_2 || '499',
-      saving: window.unmuteEditorSettings?.savings_2 || 0,
-      onClick: handleClick,
-      inactive: false,
-    },
-    {
       image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png',
       quantity: 1,
       title: 'Collage',
@@ -74,6 +65,15 @@ export const OffersPage = () => {
       onClick: navigateToCollage,
       inactive: false,
       //inactive: shop !== 'unmuteframes.myshopify.com',
+    },
+    {
+      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
+      quantity: 2,
+      title: 'Mest populær',
+      price: window.unmuteEditorSettings?.price_2 || '499',
+      saving: window.unmuteEditorSettings?.savings_2 || 0,
+      onClick: handleClick,
+      inactive: false,
     },
     {
       image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png',

@@ -7,7 +7,6 @@ let AIEnhancedVariants = [];
 if (shop === 'unmuteframes.myshopify.com') {
   s3Bucket = 'unmute-stage';
   spacesBucket = 'unmute-test';
-  AIEnhanceVariantID = 50462064771336;
 
   collageVariants = [
     {

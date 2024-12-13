@@ -63,18 +63,18 @@ function App() {
     });
   }, [dispatch]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchCartData().then(({ data }) => {
-        const items = data.items
-          .filter((cartItem) =>
-            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
-          );
-        dispatch(updateUnmutes(items));
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchCartData().then(({ data }) => {
+  //       const items = data.items
+  //         .filter((cartItem) =>
+  //           shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
+  //         );
+  //       dispatch(updateUnmutes(items));
+  //     });
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [dispatch]);
 
   // Check cart regularly for changes to detect the removed items
   // useEffect(() => {

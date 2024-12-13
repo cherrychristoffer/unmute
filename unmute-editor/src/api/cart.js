@@ -32,7 +32,7 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
 
   console.log('enhancedVariant', enhancedVariant);
 
-  // if (variant.id !== Number(key.split(":")[0])) {
+  if (variant.id !== Number(key.split(":")[0])) {
     // remove the item from the cart
     await axios.post(`${cartUrl}/change.js`, {
       id: key,
@@ -61,12 +61,26 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
     response = await axios.post(`${cartUrl}/add.js`, {
       items: items,
     });
-  // } else {
-  //   response = await axios.post(`${cartUrl}/change.js`, {
-  //     id: key,
-  //     properties,
-  //   });
-  // }
+  } else {
+    response = await axios.post(`${cartUrl}/change.js`, {
+      id: key,
+      properties,
+    });
+
+    if (enhancedVariant) {
+      const items = [
+        {
+          id: enhancedVariant.id,
+          quantity: 1,
+          properties: {...properties, _enhanced: true},
+        },
+      ]
+
+      await axios.post(`${cartUrl}/add.js`, {
+        items,
+      });
+    }
+  }
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()

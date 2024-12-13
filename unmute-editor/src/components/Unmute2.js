@@ -28,19 +28,20 @@ const frame_padding = (scale) => {
 };
 
 const Unmute2 = ({
-                   unmute,
-                   onDelete,
-                   isActive,
-                   index,
-                   swiperRef,
-                   showChangeImageButton,
-                 }) => {
+  unmute,
+  onDelete,
+  isActive,
+  index,
+  swiperRef,
+  showChangeImageButton,
+}) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
   const [loadingNewImage, setLoadingNewImage] = useState(false);
   const [smallImage, setSmallImage] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openEnhancingConfirm, setOpenEnhancingConfirm] = useState(false);
 
   useEffect(() => {
     console.log('loadingNewImage state:', loadingNewImage);
@@ -237,7 +238,7 @@ const Unmute2 = ({
               <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
             </div>
             {/* <div className="flex mt-3 p-3">
-              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={handleEnhanceSmallImage} className={'w-full'} />
+              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => setOpenEnhancingConfirm(true)} className={'w-full'} />
             </div> */}
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
@@ -268,6 +269,19 @@ const Unmute2 = ({
         onDelete(unmute.key);
         setOpenConfirm(false);
       }} onCancel={() => setOpenConfirm(false)} />}
+
+      {openEnhancingConfirm &&
+        <ConfirmModal
+          title={'Vil du bruge det forbedrede billede?'}
+          text="Vælg om du vil bruge"
+          buttonText="Ja (+49kr)"
+          cancelText="Nej"
+          onConfirm={() => {
+            handleEnhanceSmallImage();
+            setOpenEnhancingConfirm(false);
+          }} onCancel={() => setOpenEnhancingConfirm(false)}
+        />
+      }
     </>
   );
 };

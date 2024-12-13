@@ -1,12 +1,12 @@
 import React from 'react';
-import { Modal, Button, Box, Typography, Fade, Backdrop } from '@mui/material';
+import { Modal, Box, Fade } from '@mui/material';
 import VButton from './VButton';
 
 export const ConfirmModal = (props) => {
   let {
     title = props.title ? props.title : 'Vil du slette?',
     children = props.text ? props.text : `Bekræft, at du vil slette ${props.type}. Handlingen kan ikke fortrydes.`,
-    cancelText = 'Anuller',
+    cancelText = props.cancelText ? props.cancelText : 'Anuller',
     confirmText = props.buttonText ? props.buttonText : 'Ja, slet',
     onCancel = () => {
     },

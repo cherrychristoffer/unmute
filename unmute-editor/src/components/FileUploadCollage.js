@@ -105,7 +105,7 @@ const FileUploadCollage = forwardRef(({ index, cropFormat = null, paste = false,
       newImages = item.properties._images.map((image, i) => {
         return i === index ? newFileUrls[0] : image;
       });
-      newOriginalImages = item.properties._original_images.map((image, i) => {
+      newOriginalImages = (item.properties._original_images || []).map((image, i) => {
         return i === index ? newFileUrls[0] : image;
       });
       newImageStates = item.properties._collage_image_states.map((image, i) => {
@@ -113,9 +113,10 @@ const FileUploadCollage = forwardRef(({ index, cropFormat = null, paste = false,
       });
     } else {
       newImages = [...item.properties._images, ...newFileUrls];
-      newOriginalImages = [...item.properties._original_images, ...newFileUrls];
+      newOriginalImages = [...(item.properties._original_images || []), ...newFileUrls];
       newImageStates = [...item.properties._collage_image_states, {}];
     }
+
     const cart = await updateUnmuteInCart({
       key: item.key,
       properties: {

@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'wouter';
@@ -23,7 +23,7 @@ import { useActiveUnmute } from '../api/useUnmutes';
 import CollageUnmute from './CollageUnmute';
 import Unmute2 from './Unmute2';
 
-export const Frame = () => {
+export const Frame = React.memo(() => {
   const cacheBust = Date.now();
   const audioRef = useRef();
   const swiperRef = useRef(null);
@@ -271,4 +271,4 @@ export const Frame = () => {
       ) : null}
     </div>
   );
-};
+});

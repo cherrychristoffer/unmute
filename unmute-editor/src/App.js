@@ -112,13 +112,13 @@ function App() {
             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
           );
 
-          dispatch(updateUnmutes(filteredItems));
+          if(JSON.stringify(unmutes) !== JSON.stringify(filteredItems)) {
+            dispatch(updateUnmutes(filteredItems));
+          }
         }
 
         // Save cart items to localstorage and compare it every time
         localStorage.setItem("cart", JSON.stringify(data.items));
-
-        dispatch(setIsLoadingUnmutes(false));
       });
     }, 3000);
 

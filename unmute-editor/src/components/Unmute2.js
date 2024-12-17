@@ -237,9 +237,9 @@ const Unmute2 = ({
             <div className="flex mt-3 p-3">
               <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
             </div>
-            <div className="flex mt-3 p-3">
+            {/* <div className="flex mt-3 p-3">
               <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => setOpenEnhancingConfirm(true)} className={'w-full'} />
-            </div>
+            </div> */}
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
             For lav opløsning

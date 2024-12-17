@@ -1,15 +1,12 @@
 import heic2any from 'heic2any';
 
 export const convertHeicToJpg = async (file, path) => {
-  console.log('convertHeicToJpg', file);
   let finalFile = file;
   let finalPath = path;
 
   if (file && (file.type === 'application/octet-stream' || file.type === '')) {
     try {
       const originalBlob = new Blob([file], { type: 'image/heic' });
-
-      console.log(originalBlob);
 
       // Convert HEIC to JPEG
       const blob = await heic2any({

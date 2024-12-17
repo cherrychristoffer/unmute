@@ -1,5 +1,5 @@
 import { React, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { fetchCartData, updateUnmuteInCart, removeUnmuteInCart } from "./api/cart";
 
@@ -50,7 +50,6 @@ function App() {
       if (data.items.length === 0) {
         navigate("/");
       } else {
-        console.log(data.items);
         data.items
           .filter((cartItem) =>
             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
@@ -63,85 +62,68 @@ function App() {
     });
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetchCartData().then(({ data }) => {
-  //       const items = data.items
-  //         .filter((cartItem) =>
-  //           shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
-  //         );
-  //       dispatch(updateUnmutes(items));
-  //     });
-  //   }, 3000);
-  //   return () => clearInterval(interval);
-  // }, [dispatch]);
-
   // Check cart regularly for changes to detect the removed items
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetchCartData().then(({ data }) => {
-  //       const savedCart = localStorage.getItem("cart");
-  //       let unmutes = [];
-  //       if (savedCart) {
-  //         unmutes = JSON.parse(savedCart);
-  //       }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCartData().then(({ data }) => {
+        const savedCart = localStorage.getItem("cart");
+        let unmutes = [];
+        if (savedCart) {
+          unmutes = JSON.parse(savedCart);
+        }
 
-  //       // Compare the cart items with the previous state and get the removed items
-  //       let removedItems = []
-  //       if (unmutes) {
-  //         removedItems = unmutes.filter(
-  //           (unmute) => !data.items.some((cartItem) => cartItem.key === unmute.key)
-  //         );
-  //       }
+        // Compare the cart items with the previous state and get the removed items
+        let removedItems = []
+        if (unmutes.length > 0) {
+          // if a product is in unmutes but not in the data.items, it means it's removed
+          removedItems = unmutes.filter(
+            (unmute) => !data.items.some((cartItem) => cartItem.properties._uuid === unmute.properties._uuid && cartItem.id === unmute.id)
+          );
+        }
 
-  //       console.log("Removed items", removedItems);
+        if (data.items.length > 0) {
+          const newItems = data.items
+            .map((unmute) => {
+              for (let i = 0; i < removedItems.length; i++) {
+                if (unmute.properties._uuid === removedItems[i].properties._uuid && removedItems[i].properties._enhanced) {
+                  const properties = { ...unmute.properties };
+                  properties._images = [unmute.properties._touched_images[0]];
+                  delete properties._touched_images
 
-  //       if (data.items.length === 0) {
-  //         navigate("/");
-  //       } else {
-  //         console.log(data.items);
-  //         const newItems = data.items
-  //           .filter((cartItem) =>
-  //             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
-  //           )
-  //           .map((unmute) => {
-  //             for (let i = 0; i < removedItems.length; i++) {
-  //               if (unmute.properties.uuid === removedItems[i].properties.uuid && removedItems[i].properties._enhanced) {
-  //                 const properties = { ...unmute.properties };
-  //                 properties._images = [unmute.properties._touched_images[0]];
-  //                 delete properties._touched_images
+                  updateUnmuteInCart({
+                    key: unmute.key,
+                    properties: properties,
+                  });
 
-  //                 updateUnmuteInCart({
-  //                   key: unmute.key,
-  //                   properties: properties,
-  //                 });
+                  return {
+                    ...unmute,
+                    properties: properties,
+                  }
+                } else if (unmute.properties._uuid === removedItems[i].properties._uuid && !removedItems[i].properties._enhanced) {
+                  // Remove the unmute from the cart
+                  removeUnmuteInCart(removedItems[i].properties._uuid, true);
+                }
+              }
 
-  //                 return {
-  //                   ...unmute,
-  //                   properties: properties,
-  //                 }
-  //               } else if (unmute.properties.uuid === removedItems[i].properties.uuid && !removedItems[i].properties._enhanced) {
-  //                 // Remove the unmute from the cart
-  //                 removeUnmuteInCart(unmute.key);
-  //               }
-  //             }
+              return unmute;
+            });
 
-  //             return unmute;
-  //           });
+          const filteredItems = newItems.filter((cartItem) =>
+            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
+          );
 
-  //         console.log('newItems', newItems)
-  //         dispatch(updateUnmutes(newItems));
-  //       }
+          dispatch(updateUnmutes(filteredItems));
+        }
 
-  //       // Save cart items to localstorage and compare it every time
-  //       localStorage.setItem("cart", JSON.stringify(data.items));
+        // Save cart items to localstorage and compare it every time
+        localStorage.setItem("cart", JSON.stringify(data.items));
 
-  //       dispatch(setIsLoadingUnmutes(false));
-  //     });
-  //   }, 5000);
+        dispatch(setIsLoadingUnmutes(false));
+      });
+    }, 3000);
 
-  //   return () => clearInterval(interval);
-  // }, [dispatch]);
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   const location = useLocation();
   const specialRoutesRegex = /\/(orientation|frame|passepartout|crop)/;

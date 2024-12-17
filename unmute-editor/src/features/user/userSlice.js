@@ -133,6 +133,21 @@ export const userSlice = createSlice({
       };
     },
 
+    updateUnmuteKeys: (state, action) => {
+      return {
+        ...state,
+        unmutes: state.unmutes.map((item) => {
+          const updatedUnmute = action.payload.find(
+            (state) => state.properties._uuid === item.properties._uuid
+          );
+          if (updatedUnmute) {
+            return updatedUnmute;
+          }
+          return item;
+        }),
+      };
+    },
+
     updateUnmutes: (state, action) => {
       return {
         ...state,

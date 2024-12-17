@@ -197,14 +197,14 @@ const Unmute2 = ({
                 setLoadingNewImage(false);
               }} />
             </div>
+            <button
+              onClick={() => setOpenConfirm(true)}
+              className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-10 -right-10 z-[20000000]"
+            >
+              <CloseIcon />
+            </button>
             {images && images.length > 0 ? (
               <>
-                <button
-                  onClick={() => setOpenConfirm(true)}
-                  className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-10 -right-10 z-[20000000]"
-                >
-                  <CloseIcon />
-                </button>
                 <div className={'w-full h-full'}>
                   <img src={images[0]} alt="Frame" className={'w-full h-full object-cover'} />
                 </div>
@@ -237,9 +237,9 @@ const Unmute2 = ({
             <div className="flex mt-3 p-3">
               <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
             </div>
-            {/* <div className="flex mt-3 p-3">
+            <div className="flex mt-3 p-3">
               <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => setOpenEnhancingConfirm(true)} className={'w-full'} />
-            </div> */}
+            </div>
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
             For lav opløsning
@@ -266,7 +266,7 @@ const Unmute2 = ({
       )}
 
       {openConfirm && <ConfirmModal type={'denne Unmute'} onConfirm={() => {
-        onDelete(unmute.key);
+        onDelete(unmute.properties._uuid);
         setOpenConfirm(false);
       }} onCancel={() => setOpenConfirm(false)} />}
 

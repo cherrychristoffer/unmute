@@ -7,7 +7,20 @@ const cartUrl = `${window.Shopify.routes.root}cart`;
 
 export const fetchCartData = async () => axios.get(`${cartUrl}.js`);
 
+export const getKeyFromUUID = async (uuid, enhanced = false) => {
+  const cartData = await fetchCartData();
+  const cartItem = cartData.data.items.find((item) => item.properties._uuid === uuid && ((item.properties._enhanced == enhanced && enhanced) || (!item.properties._enhanced && !enhanced)));
+  return cartItem ? cartItem.key : null;
+};
+
 export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) => {
+  let realKey = key;
+
+  const newKey = await getKeyFromUUID(properties._uuid);
+  if (newKey) {
+    realKey = newKey;
+  }
+
   let response;
 
   const collage = properties._collage;
@@ -30,12 +43,10 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
     });
   }
 
-  console.log('enhancedVariant', enhancedVariant);
-
-  if (variant.id !== Number(key.split(":")[0])) {
+  if (variant.id !== Number(realKey.split(":")[0])) {
     // remove the item from the cart
     await axios.post(`${cartUrl}/change.js`, {
-      id: key,
+      id: realKey,
       quantity: 0,
     });
 
@@ -51,11 +62,9 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
       items.push({
         id: enhancedVariant.id,
         quantity: 1,
-        properties: {...properties, _enhanced: true},
+        properties: { ...properties, _enhanced: true },
       });
     }
-
-    console.log('items', items);
 
     // add the item with the correct variant
     response = await axios.post(`${cartUrl}/add.js`, {
@@ -63,7 +72,7 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
     });
   } else {
     response = await axios.post(`${cartUrl}/change.js`, {
-      id: key,
+      id: realKey,
       properties,
     });
 
@@ -72,7 +81,7 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
         {
           id: enhancedVariant.id,
           quantity: 1,
-          properties: {...properties, _enhanced: true},
+          properties: { ...properties, _enhanced: true },
         },
       ]
 
@@ -92,7 +101,8 @@ export const updateUnmuteInCart = async ({ key, properties, enhanced = false }) 
   return response
 };
 
-export const removeUnmuteInCart = async (key) => {
+export const removeUnmuteInCart = async (uuid, enhanced = false) => {
+  const key = await getKeyFromUUID(uuid, enhanced);
   const response = await axios.post(`${cartUrl}/change.js`, {
     id: key,
     quantity: 0,
@@ -104,7 +114,6 @@ export const removeUnmuteInCart = async (key) => {
   if (response?.data?.sections?.['cart-icon-bubble'] && cartIconBubble) {
     cartIconBubble.innerHTML = response.data.sections["cart-icon-bubble"];
   }
-
 
   if (window.theme?.cart?.rerenderCart) {
     window.theme.cart.rerenderCart()

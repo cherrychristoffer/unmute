@@ -314,7 +314,7 @@ const CollageUnmute = ({
       </div>
 
       {openConfirm && <ConfirmModal type={'denne Unmute'} onConfirm={() => {
-        onDelete(unmute.key);
+        onDelete(unmute.properties._uuid);
         setOpenConfirm(false);
       }} onCancel={() => setOpenConfirm(false)} />}
     </>

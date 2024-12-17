@@ -1,11 +1,9 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { useLocation, useSearch } from 'wouter';
 
 import { addUnmute } from '../features/user/userSlice';
 import { addUnmuteToCart } from '../api/cart';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { useParams } from 'wouter';
 
 import { Loader } from '../components/Loader';
 
@@ -18,8 +16,6 @@ export const OffersPage = () => {
 
   const params = useSearch();
   const [stayOnPage, setStayOnPage] = useState(params?.includes('stay=true'));
-
-  console.log('offers page', params?.includes('stay=true'));
 
   const handleClick = ({ quantity }) => {
     setStayOnPage(true);

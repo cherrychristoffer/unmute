@@ -56,6 +56,8 @@ export const UploadImagePage = () => {
     setLoading(true);
     const file = event.target.files[0];
 
+    console.log('upload image type', file, file.type);
+
     try {
       // Upload the image
       const fileUrl = await uploadImage(activeUnmute, file);

@@ -1,9 +1,8 @@
 import AWS from 'aws-sdk';
 
-import { SPACES_BUCKET, SPACES_KEY_ID, SPACES_KEY_SECRET, AWS_KEY_ID, AWS_KEY_SECRET, S3_BUCKET, S3_REGION } from '../app/const';
-
-import { clamp } from 'lodash';
+import { SPACES_BUCKET, SPACES_KEY_ID, SPACES_KEY_SECRET } from '../app/const';
 import slugify from 'slugify';
+import { convertHeicToJpg } from '../hooks/heic2jpg';
 
 AWS.config.update({
   accessKeyId: SPACES_KEY_ID,
@@ -20,8 +19,9 @@ export const getFileUrl = (path) =>
   `https://${SPACES_BUCKET}.fra1.digitaloceanspaces.com/${path}`;
 
 export const uploadFile = async ({ file, path, customName = null }) => {
-  const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
-  const fileKey = `${path}/${customName ? customName : sanitizedFileName}`;
+  let { finalFile, finalPath } = await convertHeicToJpg(file, path);
+  const sanitizedFileName = slugify(finalFile.name, { replacement: '_', lower: false });
+  const fileKey = `${finalPath}/${customName ? customName : sanitizedFileName}`;
 
   let contentType = file.type;
 
@@ -29,7 +29,7 @@ export const uploadFile = async ({ file, path, customName = null }) => {
     .putObject({
       Bucket: SPACES_BUCKET,
       Key: fileKey,
-      Body: file,
+      Body: finalFile,
       ContentType: contentType,
       ACL: 'public-read-write',
     })

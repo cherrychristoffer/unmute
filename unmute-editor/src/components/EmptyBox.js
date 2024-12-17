@@ -72,7 +72,7 @@ export const EmptyBox = ({ orientation }) => {
           <Link key={key} className={'absolute inset-[16px]'} to="/?stay=true">
             <div className={'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'}>
               <PlusIcon size={40} />
-              <span className={'absolute top-[80px] text-center !text-[16px]'}>Vælg foto</span>
+              <span className={'absolute top-[80px] text-center !text-[16px]'}>Vælg foto eller kollage</span>
             </div>
             {/*<FileUpload newUnmute={true} uploading={() => setLoading(true)} uploaded={() => {
               setKey(key + 1);

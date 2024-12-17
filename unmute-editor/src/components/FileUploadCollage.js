@@ -156,7 +156,7 @@ const FileUploadCollage = forwardRef(({ index, cropFormat = null, paste = false,
     deleteFile({
       path: unmuteToUpdate.properties._images[0],
     }).then(() => {
-      removeUnmuteInCart(unmuteToUpdate.key).then(() => {
+      removeUnmuteInCart(unmuteToUpdate.properties._uuid).then(() => {
         dispatch(deleteUnmute(unmuteToUpdate.key));
       });
     });

@@ -128,15 +128,21 @@ export const Frame = () => {
     setPlaying(false);
   };
 
-  const handleDelete = (key) => {
-    const unmuteToUpdate = unmutes.find((unmute) => unmute.key === key);
-    deleteFile({
-      path: unmuteToUpdate.properties._images[0],
-    }).then(() => {
-      removeUnmuteInCart(unmuteToUpdate.key).then(() => {
+  const handleDelete = (uuid) => {
+    const unmuteToUpdate = unmutes.find((unmute) => unmute.properties._uuid === uuid);
+    if (unmuteToUpdate.properties._images.length > 0) {
+      deleteFile({
+        path: unmuteToUpdate.properties._images[0],
+      }).then(() => {
+        removeUnmuteInCart(uuid).then(() => {
+          dispatch(deleteUnmute(unmuteToUpdate.key));
+        });
+      });
+    } else {
+      removeUnmuteInCart(uuid).then(() => {
         dispatch(deleteUnmute(unmuteToUpdate.key));
       });
-    });
+    }
   };
 
   if (loading) {

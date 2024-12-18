@@ -25,7 +25,7 @@ export const ConfirmModal = (props) => {
         <Box
           sx={{
             position: 'absolute',
-            top: '50%',
+            top: { xs: '70%', md: '50%' },
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 400,

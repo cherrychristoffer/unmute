@@ -42,6 +42,7 @@ const Unmute2 = ({
   const [smallImage, setSmallImage] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openEnhancingConfirm, setOpenEnhancingConfirm] = useState(false);
+  const [enhancedImage, setEnhancedImage] = useState(null);
 
   useEffect(() => {
     console.log('loadingNewImage state:', loadingNewImage);
@@ -93,13 +94,15 @@ const Unmute2 = ({
     });
   };
 
-  const handleEnhanceSmallImage = async () => {
+  const saveEnhancedImage = async () => {
+    if (!enhancedImage) {
+      return;
+    }
+    setOpenEnhancingConfirm(false);
     setLoading(true);
-    const imageUrl = unmute.properties._images[0];
-    const extractedPath = imageUrl.split('.com/')[1];
-    const res = await photosEnhance(extractedPath);
-    const file = base64ToFile(res, 'enhanced.png');
+    const file = base64ToFile(enhancedImage, 'enhanced.png');
     const uuid = unmute.properties._uuid;
+    const imageUrl = unmute.properties._images[0];
     uploadFile({
       path: uuid,
       file,
@@ -120,6 +123,23 @@ const Unmute2 = ({
         dispatch(updateUnmutes(data.items));
       });
     });
+  }
+
+  const cancelEnhancing = async () => {
+    setEnhancedImage(null);
+    setSmallImage(true);
+    setOpenEnhancingConfirm(false);
+  }
+
+  const handleEnhanceSmallImage = async () => {
+    setLoading(true);
+    const imageUrl = unmute.properties._images[0];
+    const extractedPath = imageUrl.split('.com/')[1];
+    const res = await photosEnhance(extractedPath);
+    setEnhancedImage(res);
+    setOpenEnhancingConfirm(true);
+    setSmallImage(false);
+    setLoading(false);
   }
 
   const {
@@ -159,6 +179,8 @@ const Unmute2 = ({
     setFrameWidth(frameRef.current.offsetWidth);
   }, [frame]);
 
+  const allImages = enhancedImage ? [enhancedImage, ...images] : images;
+
   return (
     <>
       <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', 'snap-center flex items-center py-4')}>
@@ -178,7 +200,7 @@ const Unmute2 = ({
             )}
           />
           <img
-            src={images}
+            src={allImages}
             alt="Frame"
             onLoad={handleImageLoad}
             className={'hidden'}
@@ -206,7 +228,7 @@ const Unmute2 = ({
             {images && images.length > 0 ? (
               <>
                 <div className={'w-full h-full'}>
-                  <img src={images[0]} alt="Frame" className={'w-full h-full object-cover'} />
+                  <img src={enhancedImage || images[0]} alt="Frame" className={'w-full h-full object-cover'} />
                 </div>
               </>
             ) : null}
@@ -237,9 +259,9 @@ const Unmute2 = ({
             <div className="flex mt-3 p-3">
               <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
             </div>
-            {/* <div className="flex mt-3 p-3">
-              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => setOpenEnhancingConfirm(true)} className={'w-full'} />
-            </div> */}
+            <div className="flex mt-3 p-3">
+              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => handleEnhanceSmallImage()} className={'w-full'} />
+            </div>
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
             For lav opløsning
@@ -277,9 +299,8 @@ const Unmute2 = ({
           buttonText="Ja (+49kr)"
           cancelText="Nej"
           onConfirm={() => {
-            handleEnhanceSmallImage();
-            setOpenEnhancingConfirm(false);
-          }} onCancel={() => setOpenEnhancingConfirm(false)}
+            saveEnhancedImage();
+          }} onCancel={() => cancelEnhancing()}
         />
       }
     </>

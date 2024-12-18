@@ -224,6 +224,49 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'landscape',
     },
   ];
+
+  AIEnhancedVariants = [
+    {
+      id: 49961295708498,
+      passpartout: 'none',
+      orientation: 'portrait',
+    },
+    {
+      id: 49961305112914,
+      passpartout: 'none',
+      orientation: 'landscape',
+    },
+    {
+      id: 49961312420178,
+      passpartout: 2,
+      orientation: 'portrait',
+    },
+    {
+      id: 49961315696978,
+      passpartout: 2,
+      orientation: 'landscape',
+    },
+    {
+      id: 49961321595218,
+      passpartout: 5,
+      orientation: 'portrait',
+    },
+    {
+      id: 49961322774866,
+      passpartout: 5,
+      orientation: 'landscape',
+    },
+    {
+      id: 49961323757906,
+      passpartout: 7,
+      orientation: 'portrait',
+    },
+    {
+      id: 49961331327314,
+      passpartout: 7,
+      orientation: 'landscape',
+    },
+  ];
 }
 
 export const shopifyCollageVariants = collageVariants;

@@ -2,6 +2,10 @@ import React from 'react';
 import { Modal, Box, Fade } from '@mui/material';
 import VButton from './VButton';
 
+const Backdrop = (props) => {
+  return <Box sx={{ bg: 'transparent' }}></Box>
+}
+
 export const ConfirmModal = (props) => {
   let {
     title = props.title ? props.title : 'Vil du slette?',
@@ -20,12 +24,15 @@ export const ConfirmModal = (props) => {
       onClose={onCancel}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
+      slots={{
+        backdrop: Backdrop, // You can replace this with a custom component
+      }}
     >
       <Fade in={true}>
         <Box
           sx={{
             position: 'absolute',
-            top: { xs: '70%', md: '50%' },
+            top: '70%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 400,
@@ -33,6 +40,7 @@ export const ConfirmModal = (props) => {
             borderRadius: 2,
             boxShadow: 24,
             p: 4,
+            outline: 'none',
           }}
         >
           <h4 className={'text-3xl font-semibold tracking-tight'}>

@@ -1,5 +1,5 @@
 import { React, useEffect, useRef, useState } from 'react';
-
+import Snackbar from '@mui/material/Snackbar';
 import clsx from 'clsx';
 
 const cssGrids = {
@@ -107,24 +107,30 @@ const frame_padding = (scale) => {
 };
 
 const CollageUnmute = ({
-                         unmute,
-                         onDelete,
-                         isActive,
-                         index,
-                         swiperRef,
-                         showChangeImageButton,
-                       }) => {
+  unmute,
+  onDelete,
+  isActive,
+  index,
+  swiperRef,
+  showChangeImageButton,
+}) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [reorderActive, setReorderActive] = useState(false);
   const [reorderIndex1, setReorderIndex1] = useState(null);
+  const [open, setOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const collageChangeImage = useSelector((state) => state.image.collageChangeImage);
 
   const [frameWidth, setFrameWidth] = useState();
   const frameRef = useRef();
+
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const {
     properties: {
@@ -206,11 +212,11 @@ const CollageUnmute = ({
       <div ref={outerDivRef} className={`${cssGrids[unmute.properties['_collage_type']].items[index]} overflow-hidden relative bg-[#f1f0ef]`}>
         <div className={`${image ? 'hidden' : 'block'} absolute inset-0`}>
           <FileUploadCollage ref={pondRef} index={index} isActive={false} cropFormat={cropFormat}
-                             uploading={() => {
-                               setLoadingNewImage(true);
-                             }} uploaded={() => {
-            setLoadingNewImage(false);
-          }} />
+            uploading={() => {
+              setLoadingNewImage(true);
+            }} uploaded={() => {
+              setLoadingNewImage(false);
+            }} />
         </div>
         {image && (
           <>
@@ -262,9 +268,9 @@ const CollageUnmute = ({
             )}
           />
           <div className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[unmute.properties['_collage_type']].gridTemplateColumns} gap-3 bg-white`}
-               style={{
-                 padding: `${frame_padding(scale)}px`,
-               }}
+            style={{
+              padding: `${frame_padding(scale)}px`,
+            }}
           >
             {Array.from({ length: maxItems }, (_, index) => (
               <CollageItem
@@ -306,14 +312,37 @@ const CollageUnmute = ({
         </div>
       )}
 
-      <div className={'flex items-start gap-3 mt-5 bg-white border border-zinc-200 rounded-lg p-4 text-[12px]'}>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-        </svg>
-        Det er vigtigt, at du klikker på hvert billede og sikrer dig, at beskæringen er som ønsket.
-      </div>
+      {
+        !isMobile && (
+          <div className={'flex items-start gap-3 mt-5 bg-white border border-zinc-200 rounded-lg p-4 text-[12px]'}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+            </svg>
+            Det er vigtigt, at du klikker på hvert billede og sikrer dig, at beskæringen er som ønsket.
+          </div>
+        )
+      }
 
-      {openConfirm && <ConfirmModal type={'denne Unmute'} onConfirm={() => {
+      {
+        isMobile && (
+          <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
+            <div className={'flex items-start gap-3 p-4 rounded-lg bg-white border border-zinc-200 text-[12px]'}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+              </svg>
+              Det er vigtigt, at du klikker på hvert billede og sikrer dig, at beskæringen er som ønsket.
+              <button
+                onClick={handleClose}
+                className="w-[34px] h-[34px] rounded-full flex items-center justify-center"
+              >
+                <CloseIcon fill="black" />
+              </button>
+            </div>
+          </Snackbar>
+        )
+      }
+
+      {openConfirm && <ConfirmModal type={'denne UNMUTE'} onConfirm={() => {
         onDelete(unmute.properties._uuid);
         setOpenConfirm(false);
       }} onCancel={() => setOpenConfirm(false)} />}

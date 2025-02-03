@@ -239,7 +239,7 @@ const Unmute = ({
         </div>
       )}
 
-      {openConfirm && <ConfirmModal type={'denne Unmute'} onConfirm={() => {
+      {openConfirm && <ConfirmModal type={'denne UNMUTE'} onConfirm={() => {
         onDelete(unmute.key);
         setOpenConfirm(false);
       }} onCancel={() => setOpenConfirm(false)} />}

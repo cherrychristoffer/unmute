@@ -79,7 +79,7 @@ export const UploadImagePage = () => {
 // Handle multiple file uploads
   const handleCollageChange = async (event) => {
     setLoading(true);
-    const files = Array.from(event.target.files).slice(0, activeUnmute.properties._collage_max_items);
+    const files = Array.from(event.target.files).slice(0, (activeUnmute.properties._collage_max_items - activeUnmute.properties._images.length));
     const newFileUrls = [];
 
     try {
@@ -113,7 +113,7 @@ export const UploadImagePage = () => {
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Upload</h1>
           {type !== 'multiple' ? (
             <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-              Vælg dit yndlings-foto
+              Vælg dit yndlings foto
             </h2>
           ) : (
             <>

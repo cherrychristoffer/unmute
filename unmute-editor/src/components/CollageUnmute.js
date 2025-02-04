@@ -21,10 +21,10 @@ const cssGrids = {
   'collage_2_2': {
     gridTemplateColumns: 'grid-cols-2',
     items: [
-      '',
-      '',
-      '',
-      '',
+      'h-full',
+      'h-full',
+      'h-full',
+      'h-full',
     ],
   },
   'collage_2_1_2': {

@@ -14,7 +14,11 @@ export const convertVideoToAudio = async (videoKey) => {
     }
   );
 
-  return new File([response.data], "video-to-audio.mp3", {
+  const timestamp = Date.now();
+  const uniqueId = Math.floor(Math.random() * 1000000);
+  let fileName = `${timestamp}-${uniqueId}-video-to-audio.mp3`;
+
+  return new File([response.data], fileName, {
     type: "audio/mp3",
   });
 };

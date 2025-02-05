@@ -45,6 +45,24 @@ export const Frame = React.memo(() => {
     (state) => state.user.activeUnmuteIndex,
   );
 
+  useEffect(() => {
+    if (audioRef.current) {
+      const audio = audioRef.current;
+      console.log("Audio element:", audio);
+
+      const handleEnded = () => {
+        console.log("Audio ended");
+        setPlaying(false);
+      };
+
+      audio.onended = handleEnded;
+    }
+
+    // return () => {
+    //   audio.onended = null;
+    // };
+  }, [audioRef.current]);
+
   const sortUnmutes = () => {
     if (unmutes?.length !== 1) {
       const sortedUnmutes = [...unmutes]?.sort((a, b) => {
@@ -116,12 +134,6 @@ export const Frame = React.memo(() => {
 
   const handlePlayAudio = () => {
     setPlaying(true);
-    const time = unmutes[activeUnmuteIndex]?.properties?._audios[0].countdown;
-    const parts = time.split(':');
-    const result = parseInt(parts[1], 10);
-    setTimeout(() => {
-      setPlaying(false);
-    }, result * 1000);
   };
 
   const handlePauseAudio = () => {
@@ -221,53 +233,53 @@ export const Frame = React.memo(() => {
         ))}
       </Swiper>
       {params[0] !== 'crop' ? (
-      <div className="sm:mt-4 flex flex-col items-center">
-        {activeUnmute?.properties?._audios?.length > 0 ? (
-          <div className="flex flex-row items-center">
-            <Link
-              to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
-              className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
-            >
-              Rediger lyd
-            </Link>
+        <div className="sm:mt-4 flex flex-col items-center">
+          {activeUnmute?.properties?._audios?.length > 0 ? (
+            <div className="flex flex-row items-center">
+              <Link
+                to={`/edit-audio/${activeUnmute?.properties?._uuid}`}
+                className="text-rose-500 bg-white-500 border border-rose focus:outline-none hover:bg-rose-600 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-16 py-2.5 cursor-pointer"
+              >
+                Rediger lyd
+              </Link>
 
-            <button
-              onClick={() => {
-                playing ? handlePauseAudio() : handlePlayAudio();
+              <button
+                onClick={() => {
+                  playing ? handlePauseAudio() : handlePlayAudio();
+                }}
+                className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
+              >
+                {playing ? (
+                  <>
+                    <PauseIcon />
+                  </>
+                ) : (
+                  <>
+                    <PlayIcon />️
+                  </>
+                )}
+              </button>
+              <audio
+                ref={audioRef}
+                className="hidden"
+                controls="controls"
+                src={`${activeUnmute?.properties?._audios[0]?.file}?c=${cacheBust}`}
+              ></audio>
+            </div>
+          ) : (
+            <Link
+              to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
+              className="audio-hidden-replace flex justify-center text-white bg-rose-500 border border-rose-600 focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-xl tracking-tight px-6 py-2.5 cursor-pointer text-center w-[270px]"
+              style={{
+                opacity: !activeUnmute || disableAllExtions ? '0.5' : '1',
+                pointerEvents:
+                  !activeUnmute || disableAllExtions ? 'none' : 'unset',
               }}
-              className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
             >
-              {playing ? (
-                <>
-                  <PauseIcon />
-                </>
-              ) : (
-                <>
-                  <PlayIcon />️
-                </>
-              )}
-            </button>
-            <audio
-              ref={audioRef}
-              className="hidden"
-              controls="controls"
-              src={`${activeUnmute?.properties?._audios[0]?.file}?c=${cacheBust}`}
-            ></audio>
-          </div>
-        ) : (
-          <Link
-            to={`/audio-upload/${activeUnmute?.properties?._uuid}`}
-            className="audio-hidden-replace flex justify-center text-white bg-rose-500 border border-rose-600 focus:outline-none hover:bg-rose-600 focus:ring-4 focus:ring-rose font-medium rounded-xl tracking-tight px-6 py-2.5 cursor-pointer text-center w-[270px]"
-            style={{
-              opacity: !activeUnmute || disableAllExtions ? '0.5' : '1',
-              pointerEvents:
-                !activeUnmute || disableAllExtions ? 'none' : 'unset',
-            }}
-          >
-            Tilføj lydfil
-          </Link>
-        )}
-      </div>
+              Tilføj lydfil
+            </Link>
+          )}
+        </div>
       ) : null}
     </div>
   );

@@ -210,7 +210,7 @@ const CollageUnmute = ({
 
     return (
       <div ref={outerDivRef} className={`${cssGrids[unmute.properties['_collage_type']].items[index]} overflow-hidden relative bg-[#f1f0ef]`}>
-        <div className={`${image ? 'hidden' : 'block'} absolute inset-0`}>
+        <div className={`${image ? 'hidden' : 'block'} w-full h-full min-h-[20px]`}>
           <FileUploadCollage ref={pondRef} index={index} isActive={false} cropFormat={cropFormat}
             uploading={() => {
               setLoadingNewImage(true);
@@ -220,7 +220,7 @@ const CollageUnmute = ({
         </div>
         {image && (
           <>
-            <img src={image} alt="img" className={`object-cover absolute w-full h-full inset-0 z-10 cursor-pointer transition-all ${(reorderActive || collageChangeImage) ? reorderIndex1 === index ? 'opacity-25' : 'hover:opacity-50' : ''}`} onClick={() => {
+            <img src={image} alt="img" className={`object-cover absolute w-full h-full inset-0 z-10 min-h-[20px] cursor-pointer transition-all ${(reorderActive || collageChangeImage) ? reorderIndex1 === index ? 'opacity-25' : 'hover:opacity-50' : ''}`} onClick={() => {
               if (collageChangeImage) {
                 pondRef.current.browse();
               } else if (!reorderActive) {
@@ -324,7 +324,7 @@ const CollageUnmute = ({
       }
 
       {
-        isMobile && (
+        isMobile && isActive && (
           <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
             <div className={'flex items-start gap-3 p-4 rounded-lg bg-white border border-zinc-200 text-[12px]'}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>

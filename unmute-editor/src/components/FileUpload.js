@@ -35,9 +35,11 @@ import {
 import 'filepond/dist/filepond.min.css';
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImageEditor from '@pqina/filepond-plugin-image-editor';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import da_DK from 'filepond/locale/da-dk';
 
 registerPlugin(FilePondPluginImageEditor);
+registerPlugin(FilePondPluginFileValidateType);
 
 // pintura
 setPlugins(plugin_crop, plugin_finetune, plugin_filter);
@@ -69,6 +71,19 @@ const FileUpload = forwardRef(({ horizontal = false, cropFormat = null, paste = 
       dispatch(setChooseNewImage(false));
     }
   }, [chooseNewImage, isActive, ref]);
+
+  // useEffect(() => {
+  //   console.log('111111111111')
+  //   if (ref?.current) {
+  //     console.log('2222222222222')
+  //     const fileInput = ref.current.querySelector('input[name="files"]');
+  //     console.log(fileInput)
+  //     if (fileInput) {
+  //       console.log('333333333333333')
+  //       fileInput.setAttribute("accept", ".jpg,.jpeg,.png,.heic");
+  //     }
+  //   }
+  // }, [ref.current]);
 
   useEffect(() => {
     setReady(true);
@@ -148,12 +163,17 @@ const FileUpload = forwardRef(({ horizontal = false, cropFormat = null, paste = 
     return null;
   }
 
+  // allowFileTypeValidation
+  // acceptedFileTypes={['image/*']}
+
   return (
     <FilePond
       ref={ref}
       {...da_DK}
       allowMultiple={false}
       allowPaste={paste}
+      allowSyncAcceptAttribute={true}
+      acceptedFileTypes={['image/*']}
       name="files"
       labelIdle={labelString()}
       credits={false}

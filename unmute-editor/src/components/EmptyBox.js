@@ -62,7 +62,7 @@ export const EmptyBox = ({ orientation }) => {
           )}
         >
           <div className="absolute top-[30px] z-[2] extra-box text-rose-500 text-center text-[14px] -mt-[5px]">
-            Tilføj ekstra UNMUTE og spar penge
+            Tilføj ekstra UNMUTE<br/>og spar penge
           </div>
           <img
             src={frame}

@@ -76,9 +76,11 @@ const FileUploadCollage = forwardRef(({ index, cropFormat = null, paste = false,
 
   function labelString() {
     return renderToString(
-      <div className={'w-[28px] h-[28px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-[35%] left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'}>
-        <PlusIcon size={34} />
-        <span className={'absolute top-[30px] text-center !text-[12px] whitespace-nowrap'}>Vælg foto</span>
+      <div className={'cursor-pointer flex flex-col items-center'}>
+        <div className='w-[28px] h-[28px] flex items-center justify-center bg-rose-500 hover:bg-rose-700 fill-white rounded-full'>
+          <PlusIcon size={34} />
+        </div>
+        <span className={'text-center !text-[12px] whitespace-nowrap upload-photo-label'}>Vælg foto</span>
       </div>,
     );
   }

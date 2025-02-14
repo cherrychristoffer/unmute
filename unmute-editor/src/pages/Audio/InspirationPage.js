@@ -79,7 +79,7 @@ export const InspirationPage = () => {
         </button>
       </div>
 
-      <div>
+      <div className="w-10/12">
         <div className="mx-auto flex flex-col items-center">
           <h4 className="font-serif text-muld-1000 text-[32px] mt-16">
             Tips

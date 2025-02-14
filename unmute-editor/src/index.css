@@ -369,3 +369,15 @@ input[type="range"]::range-progress {
 .cropper-crop-box:before {
   display: none;
 }
+
+@media screen and (max-width: 390px) and (max-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+  .collage-item {
+    /* Your styles here */
+    height: 100% !important;
+    position: relative !important;
+  }
+}
+
+.hide-label .upload-photo-label {
+  display: none;
+}

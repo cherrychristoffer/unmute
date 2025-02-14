@@ -12,4 +12,24 @@ function base64ToFile(base64String, fileName) {
     return new File([blob], fileName, { type: mimeType });
 }
 
-export { base64ToFile };
+function getIOSVersion() {
+    const match = navigator.userAgent.match(/OS (\d+)_/);
+    return match ? parseInt(match[1], 10) : null;
+}
+
+function isIphone13Plus() {
+    const ua = navigator.userAgent;
+    const isIphone = /iPhone/.test(ua) && !window.MSStream;
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    // iPhone 13 / 14 (390 x 844)
+    const isIphone13_14 = screenWidth === 390 && screenHeight === 844;
+
+    // iPhone 13 Pro Max / 14 Plus / 14 Pro Max (430 x 932)
+    const isIphone13ProMax_14Plus = screenWidth === 430 && screenHeight === 932;
+
+    return isIphone && (isIphone13_14 || isIphone13ProMax_14Plus);
+}
+
+export { base64ToFile, getIOSVersion, isIphone13Plus };

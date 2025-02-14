@@ -1,6 +1,7 @@
 import { React, useEffect, useRef, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import clsx from 'clsx';
+import { getIOSVersion, isIphone13Plus } from '../hooks/helper'
 
 const cssGrids = {
   'collage_1_1': {
@@ -61,19 +62,19 @@ const cssGrids = {
   'collage_4_2_1_2_4': {
     gridTemplateColumns: 'grid-cols-4 grid-rows-4',
     items: [
-      '',
-      '',
-      '',
-      '',
-      '',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
       'col-span-2 row-span-2',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
+      'hide-label',
     ],
   },
 };
@@ -208,9 +209,11 @@ const CollageUnmute = ({
       return () => window.removeEventListener('resize', updateAspectRatio);
     }, []);
 
+    const isIphone = isIphone13Plus() && getIOSVersion() >= 15
+
     return (
       <div ref={outerDivRef} className={`${cssGrids[unmute.properties['_collage_type']].items[index]} overflow-hidden relative bg-[#f1f0ef]`}>
-        <div className={`${image ? 'hidden' : 'block'} w-full h-full min-h-[20px]`}>
+        <div className={`${image ? 'hidden' : 'block'} h-full w-full collage-item md:absolute inset-0 min-h-[20px]`}>
           <FileUploadCollage ref={pondRef} index={index} isActive={false} cropFormat={cropFormat}
             uploading={() => {
               setLoadingNewImage(true);
@@ -220,7 +223,7 @@ const CollageUnmute = ({
         </div>
         {image && (
           <>
-            <img src={image} alt="img" className={`object-cover absolute w-full h-full inset-0 z-10 min-h-[20px] cursor-pointer transition-all ${(reorderActive || collageChangeImage) ? reorderIndex1 === index ? 'opacity-25' : 'hover:opacity-50' : ''}`} onClick={() => {
+            <img src={image} alt="img" className={`object-cover md:absolute w-full h-full inset-0 z-10 min-h-[20px] cursor-pointer transition-all ${(reorderActive || collageChangeImage) ? reorderIndex1 === index ? 'opacity-25' : 'hover:opacity-50' : ''}`} onClick={() => {
               if (collageChangeImage) {
                 pondRef.current.browse();
               } else if (!reorderActive) {
@@ -267,7 +270,7 @@ const CollageUnmute = ({
               'relative top-0 z-[2] pointer-events-none',
             )}
           />
-          <div className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[unmute.properties['_collage_type']].gridTemplateColumns} gap-3 bg-white`}
+          <div className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[unmute.properties['_collage_type']].gridTemplateColumns} auto-rows-fr gap-3 bg-white`}
             style={{
               padding: `${frame_padding(scale)}px`,
             }}
@@ -312,7 +315,7 @@ const CollageUnmute = ({
         </div>
       )}
 
-      {
+      {/* {
         !isMobile && (
           <div className={'flex items-start gap-3 mt-5 bg-white border border-zinc-200 rounded-lg p-4 text-[12px]'}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
@@ -321,11 +324,15 @@ const CollageUnmute = ({
             Det er vigtigt, at du klikker på hvert billede og sikrer dig, at beskæringen er som ønsket.
           </div>
         )
-      }
+      } */}
 
       {
-        isMobile && isActive && (
-          <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={open} autoHideDuration={6000} onClose={handleClose}>
+        isActive && (
+          <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={open} sx={{
+            left: '0!important',
+            right: '0!important',
+            transform: 'none!important'
+          }} onClose={handleClose}>
             <div className={'flex items-start gap-3 p-4 rounded-lg bg-white border border-zinc-200 text-[12px]'}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />

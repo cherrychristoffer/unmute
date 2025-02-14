@@ -89,7 +89,7 @@ export const UploadAudioPage = () => {
       return alert("Invalid file type. Please upload an audio file.");
 
     const duration = await getBlobDuration(recordingBlob);
-    if (duration > 600) return alert("Lydfilen må maksimalt vare 10 minutter");
+    // if (duration > 600) return alert("Lydfilen må maksimalt vare 10 minutter");
 
     const minuteData = convertToTimeFormat(duration);
     const [minutes, seconds] = minuteData?.split(":")?.map(Number);
@@ -225,7 +225,7 @@ export const UploadAudioPage = () => {
             htmlFor="image"
             className="text-label block font-serif text-muld-1000 bg-white border border-rose-500 focus:outline-none hover:bg-rose-500 hover:text-white focus:ring-4 focus:ring-rose font-medium rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer w-[270px] text-center"
           >
-            Upload lydfil <span className={'text-[12px] opacity-75'}>(max. 10 minutter)</span>
+            Upload lydfil
           </label>
           <input
             type="file"
@@ -237,7 +237,7 @@ export const UploadAudioPage = () => {
         </form>
 
         <Link to="/orientation" className={'mt-8 flex justify-center'}>
-          Tilbage til Unmute-editoren
+          Tilbage til billedredigering
         </Link>
 
       </div>

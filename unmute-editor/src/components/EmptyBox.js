@@ -15,7 +15,7 @@ export const EmptyBox = ({ orientation }) => {
   const dispatch = useDispatch();
   const [_location, navigate] = useLocation();
   const [loading, setLoading] = useState(false);
-  const [key, setKey] = useState(0);
+  // const [key, setKey] = useState(0);
 
   const isLandscape = orientation === 'landscape';
   const frame = isLandscape ? frame_landscape_image : frame_image;
@@ -72,7 +72,7 @@ export const EmptyBox = ({ orientation }) => {
               'relative top-0 z-[1] pointer-events-none',
             )}
           />
-          <Link key={key} className={'absolute inset-[16px]'} to="/?stay=true">
+          <Link className={'absolute inset-[16px]'} to="/?stay=true">
             <div className={'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'}>
               <PlusIcon size={40} />
             </div>

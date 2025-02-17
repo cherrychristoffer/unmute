@@ -270,7 +270,7 @@ const CollageUnmute = ({
               'relative top-0 z-[2] pointer-events-none',
             )}
           />
-          <div className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[unmute.properties['_collage_type']].gridTemplateColumns} auto-rows-fr gap-3 bg-white`}
+          <div className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[unmute.properties['_collage_type']].gridTemplateColumns} auto-rows-fr gap-2 bg-white`}
             style={{
               padding: `${frame_padding(scale)}px`,
             }}

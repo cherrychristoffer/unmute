@@ -212,7 +212,7 @@ const CollageUnmute = ({
     const isIphone = isIphone13Plus() && getIOSVersion() >= 15
 
     return (
-      <div ref={outerDivRef} className={`${cssGrids[unmute.properties['_collage_type']].items[index]} overflow-hidden relative bg-[#f1f0ef]`}>
+      <div ref={outerDivRef} className={`${cssGrids[unmute.properties['_collage_type']].items[index]} index${index} overflow-hidden relative bg-[#f1f0ef]`}>
         <div className={`${image ? 'hidden' : 'block'} h-full w-full collage-item md:absolute inset-0 min-h-[20px]`}>
           <FileUploadCollage ref={pondRef} index={index} isActive={false} cropFormat={cropFormat}
             uploading={() => {

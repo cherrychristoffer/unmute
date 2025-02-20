@@ -173,6 +173,7 @@ const FileUpload = forwardRef(({ horizontal = false, cropFormat = null, paste = 
       allowMultiple={false}
       allowPaste={paste}
       allowSyncAcceptAttribute={true}
+      allowFileTypeValidation
       acceptedFileTypes={['image/*']}
       name="files"
       labelIdle={labelString()}

@@ -1,15 +1,15 @@
-import { Fragment, React, memo, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState, useCallback } from 'react';
 
 import axios from 'axios';
 
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { deleteFile, getFileUrl, uploadFile } from '../../api/aws';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+// import { deleteFile, getFileUrl, uploadFile } from '../../api/aws';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'wouter';
 import { useAudioRecorder } from 'react-audio-voice-recorder';
 
 import { updateUnmuteInCart } from '../../api/cart';
-import { updateUnmute, updateUnmutes } from '../../features/user/userSlice';
+import { updateUnmute } from '../../features/user/userSlice';
 import { v4 as uuid } from 'uuid';
 import { AudioBottomNavigation } from '../../components/AudioBottomNavigation';
 
@@ -18,7 +18,6 @@ import { useActiveUnmute } from '../../api/useUnmutes';
 import { Loader } from '../../components/Loader';
 import { mergeAudio } from '../../api/inspiration';
 import { AudioComponent } from './AudioComponent';
-import ProgressBar from './progress';
 import { setScrolltoActive } from '../../features/image/imageSlice';
 import { ConfirmModal } from '../../components/ConfirmModal';
 
@@ -44,15 +43,50 @@ export const EditAudioPage = () => {
   const [isLoading, setIsLoading] = useState({});
   const activeAudioRef = useRef(null);
   const allAudioRefs = useRef({});
+  const progressRefs = useRef({});
   const [makeEmptyAllListeners, setMakeEmptyAllListeners] = useState(0);
   const [activateButton, setActivateButton] = useState(0);
   const playFromAll = useRef(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [rangeMap, setRangeMap] = useState({
+    start: 0,
+    end: 1000,
+  });
+  const [activeAudioIndex, setActiveAudioIndex] = useState(0);
 
   const activeUnmute = unmutes?.find(
     (item) => item.properties?._uuid === unmuteId,
   );
   const audioFiles = activeUnmute?.properties?._audios || [];
+
+  const timeupdate = useCallback(
+    (e, uuid) => {
+      const element = e.target;
+      const audios = { ...allAudioRefs.current };
+      const audioRef = audios[uuid];
+
+      // Update the progress bar based on the current time
+      const progressElement = progressRefs.current[uuid];
+      if (progressElement && audioRef) {
+        const currentTime = audioRef.currentTime;
+        const duration = audioRef.duration;
+
+        // Update the progress bar width based on the current playback time
+        const percentage = (currentTime / duration) * 100;
+        progressElement.style.left = `${percentage}%`;
+      }
+
+      // if (
+      //   element.currentTime >= rangeMap?.end / 1000
+      //   // && rangeMap?.end !== item?.seconds * 1000
+      // ) {
+      //   audioRef?.pause();
+      //   audioRef.currentTime = 0;
+      //   audioRef?.removeEventListener('timeupdate', timeupdate);
+      // }
+    },
+    [rangeMap?.end],
+  );
 
   const handleAllPlayAudio = async () => {
     pauseAllAudios();
@@ -68,20 +102,40 @@ export const EditAudioPage = () => {
         return pauseAllAudios();
       }
       playFromAll.current = true;
+      setActiveAudioIndex(index);
 
       const item = audios[audioData[index]];
       if (item) {
-        setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
-        item.currentTime = 0;
+        const prevIndex = index > 0 ? index - 1 : 0;
+        if (index > 0) {
+          setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true, [audioData[index - 1]]: false }));
+        } else {
+          setActiveAudio((prev) => ({ ...prev, [audioData[index]]: true }));
+        }
+        // item.currentTime = 0;
         item.play();
 
+        setRangeMap({
+          start: item.currentTime * 1000,
+          end: item.seconds * 1000,
+        });
+
+        item.addEventListener('timeupdate', (e) => timeupdate(e, audioData[index]));
+
         item.onended = () => {
+          item.removeEventListener('timeupdate', (e) => timeupdate(e, audioData[index]));
           if (playFromAll.current) {
+            item.currentTime = 0;
             playAudio(index + 1);
           }
         };
       }
     };
+
+    // reset the current audio index
+    if (activeAudioIndex > 0) {
+      currentAudioIndex = activeAudioIndex;
+    }
 
     playAudio(currentAudioIndex);
   };
@@ -342,6 +396,7 @@ export const EditAudioPage = () => {
                         setActiveAudio={setActiveAudio}
                         item={item}
                         allAudioRefs={allAudioRefs}
+                        progressRefs={progressRefs}
                         index={index}
                         key={item.uuid}
                         pauseAllAudios={pauseAllAudios}

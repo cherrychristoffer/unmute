@@ -21,6 +21,7 @@ export const AudioComponent = ({
                                  pauseAllAudios,
                                  index,
                                  allAudioRefs,
+                                 progressRefs,
                                  cacheBust,
                                  setActiveAudio,
                                  activeAudio,
@@ -33,7 +34,6 @@ export const AudioComponent = ({
                                }) => {
   const dispatch = useDispatch();
   const audioRef = useRef(null);
-  const progressRefs = useRef(null);
   const startRef = useRef(null);
   const endRef = useRef(null);
   const [isCropping, setIsCropping] = useState(false);
@@ -50,7 +50,7 @@ export const AudioComponent = ({
       const element = e.target;
 
       // Update the progress bar based on the current time
-      const progressElement = progressRefs.current;
+      const progressElement = progressRefs.current[item.uuid];
       if (progressElement && audioRef.current) {
         const currentTime = audioRef.current.currentTime;
         const duration = audioRef.current.duration;
@@ -108,7 +108,7 @@ export const AudioComponent = ({
   };
 
   function calculateValues(startValue, endValue, max, id) {
-    const progressElement = progressRefs.current;
+    const progressElement = progressRefs.current[item.uuid];
 
     if (progressElement) {
       progressElement.style.left = (startValue / max) * 100 + '%';
@@ -137,7 +137,7 @@ export const AudioComponent = ({
       end: name === 'end' ? updatedEndValue : endValue,
     }));
 
-    if (progressRefs.current) {
+    if (progressRefs.current && progressRefs.current[item.uuid]) {
       //calculateValues(updatedStartValue, updatedEndValue, item?.seconds * 1000, id);
     }
   };
@@ -310,7 +310,7 @@ export const AudioComponent = ({
                   handleChange={(e) => handleChange(e, item.uuid)}
                   startRef={(ref) => (startRef.current = ref)}
                   endRef={(ref) => (endRef.current = ref)}
-                  progressRef={(ref) => (progressRefs.current = ref)}
+                  progressRef={(ref) => (progressRefs.current[item.uuid] = ref)}
                 />
               )}
               <AudioVisualizer

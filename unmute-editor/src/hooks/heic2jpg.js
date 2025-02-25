@@ -1,17 +1,19 @@
 import heic2any from 'heic2any';
+import { isHEICorHEIF } from './helper';
 
 export const convertHeicToJpg = async (file, path) => {
   let finalFile = file;
   let finalPath = path;
 
-  console.log("Converting HEIC file:", file.type);
-
   const isHEIC = file.type === 'image/heic';
   const isHEIF = file.type === 'image/heif';
+  const isHEICorHEIFFile = isHEIC || isHEIF || isHEICorHEIF(file.name);
 
-  if (!isHEIF && !isHEIC) {
+  if (!isHEICorHEIFFile) {
     return { finalFile, finalPath };
   }
+
+  console.log("Converting HEIC file:", file.type);
 
   try {
     const originalBlob = new Blob([file], { type: 'image/heif' });

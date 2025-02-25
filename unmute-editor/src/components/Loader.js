@@ -2,9 +2,9 @@ import { React } from "react";
 
 import clsx from "clsx";
 
-export const Loader = ({ size = "w-8 h-8" }) => {
+export const Loader = ({ wrapper_size = "w-56 h-56", size = "w-8 h-8" }) => {
   return (
-    <div className="w-56 h-56 flex items-center justify-center rounded-lg">
+    <div className={`${wrapper_size} flex items-center justify-center rounded-lg`}>
       <div role="status">
         <svg
           aria-hidden="true"

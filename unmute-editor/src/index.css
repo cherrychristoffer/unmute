@@ -62,9 +62,13 @@ html {
 /**********/
 @layer components {
   #progress-bar {
-    @apply hidden w-0 h-2 bg-muld-500 fixed z-50;
+    @apply hidden;
     transition: width 200ms ease-out, opacity 100ms 100ms ease-in;
     transform: translate3d(0, 0, 0);
+  }
+
+  #globalprogress {
+    @apply hidden;
   }
 
   .text-xs {

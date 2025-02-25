@@ -22,6 +22,7 @@ import { UploadImagePage } from "./pages/UploadImagePage";
 import { EditAudioPage } from "./pages/Audio/EditAudioPage";
 import { InspirationPage } from "./pages/Audio/InspirationPage";
 import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
+import { Loader } from "./components/Loader";
 
 import { addUnmute, setIsLoadingUnmutes, updateUnmutes } from "./features/user/userSlice";
 import { shopifyCollageVariants, shopifyVariants } from './app/const';
@@ -108,11 +109,19 @@ function App() {
               return unmute;
             });
 
+          newItems.sort((a, b) => a.key - b.key);
+
           const filteredItems = newItems.filter((cartItem) =>
             shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
           );
 
-          if(JSON.stringify(unmutes) !== JSON.stringify(filteredItems)) {
+          // sort unmutes by object key
+          unmutes.sort((a, b) => a.key - b.key);
+
+          if(JSON.stringify(unmutes) !== JSON.stringify(newItems)) {
+            console.log('cart changed')
+            console.log("unmutes", unmutes.map((unmute) => unmute.key));
+            console.log("newitems", newItems.map((unmute) => unmute.key));
             dispatch(updateUnmutes(filteredItems));
           }
         }
@@ -133,7 +142,12 @@ function App() {
 
   return (
     <div className={`app-wrapper ${isSpecialRoute ? "with-navigation" : ""} pt-[10px] sm:pt-[30px] pb-[110px] sm:pb-[130px]`}>
-      <progress id="progress-bar"></progress>
+      {/* <progress id="progress-bar"></progress> */}
+      <div className="flex flex-col items-center justify-center h-24">
+        <div id="globalprogress">
+          <Loader size="w-16 h-16" wrapper_size="w-24 h-24" />
+        </div>
+      </div>
 
       <Switch>
         <Route

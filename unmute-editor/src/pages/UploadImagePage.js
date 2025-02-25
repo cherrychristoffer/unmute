@@ -142,7 +142,7 @@ export const UploadImagePage = () => {
                   </label>
                   <input
                     type="file"
-                    accept="image/png, image/jpeg, image/jpg"
+                    accept="image/png, image/jpeg, image/jpg, image/heic, image/webp"
                     className="hidden"
                     id="image"
                     onChange={handleChange}
@@ -160,7 +160,7 @@ export const UploadImagePage = () => {
                     type="file"
                     multiple
                     onChange={handleCollageChange}
-                    accept="image/png, image/jpeg, image/jpg"
+                    accept="image/png, image/jpeg, image/jpg, image/heic, image/webp"
                     className="hidden"
                     id="image"
                   />

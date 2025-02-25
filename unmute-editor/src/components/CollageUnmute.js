@@ -1,6 +1,17 @@
 import { React, useEffect, useRef, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import clsx from 'clsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { CloseIcon } from '../assets/icons/icon_close';
+import { updateUnmuteInCart } from '../api/cart';
+import { updateUnmutes } from '../features/user/userSlice';
+
+import frame_image from '../assets/images/frame.png';
+import frame_landscape_image from '../assets/images/frame_landscape.png';
+import { ConfirmModal } from './ConfirmModal';
+import PinturaCollagePortal from './PinturaCollage';
+import FileUploadCollage from './FileUploadCollage';
+import VButton from './VButton';
 import { getIOSVersion, isIphone13Plus } from '../hooks/helper'
 
 const cssGrids = {
@@ -78,30 +89,6 @@ const cssGrids = {
     ],
   },
 };
-
-
-import { useDispatch, useSelector } from 'react-redux';
-import { CloseIcon } from '../assets/icons/icon_close';
-import { ExclamationIcon } from '../assets/icons/icon_exclamation';
-import { PlusIcon } from '../assets/icons/icon_plus';
-
-import { Loader } from './Loader';
-
-import { getFileUrl, uploadFile } from '../api/aws';
-import { updateUnmuteInCart } from '../api/cart';
-import { updateUnmutes } from '../features/user/userSlice';
-
-import frame_image from '../assets/images/frame.png';
-import frame_landscape_image from '../assets/images/frame_landscape.png';
-
-import CropperComponent from './Cropper';
-import { setDisableAllActions } from '../features/image/imageSlice';
-import { ConfirmModal } from './ConfirmModal';
-import FileUpload from './FileUpload';
-import PinturaPortal from './Pintura';
-import PinturaCollagePortal from './PinturaCollage';
-import FileUploadCollage from './FileUploadCollage';
-import VButton from './VButton';
 
 const frame_padding = (scale) => {
   return 7 * scale;

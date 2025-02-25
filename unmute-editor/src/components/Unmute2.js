@@ -8,7 +8,7 @@ import { PlusIcon } from '../assets/icons/icon_plus';
 
 import { Loader } from './Loader';
 
-import { getFileUrl, uploadFile } from '../api/aws';
+import { getFileUrl, uploadFile } from '../api/spaces';
 import { updateUnmuteInCart } from '../api/cart';
 import { updateUnmutes } from '../features/user/userSlice';
 import { photosEnhance } from '../api/image';
@@ -22,6 +22,7 @@ import { ConfirmModal } from './ConfirmModal';
 import VButton from './VButton';
 import ImageCropper from './ImageCropper';
 import FileUpload from './FileUpload';
+import { getFileNameWithoutExtension } from '../hooks/helper';
 
 const frame_padding = (scale) => {
   return 7 * scale;
@@ -100,9 +101,10 @@ const Unmute2 = ({
     }
     setOpenEnhancingConfirm(false);
     setLoading(true);
-    const file = base64ToFile(enhancedImage, 'enhanced.png');
     const uuid = unmute.properties._uuid;
     const imageUrl = unmute.properties._images[0];
+    const filename = getFileNameWithoutExtension(imageUrl);
+    const file = base64ToFile(enhancedImage, `enhanced-${filename}.png`);
     uploadFile({
       path: uuid,
       file,
@@ -113,6 +115,7 @@ const Unmute2 = ({
         properties: {
           ...unmute.properties,
           _images: [fileUrl],
+          _image_state: null,
           _touched_images: [imageUrl],
           _original_images: [unmute.properties._original_images[0]],
         },

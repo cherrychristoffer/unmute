@@ -19,10 +19,9 @@ export const getFileUrl = (path) =>
   `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${path}`;
 
 export const uploadFile = async ({ file, path }) => {
-  const progressBar = document.querySelector('#progress-bar');
+  const progressBar = document.querySelector('#globalprogress');
 
   progressBar.style.display = 'block';
-  progressBar.style.width = '5%';
 
   const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
   const fileKey = `${path}/${sanitizedFileName}`;
@@ -42,8 +41,6 @@ export const uploadFile = async ({ file, path }) => {
       if (progress === 100) {
         progressBar.style.display = 'none';
       }
-
-      progressBar.style.width = `${progress}%`;
     })
     .promise()
     .then(() => {

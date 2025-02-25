@@ -32,4 +32,28 @@ function isIphone13Plus() {
     return isIphone && (isIphone13_14 || isIphone13ProMax_14Plus);
 }
 
-export { base64ToFile, getIOSVersion, isIphone13Plus };
+function getFileNameWithoutExtension(imageUrl) {
+    // Create a URL object
+    const url = new URL(imageUrl);
+
+    // Get the pathname (e.g., "/images/photo.jpg")
+    const pathname = url.pathname;
+
+    // Extract the file name using split and pop
+    const fileNameWithExtension = pathname.split('/').pop();
+
+    // Remove the file extension
+    const fileName = fileNameWithExtension.split('.').slice(0, -1).join('.');
+
+    return fileName;
+}
+
+function isHEICorHEIF(filename) {
+    // Convert the filename to lowercase to handle case insensitivity
+    const lowerCaseFilename = filename.toLowerCase();
+
+    // Check if the filename ends with .heic or .heif
+    return lowerCaseFilename.endsWith('.heic') || lowerCaseFilename.endsWith('.heif');
+}
+
+export { base64ToFile, getIOSVersion, isIphone13Plus, getFileNameWithoutExtension, isHEICorHEIF };

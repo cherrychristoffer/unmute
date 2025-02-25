@@ -121,13 +121,16 @@ const PinturaPortal = ({ editorRef, activeUnmute, isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const isEnhanced = activeUnmute?.properties?._touched_images?.length > 0;
+  const activeImage = isEnhanced ? activeUnmute?.properties?._images[0] : activeUnmute?.properties?._original_images[0];
+
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="w-full h-full">
         <PinturaEditor
           ref={editorRef}
           {...editorDefaults}
-          src={activeUnmute?.properties?._original_images[0]}
+          src={activeImage}
           imageCropAspectRatio={horizontal ? 4 / 3 : 3 / 4}
           onLoad={handleEditorLoad}
           onProcess={(data) => {

@@ -1,5 +1,5 @@
-import axios from "axios";
-import { BASE_API_URL, S3_BUCKET } from "../app/const";
+import axios from 'axios'
+import { BASE_API_URL, S3_BUCKET } from '../app/const'
 
 export const convertVideoToAudio = async (videoKey) => {
   const response = await axios.post(
@@ -9,16 +9,16 @@ export const convertVideoToAudio = async (videoKey) => {
       bucket: S3_BUCKET,
     },
     {
-      headers: { "Content-Type": "application/json" },
-      responseType: "blob",
+      headers: { 'Content-Type': 'application/json' },
+      responseType: 'blob',
     }
-  );
+  )
 
-  const timestamp = Date.now();
-  const uniqueId = Math.floor(Math.random() * 1000000);
-  let fileName = `${timestamp}-${uniqueId}-video-to-audio.mp3`;
+  const timestamp = Date.now()
+  const uniqueId = Math.floor(Math.random() * 1000000)
+  let fileName = `${timestamp}-${uniqueId}-video-to-audio.mp3`
 
   return new File([response.data], fileName, {
-    type: "audio/mp3",
-  });
-};
+    type: 'audio/mp3',
+  })
+}

@@ -1,147 +1,198 @@
-import { React, useEffect } from "react";
-import { useDispatch } from 'react-redux';
+import { React, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
-import { fetchCartData, updateUnmuteInCart, removeUnmuteInCart } from "./api/cart";
+import {
+  fetchCartData,
+  updateUnmuteInCart,
+  removeUnmuteInCart,
+} from './api/cart'
 
-import { Route, Switch, useLocation } from "wouter";
-import { CollagePage } from "./pages/CollagePage";
+import { Route, Switch, useLocation } from 'wouter'
+import { CollagePage } from './pages/CollagePage'
 
-import { CropPage } from "./pages/CropPage";
-import { Frame } from "./components/Frame";
-import { UnmuteBottomNavigation } from "./components/UnmuteBottomNavigation";
-import { UploadAudioPage } from "./pages/Audio/UploadAudioPage";
+import { CropPage } from './pages/CropPage'
+import { Frame } from './components/Frame'
+import { UnmuteBottomNavigation } from './components/UnmuteBottomNavigation'
+import { UploadAudioPage } from './pages/Audio/UploadAudioPage'
 
-import { FramePage } from "./pages/FramePage";
-import { InspirationsVideoPage } from "./pages/InspirationsVideoPage";
-import { OffersPage } from "./pages/OffersPage";
-import { OrientationPage } from "./pages/OrientationPage";
-import { PassepartoutPage } from "./pages/PassepartoutPage";
-import { ReplacePage } from "./pages/ReplacePage";
-import { UploadImagePage } from "./pages/UploadImagePage";
+import { FramePage } from './pages/FramePage'
+import { InspirationsVideoPage } from './pages/InspirationsVideoPage'
+import { OffersPage } from './pages/OffersPage'
+import { OrientationPage } from './pages/OrientationPage'
+import { PassepartoutPage } from './pages/PassepartoutPage'
+import { ReplacePage } from './pages/ReplacePage'
+import { UploadImagePage } from './pages/UploadImagePage'
 
-import { EditAudioPage } from "./pages/Audio/EditAudioPage";
-import { InspirationPage } from "./pages/Audio/InspirationPage";
-import { StartRecordingPage } from "./pages/Audio/StartRecordingPage";
-import { Loader } from "./components/Loader";
+import { EditAudioPage } from './pages/Audio/EditAudioPage'
+import { InspirationPage } from './pages/Audio/InspirationPage'
+import { StartRecordingPage } from './pages/Audio/StartRecordingPage'
+import { Loader } from './components/Loader'
+import { delay } from './hooks/helper'
 
-import { addUnmute, setIsLoadingUnmutes, updateUnmutes } from "./features/user/userSlice";
-import { shopifyCollageVariants, shopifyVariants } from './app/const';
+import {
+  addUnmute,
+  setIsLoadingUnmutes,
+  updateUnmutes,
+} from './features/user/userSlice'
+import { shopifyCollageVariants, shopifyVariants } from './app/const'
 
-import "./assets/styles/global.css";
+import './assets/styles/global.css'
 
 function App() {
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
+  const dispatch = useDispatch()
+  const [_location, navigate] = useLocation()
 
   const appHeight = () => {
-    const doc = document.documentElement;
-    doc.style.setProperty("--app-height", `${window.innerHeight}px`);
-  };
-
-  function init() {
-    window.addEventListener("resize", appHeight);
+    const doc = document.documentElement
+    doc.style.setProperty('--app-height', `${window.innerHeight}px`)
   }
 
-  useEffect(init, []);
-  useEffect(appHeight, []);
+  function init() {
+    window.addEventListener('resize', appHeight)
+  }
+
+  useEffect(init, [])
+  useEffect(appHeight, [])
 
   useEffect(() => {
-    dispatch(setIsLoadingUnmutes(true));
+    dispatch(setIsLoadingUnmutes(true))
     fetchCartData().then(({ data }) => {
       if (data.items.length === 0) {
-        navigate("/");
+        navigate('/')
       } else {
         data.items
-          .filter((cartItem) =>
-            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
+          .filter(
+            (cartItem) =>
+              shopifyVariants.some(
+                (variant) => variant.id === cartItem.variant_id
+              ) ||
+              shopifyCollageVariants.some(
+                (variant) => variant.id === cartItem.variant_id
+              )
           )
           .forEach((unmute) => {
-            dispatch(addUnmute(unmute));
-          });
+            dispatch(addUnmute(unmute))
+          })
       }
-      dispatch(setIsLoadingUnmutes(false));
-    });
-  }, [dispatch]);
+      dispatch(setIsLoadingUnmutes(false))
+    })
+  }, [dispatch])
 
-  // Check cart regularly for changes to detect the removed items
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchCartData().then(({ data }) => {
-        const savedCart = localStorage.getItem("cart");
-        let unmutes = [];
-        if (savedCart) {
-          unmutes = JSON.parse(savedCart);
-        }
+  const updateItemsWithCart = async () => {
+    return fetchCartData().then(({ data }) => {
+      const savedCart = localStorage.getItem('cart')
+      let unmutes = []
+      if (savedCart) {
+        unmutes = JSON.parse(savedCart)
+      }
 
-        // Compare the cart items with the previous state and get the removed items
-        let removedItems = []
-        if (unmutes.length > 0) {
-          // if a product is in unmutes but not in the data.items, it means it's removed
-          removedItems = unmutes.filter(
-            (unmute) => !data.items.some((cartItem) => cartItem.properties._uuid === unmute.properties._uuid && cartItem.id === unmute.id)
-          );
-        }
+      // Compare the cart items with the previous state and get the removed items
+      let removedItems = []
+      if (unmutes.length > 0) {
+        // if a product is in unmutes but not in the data.items, it means it's removed
+        removedItems = unmutes.filter(
+          (unmute) =>
+            !data.items.some(
+              (cartItem) =>
+                cartItem.properties._uuid === unmute.properties._uuid &&
+                cartItem.id === unmute.id
+            )
+        )
+      }
 
-        if (data.items.length > 0) {
-          const newItems = data.items
-            .map((unmute) => {
-              for (let i = 0; i < removedItems.length; i++) {
-                if (unmute.properties._uuid === removedItems[i].properties._uuid && removedItems[i].properties._enhanced) {
-                  const properties = { ...unmute.properties };
-                  properties._images = [unmute.properties._touched_images[0]];
-                  delete properties._touched_images
+      if (data.items.length > 0) {
+        const newItems = data.items.map((unmute) => {
+          for (let i = 0; i < removedItems.length; i++) {
+            if (
+              unmute.properties._uuid === removedItems[i].properties._uuid &&
+              removedItems[i].properties._enhanced
+            ) {
+              const properties = { ...unmute.properties }
+              properties._images = [unmute.properties._touched_images[0]]
+              delete properties._touched_images
 
-                  updateUnmuteInCart({
-                    key: unmute.key,
-                    properties: properties,
-                  });
+              updateUnmuteInCart({
+                key: unmute.key,
+                properties: properties,
+              })
 
-                  return {
-                    ...unmute,
-                    properties: properties,
-                  }
-                } else if (unmute.properties._uuid === removedItems[i].properties._uuid && !removedItems[i].properties._enhanced) {
-                  // Remove the unmute from the cart
-                  removeUnmuteInCart(removedItems[i].properties._uuid, true);
-                }
+              return {
+                ...unmute,
+                properties: properties,
               }
-
-              return unmute;
-            });
-
-          newItems.sort((a, b) => a.key - b.key);
-
-          const filteredItems = newItems.filter((cartItem) =>
-            shopifyVariants.some((variant) => variant.id === cartItem.variant_id) || shopifyCollageVariants.some((variant) => variant.id === cartItem.variant_id)
-          );
-
-          // sort unmutes by object key
-          unmutes.sort((a, b) => a.key - b.key);
-
-          if(JSON.stringify(unmutes) !== JSON.stringify(newItems)) {
-            console.log('cart changed')
-            console.log("unmutes", unmutes.map((unmute) => unmute.key));
-            console.log("newitems", newItems.map((unmute) => unmute.key));
-            dispatch(updateUnmutes(filteredItems));
+            } else if (
+              unmute.properties._uuid === removedItems[i].properties._uuid &&
+              !removedItems[i].properties._enhanced
+            ) {
+              // Remove the unmute from the cart
+              removeUnmuteInCart(removedItems[i].properties._uuid, true)
+            }
           }
+
+          return unmute
+        })
+
+        newItems.sort((a, b) => a.key - b.key)
+
+        const filteredItems = newItems.filter(
+          (cartItem) =>
+            shopifyVariants.some(
+              (variant) => variant.id === cartItem.variant_id
+            ) ||
+            shopifyCollageVariants.some(
+              (variant) => variant.id === cartItem.variant_id
+            )
+        )
+
+        // sort unmutes by object key
+        unmutes.sort((a, b) => a.key - b.key)
+
+        if (JSON.stringify(unmutes) !== JSON.stringify(newItems)) {
+          console.log('cart changed')
+          console.log(
+            'unmutes',
+            unmutes.map((unmute) => unmute.key)
+          )
+          console.log(
+            'newitems',
+            newItems.map((unmute) => unmute.key)
+          )
+          dispatch(updateUnmutes(filteredItems))
         }
+      }
 
-        // Save cart items to localstorage and compare it every time
-        localStorage.setItem("cart", JSON.stringify(data.items));
-      });
-    }, 3000);
+      // Save cart items to localstorage and compare it every time
+      localStorage.setItem('cart', JSON.stringify(data.items))
+    })
+  }
 
-    return () => clearInterval(interval);
-  }, [dispatch]);
+  useEffect(() => {
+    let isMounted = true // To handle component unmounting
 
-  const location = useLocation();
-  const specialRoutesRegex = /\/(orientation|frame|passepartout|crop)/;
+    const updateLoop = async () => {
+      while (isMounted) {
+        await updateItemsWithCart() // Wait for function completion
+        await delay(1000) // Delay for 1s
+      }
+    }
+
+    updateLoop() // Start the loop
+
+    return () => {
+      isMounted = false // Stop loop when component unmounts
+    }
+  }, [dispatch])
+
+  const location = useLocation()
+  const specialRoutesRegex = /\/(orientation|frame|passepartout|crop)/
 
   // Check if the current path matches any of the special routes
-  const isSpecialRoute = specialRoutesRegex.test(location.pathname);
+  const isSpecialRoute = specialRoutesRegex.test(location.pathname)
 
   return (
-    <div className={`app-wrapper ${isSpecialRoute ? "with-navigation" : ""} pt-[10px] sm:pt-[30px] pb-[110px] sm:pb-[130px]`}>
+    <div
+      className={`app-wrapper ${isSpecialRoute ? 'with-navigation' : ''} pt-[10px] sm:pt-[30px] pb-[110px] sm:pb-[130px]`}
+    >
       {/* <progress id="progress-bar"></progress> */}
       <div className="flex flex-col items-center justify-center h-24">
         <div id="globalprogress">
@@ -159,11 +210,7 @@ function App() {
       <Switch>
         {/* Starting page */}
         {/*<Route path="/" component={StartPage}></Route>*/}
-        <Route
-          name="home"
-          path="/"
-          component={OffersPage}
-        />
+        <Route name="home" path="/" component={OffersPage} />
         {/*<Route*/}
         {/*  path="/inspirations"*/}
         {/*  component={InspirationsPage}*/}
@@ -172,14 +219,8 @@ function App() {
           path="/inspiration-video/:id"
           component={InspirationsVideoPage}
         />
-        <Route
-          path="/upload-image"
-          component={UploadImagePage}
-        />
-        <Route
-          path="/collage"
-          component={CollagePage}
-        />
+        <Route path="/upload-image" component={UploadImagePage} />
+        <Route path="/collage" component={CollagePage} />
 
         {/*<Route*/}
         {/*  path="/audio/:id"*/}
@@ -189,44 +230,17 @@ function App() {
         {/*  path="/audio-approach"*/}
         {/*  component={AudioApproachPage}*/}
         {/*/>*/}
-        <Route
-          path="/audio-upload/:id"
-          component={UploadAudioPage}
-        />
-        <Route
-          path="/start-recording/:id"
-          component={StartRecordingPage}
-        />
-        <Route
-          path="/inspiration/:id"
-          component={InspirationPage}
-        />
-        <Route
-          path="/edit-audio/:id"
-          component={EditAudioPage}
-        />
+        <Route path="/audio-upload/:id" component={UploadAudioPage} />
+        <Route path="/start-recording/:id" component={StartRecordingPage} />
+        <Route path="/inspiration/:id" component={InspirationPage} />
+        <Route path="/edit-audio/:id" component={EditAudioPage} />
 
         {/* UnmuteBottomNavigation */}
-        <Route
-          path="/orientation"
-          component={OrientationPage}
-        />
-        <Route
-          path="/frame"
-          component={FramePage}
-        />
-        <Route
-          path="/passepartout"
-          component={PassepartoutPage}
-        />
-        <Route
-          path="/crop"
-          component={CropPage}
-        />
-        <Route
-          path="/replace"
-          component={ReplacePage}
-        />
+        <Route path="/orientation" component={OrientationPage} />
+        <Route path="/frame" component={FramePage} />
+        <Route path="/passepartout" component={PassepartoutPage} />
+        <Route path="/crop" component={CropPage} />
+        <Route path="/replace" component={ReplacePage} />
         <Route path="/add">ADD</Route>
       </Switch>
 
@@ -237,7 +251,7 @@ function App() {
         />
       </Switch>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

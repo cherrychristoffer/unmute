@@ -1,35 +1,35 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState } from 'react'
 
-import { useDispatch, useSelector } from 'react-redux';
-import TextareaAutosize from 'react-textarea-autosize';
-import { useLocation, useParams } from 'wouter';
+import { useDispatch, useSelector } from 'react-redux'
+import TextareaAutosize from 'react-textarea-autosize'
+import { useLocation, useParams } from 'wouter'
 
-import { AudioBottomNavigation } from '../../components/AudioBottomNavigation';
-import { useAudioRecorder } from 'react-audio-voice-recorder';
-import { v4 as uuid } from 'uuid';
-import { updateUnmutes } from '../../features/user/userSlice';
+import { AudioBottomNavigation } from '../../components/AudioBottomNavigation'
+import { useAudioRecorder } from 'react-audio-voice-recorder'
+import { v4 as uuid } from 'uuid'
+import { updateUnmutes } from '../../features/user/userSlice'
 
-import { updateUnmuteInCart } from '../../api/cart';
+import { updateUnmuteInCart } from '../../api/cart'
 
-import { getFileUrl, uploadFile } from '../../api/aws';
-import { useActiveUnmute } from '../../api/useUnmutes';
-import { useInterval } from '../../hooks/useInterval';
-import { convertToWav } from './convertToWav';
-import { convertMp4ToWav } from './convertMp4ToWav';
-import { Loader } from '../../components/Loader';
+import { getFileUrl, uploadFile } from '../../api/aws'
+import { useActiveUnmute } from '../../api/useUnmutes'
+import { useInterval } from '../../hooks/useInterval'
+import { convertToWav } from './convertToWav'
+import { convertMp4ToWav } from './convertMp4ToWav'
+import { Loader } from '../../components/Loader'
 
 const formatTime = (time) => {
-  let minutes = Math.floor(time / 60);
-  let seconds = time % 60;
+  let minutes = Math.floor(time / 60)
+  let seconds = time % 60
 
   if (seconds < 10) {
-    seconds = `0${seconds}`;
+    seconds = `0${seconds}`
   }
 
-  return `${minutes}:${seconds}`;
-};
+  return `${minutes}:${seconds}`
+}
 export const StartRecordingPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const {
     startRecording,
     stopRecording,
@@ -37,86 +37,86 @@ export const StartRecordingPage = () => {
     recordingBlob,
     isRecording,
     isPaused,
-  } = useAudioRecorder({ downloadFileExtension: 'wav' });
+  } = useAudioRecorder({ downloadFileExtension: 'wav' })
 
-  const audioRef = useRef();
-  const [isRecordingValidate, setIsRecordingValidate] = useState(0);
-  const [countDown, setCountDown] = useState(3);
-  const { unmutes } = useSelector((state) => state.user);
+  const audioRef = useRef()
+  const [isRecordingValidate, setIsRecordingValidate] = useState(0)
+  const [countDown, setCountDown] = useState(3)
+  const { unmutes } = useSelector((state) => state.user)
 
-  const [time, setTime] = useState(0);
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
-  const { id: unmuteId } = useParams();
+  const [time, setTime] = useState(0)
+  const dispatch = useDispatch()
+  const [_location, navigate] = useLocation()
+  const { id: unmuteId } = useParams()
   const getQueryParams = (url) => {
     const params = new URLSearchParams(
-      new URL(url, window.location.origin).search,
-    );
-    return params.get('seconds');
-  };
-  const seconds = getQueryParams(location);
+      new URL(url, window.location.origin).search
+    )
+    return params.get('seconds')
+  }
+  const seconds = getQueryParams(location)
   const activeUnmute = unmutes?.find(
-    (item) => item.properties?._uuid === unmuteId,
-  );
+    (item) => item.properties?._uuid === unmuteId
+  )
   useEffect(() => {
-    setIsRecordingValidate(Number(seconds));
-  }, []);
+    setIsRecordingValidate(Number(seconds))
+  }, [])
 
   useEffect(() => {
     if (isRecordingValidate >= 600) {
-      stopRecording();
+      stopRecording()
     }
-  }, [isRecordingValidate]);
+  }, [isRecordingValidate])
 
   useInterval(
     () => {
-      setTime((prevTime) => prevTime + 1);
-      setIsRecordingValidate((prevTime) => prevTime + 1);
+      setTime((prevTime) => prevTime + 1)
+      setIsRecordingValidate((prevTime) => prevTime + 1)
     },
 
-    isRecording && !isPaused ? 1000 : null,
-  );
+    isRecording && !isPaused ? 1000 : null
+  )
 
   useInterval(
     () => {
       setCountDown((prevCountDown) => {
         if (prevCountDown - 1 === 0) {
-          startRecording();
+          startRecording()
         }
 
-        return prevCountDown - 1;
-      });
+        return prevCountDown - 1
+      })
     },
-    countDown > 0 ? 1000 : null,
-  );
+    countDown > 0 ? 1000 : null
+  )
 
   useEffect(() => {
-    if (!recordingBlob) return;
+    if (!recordingBlob) return
 
     async function add() {
-      let wavBlob = null;
+      let wavBlob = null
       if (recordingBlob.type === 'audio/mp4') {
-        wavBlob = await convertMp4ToWav(recordingBlob);
+        wavBlob = await convertMp4ToWav(recordingBlob)
       } else {
-        wavBlob = await convertToWav(recordingBlob);
+        wavBlob = await convertToWav(recordingBlob)
       }
 
-      const newUuid = uuid();
+      const newUuid = uuid()
       const file = new File([wavBlob], `${newUuid}.wav`, {
         type: 'audio/wav',
-      });
+      })
 
       uploadFile({
         file,
         path: activeUnmute.properties._uuid,
       }).then((path) => {
-        const fileUrl = getFileUrl(path);
+        const fileUrl = getFileUrl(path)
 
         const audio = {
           file: fileUrl,
           countdown: formatTime(time),
           notRecorded: isRecordingValidate >= 600 ? true : false,
-        };
+        }
 
         updateUnmuteInCart({
           key: activeUnmute.key,
@@ -125,20 +125,22 @@ export const StartRecordingPage = () => {
             _audios: [...activeUnmute.properties._audios, audio],
           },
         }).then(({ data }) => {
-          dispatch(updateUnmutes(data.items));
-          window.location.href = `/pages/editor#/edit-audio/${unmuteId}`;
+          dispatch(updateUnmutes(data.items))
+          window.location.href = `/pages/editor#/edit-audio/${unmuteId}`
           // navigate(`/edit-audio/${unmuteId}`);
-        });
-      });
+        })
+      })
     }
 
-    add();
-  }, [recordingBlob]);
+    add()
+  }, [recordingBlob])
 
   return (
     <div className={'pb-[100px] sm:pb-[140px] pt-10'}>
       <div className="flex flex-col items-center">
-        {loading ? <Loader size={'w-24 h-24'} /> : (
+        {loading ? (
+          <Loader size={'w-24 h-24'} />
+        ) : (
           <div className="mt-6">
             {!isRecording && (
               <div className="relative top-0 flex justify-center mb-3">
@@ -183,8 +185,8 @@ export const StartRecordingPage = () => {
 
           <button
             onClick={() => {
-              setLoading(true);
-              stopRecording();
+              setLoading(true)
+              stopRecording()
             }}
             className="text-white bg-rose-500 border border-rose transition duration-200 ease-out outline-none hover:bg-rose-900 font-medium rounded-lg px-8 py-2.5 cursor-pointer mt-10"
           >
@@ -204,5 +206,5 @@ export const StartRecordingPage = () => {
         stopRecording={stopRecording}
       />*/}
     </div>
-  );
-};
+  )
+}

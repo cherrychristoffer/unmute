@@ -1,34 +1,34 @@
-import { React, useState } from 'react';
+import { React, useState } from 'react'
 
-import { CheckIcon } from '../assets/icons/icon_check';
+import { CheckIcon } from '../assets/icons/icon_check'
 
-import { updateUnmute, updateUnmutes } from '../features/user/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { updateUnmute, updateUnmutes } from '../features/user/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { updateUnmuteInCart } from '../api/cart';
+import { updateUnmuteInCart } from '../api/cart'
 
-import { useActiveUnmute } from '../api/useUnmutes';
+import { useActiveUnmute } from '../api/useUnmutes'
 
-import large from '../assets/images/passepartout/large.png';
-import medium from '../assets/images/passepartout/medium.png';
-import none from '../assets/images/passepartout/none.png';
-import small from '../assets/images/passepartout/small.png';
+import large from '../assets/images/passepartout/large.png'
+import medium from '../assets/images/passepartout/medium.png'
+import none from '../assets/images/passepartout/none.png'
+import small from '../assets/images/passepartout/small.png'
 
 export const PassepartoutPage = () => {
-  const dispatch = useDispatch();
-  const { activeUnmute } = useActiveUnmute();
-  const { disableAllExtions } = useSelector((state) => state.image);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  const { activeUnmute } = useActiveUnmute()
+  const { disableAllExtions } = useSelector((state) => state.image)
+  const [loading, setLoading] = useState(false)
 
   const handleClick = (passepartout) => {
-    if (!activeUnmute) return;
-    setLoading(true);
+    if (!activeUnmute) return
+    setLoading(true)
     dispatch(
       updateUnmute({
         ...activeUnmute,
         properties: { ...activeUnmute.properties, _passepartout: passepartout },
-      }),
-    );
+      })
+    )
 
     updateUnmuteInCart({
       key: activeUnmute.key,
@@ -36,14 +36,16 @@ export const PassepartoutPage = () => {
         ...activeUnmute.properties,
         _passepartout: passepartout,
       },
-    }).then(({ data }) => {
-      dispatch(updateUnmutes(data.items));
-      setLoading(false);
-    }).catch((err) => {
-      console.error(err);
-      setLoading(false);
-    });
-  };
+    })
+      .then(({ data }) => {
+        dispatch(updateUnmutes(data.items))
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error(err)
+        setLoading(false)
+      })
+  }
 
   const PASSEPARTOUT = [
     {
@@ -66,7 +68,7 @@ export const PassepartoutPage = () => {
       image: large,
       title: '7 cm',
     },
-  ];
+  ]
 
   return (
     <div className={'pb-[100px] sm:pb-[140px] flex justify-center'}>
@@ -75,12 +77,12 @@ export const PassepartoutPage = () => {
           <div key={index} className={'text-center'}>
             <button
               key={index}
-              disabled={(disableAllExtions || loading)}
+              disabled={disableAllExtions || loading}
               onClick={() => handleClick(item.value)}
               className={`relative`}
             >
               <img
-                style={{ opacity: (disableAllExtions || loading) ? '0.5' : '1' }}
+                style={{ opacity: disableAllExtions || loading ? '0.5' : '1' }}
                 src={item.image}
                 alt="passepartout"
               />
@@ -94,12 +96,15 @@ export const PassepartoutPage = () => {
                 />
               )}
             </button>
-            <p className={'text-center text-[14px]'}
-               style={{ opacity: (disableAllExtions || loading) ? '0.5' : '1' }}
-            >{item.title}</p>
+            <p
+              className={'text-center text-[14px]'}
+              style={{ opacity: disableAllExtions || loading ? '0.5' : '1' }}
+            >
+              {item.title}
+            </p>
           </div>
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

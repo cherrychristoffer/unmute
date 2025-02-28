@@ -1,161 +1,159 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react'
 
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'wouter';
-import { PauseIcon } from '../assets/icons/icon_pause';
-import { PlayIcon } from '../assets/icons/icon_play';
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useParams } from 'wouter'
+import { PauseIcon } from '../assets/icons/icon_pause'
+import { PlayIcon } from '../assets/icons/icon_play'
 
-import { Loader } from './Loader';
+import { Loader } from './Loader'
 
-import { deleteFile } from '../api/aws';
-import { removeUnmuteInCart } from '../api/cart';
-import { updateAllUnmutes, deleteUnmute } from '../features/user/userSlice';
+import { deleteFile } from '../api/aws'
+import { removeUnmuteInCart } from '../api/cart'
+import { updateAllUnmutes, deleteUnmute } from '../features/user/userSlice'
 
-import { setActiveUnmuteIndex } from '../features/user/userSlice';
+import { setActiveUnmuteIndex } from '../features/user/userSlice'
 
-import frame_image from '../assets/images/frame.png';
+import frame_image from '../assets/images/frame.png'
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import '../assets/styles/swiperCustom.css';
-import { EmptyBox } from './EmptyBox';
-import { useActiveUnmute } from '../api/useUnmutes';
-import CollageUnmute from './CollageUnmute';
-import Unmute2 from './Unmute2';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+import '../assets/styles/swiperCustom.css'
+import { EmptyBox } from './EmptyBox'
+import { useActiveUnmute } from '../api/useUnmutes'
+import CollageUnmute from './CollageUnmute'
+import Unmute2 from './Unmute2'
 
 export const Frame = React.memo(() => {
-  const cacheBust = Date.now();
-  const audioRef = useRef();
-  const swiperRef = useRef(null);
-  const isAlreadyRendered = useRef();
-  const dispatch = useDispatch();
+  const cacheBust = Date.now()
+  const audioRef = useRef()
+  const swiperRef = useRef(null)
+  const isAlreadyRendered = useRef()
+  const dispatch = useDispatch()
   const params = useParams()
 
-  const [playing, setPlaying] = useState(false);
-  const [editSlider, setEditSlider] = useState(0);
-  const { activeUnmute } = useActiveUnmute();
+  const [playing, setPlaying] = useState(false)
+  const [editSlider, setEditSlider] = useState(0)
+  const { activeUnmute } = useActiveUnmute()
 
-  const { unmutes } = useSelector((state) => state.user);
-  const blankFrames = useSelector((state) => state.user.blankFrames);
+  const { unmutes } = useSelector((state) => state.user)
+  const blankFrames = useSelector((state) => state.user.blankFrames)
   const { scrollToExtra, scrollToActive, disableAllExtions } = useSelector(
-    (state) => state.image,
-  );
-  const [initialSlide, setInitialSlide] = useState(0);
-  const activeUnmuteIndex = useSelector(
-    (state) => state.user.activeUnmuteIndex,
-  );
+    (state) => state.image
+  )
+  const [initialSlide, setInitialSlide] = useState(0)
+  const activeUnmuteIndex = useSelector((state) => state.user.activeUnmuteIndex)
 
   useEffect(() => {
     if (audioRef.current) {
-      const audio = audioRef.current;
-      console.log("Audio element:", audio);
+      const audio = audioRef.current
 
       const handleEnded = () => {
-        console.log("Audio ended");
-        setPlaying(false);
-      };
+        setPlaying(false)
+      }
 
-      audio.onended = handleEnded;
+      audio.onended = handleEnded
     }
 
     // return () => {
     //   audio.onended = null;
     // };
-  }, [audioRef.current]);
+  }, [audioRef.current])
 
   const sortUnmutes = () => {
     if (unmutes?.length !== 1) {
       const sortedUnmutes = [...unmutes]?.sort((a, b) => {
-        const a_created = a.properties?._created;
-        const b_created = b.properties?._created;
+        const a_created = a.properties?._created
+        const b_created = b.properties?._created
 
         if (a_created?.date !== b_created?.date)
-          return new Date(a_created?.date) - new Date(b_created?.date);
+          return new Date(a_created?.date) - new Date(b_created?.date)
 
-        return a_created?.index - b_created?.index;
-      });
+        return a_created?.index - b_created?.index
+      })
       const itemsWithImage = sortedUnmutes.filter(
-        (item) => item.properties._images?.length > 0,
-      );
-      setEditSlider((prev) => prev + 1);
-      setInitialSlide(itemsWithImage.length - 1);
+        (item) => item.properties._images?.length > 0
+      )
+      setEditSlider((prev) => prev + 1)
+      setInitialSlide(itemsWithImage.length - 1)
       const itemsWithoutImages = sortedUnmutes.filter(
-        (item) => !item.properties._images?.length,
-      );
+        (item) => !item.properties._images?.length
+      )
 
-      dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]));
+      dispatch(updateAllUnmutes([...itemsWithImage, ...itemsWithoutImages]))
     }
-  };
+  }
 
   useEffect(() => {
     if (unmutes.length > 0 && !isAlreadyRendered.current) {
-      isAlreadyRendered.current = true;
-      sortUnmutes();
+      isAlreadyRendered.current = true
+      sortUnmutes()
     }
-  }, [unmutes]);
+  }, [unmutes])
 
   useEffect(() => {
     if (scrollToExtra > 0) {
       const isExtraExists = unmutes?.find(
-        (item) => item.properties._extra || item.properties._collage,
-      );
+        (item) => item.properties._extra || item.properties._collage
+      )
       if (!isExtraExists) {
-        setEditSlider((prev) => prev + 1);
-        setInitialSlide(unmutes?.length);
+        setEditSlider((prev) => prev + 1)
+        setInitialSlide(unmutes?.length)
       }
     }
-  }, [scrollToExtra]);
+  }, [scrollToExtra])
 
   useEffect(() => {
     if (scrollToActive > 0) {
-      setEditSlider((prev) => prev + 1);
-      setInitialSlide(activeUnmuteIndex);
+      setEditSlider((prev) => prev + 1)
+      setInitialSlide(activeUnmuteIndex)
     }
-  }, [scrollToActive]);
+  }, [scrollToActive])
 
-  const loading = activeUnmuteIndex === null;
+  const loading = activeUnmuteIndex === null
 
   useEffect(() => {
     if (audioRef.current) {
       if (playing) {
-        audioRef.current.play();
+        audioRef.current.play()
       } else {
-        audioRef.current.pause();
+        audioRef.current.pause()
       }
     }
-  }, [audioRef.current, playing]);
+  }, [audioRef.current, playing])
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.pause();
-      setPlaying(false);
+      audioRef.current.pause()
+      setPlaying(false)
     }
-  }, [activeUnmuteIndex]);
+  }, [activeUnmuteIndex])
 
   const handlePlayAudio = () => {
-    setPlaying(true);
-  };
+    setPlaying(true)
+  }
 
   const handlePauseAudio = () => {
-    setPlaying(false);
-  };
+    setPlaying(false)
+  }
 
   const handleDelete = (uuid) => {
-    const unmuteToUpdate = unmutes.find((unmute) => unmute.properties._uuid === uuid);
+    const unmuteToUpdate = unmutes.find(
+      (unmute) => unmute.properties._uuid === uuid
+    )
     if (unmuteToUpdate.properties._images.length > 0) {
       deleteFile({
         path: unmuteToUpdate.properties._images[0],
       }).then(() => {
         removeUnmuteInCart(uuid).then(() => {
-          dispatch(deleteUnmute(unmuteToUpdate.key));
-        });
-      });
+          dispatch(deleteUnmute(unmuteToUpdate.key))
+        })
+      })
     } else {
       removeUnmuteInCart(uuid).then(() => {
-        dispatch(deleteUnmute(unmuteToUpdate.key));
-      });
+        dispatch(deleteUnmute(unmuteToUpdate.key))
+      })
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -169,13 +167,13 @@ export const Frame = React.memo(() => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div
       onTouchMoveCapture={(e) => {
-        swiperRef.current.swiper.allowTouchMove = true;
+        swiperRef.current.swiper.allowTouchMove = true
       }}
     >
       <Swiper
@@ -186,12 +184,12 @@ export const Frame = React.memo(() => {
         initialSlide={initialSlide}
         slideToClickedSlide={true}
         onSlideChange={(event) => {
-          dispatch(setActiveUnmuteIndex(event.activeIndex));
+          dispatch(setActiveUnmuteIndex(event.activeIndex))
         }}
       >
         {unmutes.map((unmute, index) => (
           <SwiperSlide
-            key={index}
+            key={unmute.key}
             className={
               unmute?.properties?._orientation === 'landscape'
                 ? 'sliderLanscapedSize'
@@ -245,7 +243,7 @@ export const Frame = React.memo(() => {
 
               <button
                 onClick={() => {
-                  playing ? handlePauseAudio() : handlePlayAudio();
+                  playing ? handlePauseAudio() : handlePlayAudio()
                 }}
                 className="ml-4 flex items-center justify-center w-12 h-12 text-white-500 bg-rose-500 rounded-full focus:shadow-outline hover:bg-rose-600"
               >
@@ -282,5 +280,5 @@ export const Frame = React.memo(() => {
         </div>
       ) : null}
     </div>
-  );
-});
+  )
+})

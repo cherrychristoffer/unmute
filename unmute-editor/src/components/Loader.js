@@ -1,14 +1,16 @@
-import { React } from "react";
+import { React } from 'react'
 
-import clsx from "clsx";
+import clsx from 'clsx'
 
-export const Loader = ({ wrapper_size = "w-56 h-56", size = "w-8 h-8" }) => {
+export const Loader = ({ wrapper_size = 'w-56 h-56', size = 'w-8 h-8' }) => {
   return (
-    <div className={`${wrapper_size} flex items-center justify-center rounded-lg`}>
+    <div
+      className={`${wrapper_size} flex items-center justify-center rounded-lg`}
+    >
       <div role="status">
         <svg
           aria-hidden="true"
-          className={clsx(size, "text-gray-200 animate-spin fill-rose-600")}
+          className={clsx(size, 'text-gray-200 animate-spin fill-rose-600')}
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -25,5 +27,5 @@ export const Loader = ({ wrapper_size = "w-56 h-56", size = "w-8 h-8" }) => {
         <span className="sr-only">Loading...</span>
       </div>
     </div>
-  );
-};
+  )
+}

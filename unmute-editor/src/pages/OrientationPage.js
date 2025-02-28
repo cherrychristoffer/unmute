@@ -1,30 +1,33 @@
-import { React, useState } from 'react';
+import { React, useState } from 'react'
 
-import { CheckIcon } from "../assets/icons/icon_check";
+import { CheckIcon } from '../assets/icons/icon_check'
 
-import { updateUnmute, updateUnmutes } from "../features/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { updateUnmute, updateUnmutes } from '../features/user/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { updateUnmuteInCart } from "../api/cart";
+import { updateUnmuteInCart } from '../api/cart'
 
-import { useActiveUnmute } from "../api/useUnmutes";
+import { useActiveUnmute } from '../api/useUnmutes'
 
-import landscape from "../assets/images/orientation/landscape.png";
-import portrait from "../assets/images/orientation/portrait.png";
-import { setMustCrop, setOrientationChanged } from '../features/image/imageSlice';
+import landscape from '../assets/images/orientation/landscape.png'
+import portrait from '../assets/images/orientation/portrait.png'
+import {
+  setMustCrop,
+  setOrientationChanged,
+} from '../features/image/imageSlice'
 
 export const OrientationPage = () => {
-  const dispatch = useDispatch();
-  const { activeUnmute } = useActiveUnmute();
-  const { disableAllExtions } = useSelector((state) => state.image);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  const { activeUnmute } = useActiveUnmute()
+  const { disableAllExtions } = useSelector((state) => state.image)
+  const [loading, setLoading] = useState(false)
 
   const handleClick = (orientation) => {
-    if (!activeUnmute) return;
-    if (activeUnmute.properties._collage) {
-      return;
-    }
-    setLoading(true);
+    if (!activeUnmute) return
+    // if (activeUnmute.properties._collage) {
+    //   return;
+    // }
+    setLoading(true)
     dispatch(
       updateUnmute({
         ...activeUnmute,
@@ -33,7 +36,7 @@ export const OrientationPage = () => {
           _orientation: orientation,
         },
       })
-    );
+    )
     updateUnmuteInCart({
       key: activeUnmute.key,
       properties: {
@@ -42,51 +45,51 @@ export const OrientationPage = () => {
       },
     })
       .catch((err) => {
-        console.error(err);
+        console.error(err)
         setLoading(false)
       })
       .then(({ data }) => {
-        dispatch(setOrientationChanged(true));
-        dispatch(updateUnmutes(data.items));
+        dispatch(setOrientationChanged(true))
+        dispatch(updateUnmutes(data.items))
         setLoading(false)
-      });
-  };
+      })
+  }
 
   const ORIENTATION = [
     {
-      value: "portrait",
+      value: 'portrait',
       image: portrait,
     },
     {
-      value: "landscape",
+      value: 'landscape',
       image: landscape,
     },
-  ];
+  ]
 
   return (
-    <div className={"pb-[100px] sm:pb-[140px]"}>
+    <div className={'pb-[100px] sm:pb-[140px]'}>
       <div className="flex flex-col items-center">
         <div className="mt-[20px] flex flex-row justify-center items-center gap-8 w-2/3 max-w-[160px]">
           {ORIENTATION.map((item, index) => (
             <button
               key={index}
-              disabled={(disableAllExtions || loading || activeUnmute?.properties?._collage)}
+              disabled={disableAllExtions || loading}
               onClick={() => handleClick(item.value)}
-              className={`relative ${(activeUnmute?.properties?._collage && index > 0) ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              className={`relative cursor-pointer`}
             >
               <img
                 src={item.image}
-                style={{ opacity: (disableAllExtions || loading || (activeUnmute?.properties?._collage && index > 0)) ? "0.5" : "1" }}
+                style={{ opacity: disableAllExtions || loading ? '0.5' : '1' }}
                 className=""
                 alt={item.value}
               />
               {(activeUnmute?.properties?._orientation === item.value ||
-                (!activeUnmute && item.value === "portrait")) && (
+                (!activeUnmute && item.value === 'portrait')) && (
                 <CheckIcon
-                  color={"fill-rose-100"}
+                  color={'fill-rose-100'}
                   size={16}
                   className={
-                    "absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center"
+                    'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'
                   }
                 />
               )}
@@ -95,5 +98,5 @@ export const OrientationPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

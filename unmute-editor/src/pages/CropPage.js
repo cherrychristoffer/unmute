@@ -1,47 +1,49 @@
-import React from 'react';
-import { MinusIcon } from '../assets/icons/icon_minus';
-import { PlusIcon } from '../assets/icons/icon_plus';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLastSaved, updateZoomValue } from '../features/image/imageSlice';
-import VButton from '../components/VButton';
-import { useLocation, useRouter } from 'wouter';
+import React from 'react'
+import { MinusIcon } from '../assets/icons/icon_minus'
+import { PlusIcon } from '../assets/icons/icon_plus'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLastSaved, updateZoomValue } from '../features/image/imageSlice'
+import VButton from '../components/VButton'
+import { useLocation, useRouter } from 'wouter'
 
 export const CropPage = () => {
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
-  const { zoomValue, imageRef, minValue, ratio } = useSelector((state) => state.image);
+  const dispatch = useDispatch()
+  const [_location, navigate] = useLocation()
+  const { zoomValue, imageRef, minValue, ratio } = useSelector(
+    (state) => state.image
+  )
 
   const handleIncrease = () => {
     if (zoomValue < 3) {
-      const cropper = imageRef?.cropper;
+      const cropper = imageRef?.cropper
       if (minValue === 1 && cropper) {
-        const canvasData = cropper.getCanvasData();
-        const minZoomRatio = canvasData.width / canvasData.naturalWidth;
-        cropper.zoomTo(minZoomRatio * 1.1);
-        dispatch(updateZoomValue(minZoomRatio * 1.1));
+        const canvasData = cropper.getCanvasData()
+        const minZoomRatio = canvasData.width / canvasData.naturalWidth
+        cropper.zoomTo(minZoomRatio * 1.1)
+        dispatch(updateZoomValue(minZoomRatio * 1.1))
       } else if (cropper) {
-        const newZoom = (ratio || minValue) * 1.1;
-        cropper.zoomTo(newZoom);
-        dispatch(updateZoomValue(newZoom));
+        const newZoom = (ratio || minValue) * 1.1
+        cropper.zoomTo(newZoom)
+        dispatch(updateZoomValue(newZoom))
       }
     }
-  };
+  }
 
   const handleDecrease = () => {
     if (zoomValue > 1) {
-      const cropper = imageRef?.cropper;
+      const cropper = imageRef?.cropper
       if (cropper) {
-        const newZoom = ratio / 1.1;
-        cropper.zoomTo(newZoom);
-        dispatch(updateZoomValue(newZoom));
+        const newZoom = ratio / 1.1
+        cropper.zoomTo(newZoom)
+        dispatch(updateZoomValue(newZoom))
       }
     }
-  };
+  }
 
   const handleRangeChange = (event) => {
-    const newValue = event.target.value;
-    dispatch(updateZoomValue(newValue)); // Update zoom value in Redux state
-  };
+    const newValue = event.target.value
+    dispatch(updateZoomValue(newValue)) // Update zoom value in Redux state
+  }
 
   return (
     <div className="crop-page-container pb-[100px] sm:pb-[140px] mt-[20px]">
@@ -77,11 +79,11 @@ export const CropPage = () => {
         <VButton
           text={'Gem beskæring'}
           onClick={() => {
-            dispatch(setLastSaved(Math.floor(Date.now() / 1000)));
-            navigate('/orientation');
+            dispatch(setLastSaved(Math.floor(Date.now() / 1000)))
+            navigate('/orientation')
           }}
         />
       </div>
     </div>
-  );
-};
+  )
+}

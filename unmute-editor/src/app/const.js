@@ -1,12 +1,12 @@
-const shop = new URLSearchParams(window.location).get('host');
+const shop = new URLSearchParams(window.location).get('host')
 
-let spacesBucket, s3Bucket, variants, collageVariants;
+let spacesBucket, s3Bucket, variants, collageVariants
 
-let AIEnhancedVariants = [];
+let AIEnhancedVariants = []
 
 if (shop === 'unmuteframes.myshopify.com') {
-  s3Bucket = 'unmute-stage';
-  spacesBucket = 'unmute-test';
+  s3Bucket = 'unmute-stage'
+  spacesBucket = 'unmute-test'
 
   collageVariants = [
     {
@@ -15,7 +15,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657738504,
+      id: 50880628883720,
       passpartout: 'none',
       orientation: 'landscape',
     },
@@ -25,7 +25,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657804040,
+      id: 50880628916488,
       passpartout: 2,
       orientation: 'landscape',
     },
@@ -35,7 +35,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657869576,
+      id: 50880628949256,
       passpartout: 5,
       orientation: 'landscape',
     },
@@ -45,7 +45,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657935112,
+      id: 50880628982024,
       passpartout: 7,
       orientation: 'landscape',
     },
@@ -91,7 +91,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       passpartout: 7,
       orientation: 'landscape',
     },
-  ];
+  ]
 
   AIEnhancedVariants = [
     {
@@ -134,11 +134,11 @@ if (shop === 'unmuteframes.myshopify.com') {
       passpartout: 7,
       orientation: 'landscape',
     },
-  ];
+  ]
 } else {
   // production
-  s3Bucket = 'unmute-prod';
-  spacesBucket = 'unmute-prod';
+  s3Bucket = 'unmute-prod'
+  spacesBucket = 'unmute-prod'
 
   collageVariants = [
     {
@@ -147,7 +147,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657738504,
+      id: 50350798012754,
       passpartout: 'none',
       orientation: 'landscape',
     },
@@ -157,7 +157,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657804040,
+      id: 50350798045522,
       passpartout: 2,
       orientation: 'landscape',
     },
@@ -167,7 +167,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657869576,
+      id: 50350798078290,
       passpartout: 5,
       orientation: 'landscape',
     },
@@ -177,7 +177,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       orientation: 'portrait',
     },
     {
-      id: 50367657935112,
+      id: 50350798111058,
       passpartout: 7,
       orientation: 'landscape',
     },
@@ -223,7 +223,7 @@ if (shop === 'unmuteframes.myshopify.com') {
       passpartout: 7,
       orientation: 'landscape',
     },
-  ];
+  ]
 
   AIEnhancedVariants = [
     {
@@ -266,24 +266,22 @@ if (shop === 'unmuteframes.myshopify.com') {
       passpartout: 7,
       orientation: 'landscape',
     },
-  ];
+  ]
 }
 
-export const shopifyCollageVariants = collageVariants;
-export const shopifyVariants = variants;
+export const shopifyCollageVariants = collageVariants
+export const shopifyVariants = variants
 
-export const enhancedVariants = AIEnhancedVariants;
+export const enhancedVariants = AIEnhancedVariants
 
-export const SPACES_BUCKET = spacesBucket;
-export const SPACES_KEY_SECRET = 'kb8jVWbVSiCcSymuwjaKLcK24Xe9A0/tkz2B3TKcCcM';
-export const SPACES_KEY_ID = 'DO00RMTVEX87PXVBFJAR';
+export const SPACES_BUCKET = spacesBucket
+export const SPACES_KEY_SECRET = 'kb8jVWbVSiCcSymuwjaKLcK24Xe9A0/tkz2B3TKcCcM'
+export const SPACES_KEY_ID = 'DO00RMTVEX87PXVBFJAR'
 
-export const S3_BUCKET = s3Bucket;
+export const S3_BUCKET = s3Bucket
 
-export const AWS_KEY_ID = 'AKIA4HWJT2PJZ7YUP3AW';
-export const AWS_KEY_SECRET = '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';
+export const AWS_KEY_ID = 'AKIA4HWJT2PJZ7YUP3AW'
+export const AWS_KEY_SECRET = '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'
 
-export const S3_REGION = 'eu-north-1';
-export const BASE_API_URL = 'https://api.unmutegreetings.dk/api/v1';
-
-
+export const S3_REGION = 'eu-north-1'
+export const BASE_API_URL = 'https://api.unmutegreetings.dk/api/v1'

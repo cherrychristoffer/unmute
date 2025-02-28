@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react'
 
-const UploadIcon = ({ color, size = 24, className = "" }) => {
+const UploadIcon = ({ color, size = 24, className = '' }) => {
   return (
     <div className={className}>
       <svg
@@ -20,7 +20,7 @@ const UploadIcon = ({ color, size = 24, className = "" }) => {
         />
       </svg>
     </div>
-  );
-};
+  )
+}
 
-export { UploadIcon };
+export { UploadIcon }

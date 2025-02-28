@@ -1,32 +1,29 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState } from 'react'
 
-import clsx from 'clsx';
+import clsx from 'clsx'
 
-import { useDispatch } from 'react-redux';
-import { CloseIcon } from '../assets/icons/icon_close';
-import { PlusIcon } from '../assets/icons/icon_plus';
+import { useDispatch } from 'react-redux'
+import { CloseIcon } from '../assets/icons/icon_close'
 
-import { Loader } from './Loader';
+import { Loader } from './Loader'
 
-import { getFileUrl, uploadFile } from '../api/spaces';
-import { updateUnmuteInCart } from '../api/cart';
-import { updateUnmutes } from '../features/user/userSlice';
-import { photosEnhance } from '../api/image';
+import { getFileUrl, uploadFile } from '../api/spaces'
+import { updateUnmuteInCart } from '../api/cart'
+import { updateUnmutes } from '../features/user/userSlice'
+import { photosEnhance } from '../api/image'
 
-import { base64ToFile } from '../hooks/helper';
-import frame_image from '../assets/images/frame.png';
-import frame_landscape_image from '../assets/images/frame_landscape.png';
+import { base64ToFile } from '../hooks/helper'
+import frame_image from '../assets/images/frame.png'
+import frame_landscape_image from '../assets/images/frame_landscape.png'
 
-import CropperComponent from './Cropper';
-import { ConfirmModal } from './ConfirmModal';
-import VButton from './VButton';
-import ImageCropper from './ImageCropper';
-import FileUpload from './FileUpload';
-import { getFileNameWithoutExtension } from '../hooks/helper';
+import { ConfirmModal } from './ConfirmModal'
+import VButton from './VButton'
+import FileUpload from './FileUpload'
+import { getFileNameWithoutExtension } from '../hooks/helper'
 
 const frame_padding = (scale) => {
-  return 7 * scale;
-};
+  return 7 * scale
+}
 
 const Unmute2 = ({
   unmute,
@@ -36,35 +33,29 @@ const Unmute2 = ({
   swiperRef,
   showChangeImageButton,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const [loading, setLoading] = useState(false);
-  const [loadingNewImage, setLoadingNewImage] = useState(false);
-  const [smallImage, setSmallImage] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [openEnhancingConfirm, setOpenEnhancingConfirm] = useState(false);
-  const [enhancedImage, setEnhancedImage] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [loadingNewImage, setLoadingNewImage] = useState(false)
+  const [smallImage, setSmallImage] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false)
+  const [openEnhancingConfirm, setOpenEnhancingConfirm] = useState(false)
+  const [enhancedImage, setEnhancedImage] = useState(null)
 
-  useEffect(() => {
-    console.log('loadingNewImage state:', loadingNewImage);
-  }, [loadingNewImage]);
-
-  const [cropperOpen, setCropperOpen] = useState(false);
-
-  const [frameWidth, setFrameWidth] = useState();
-  const pondRef = useRef();
-  const frameRef = useRef();
+  const [frameWidth, setFrameWidth] = useState()
+  const pondRef = useRef()
+  const frameRef = useRef()
 
   const handleChange = async (event) => {
-    setLoading(true);
-    const uuid = unmute.properties._uuid;
-    const file = event.target.files[0];
+    setLoading(true)
+    const uuid = unmute.properties._uuid
+    const file = event.target.files[0]
 
     uploadFile({
       path: uuid,
       file,
     }).then((path) => {
-      const fileUrl = getFileUrl(path);
+      const fileUrl = getFileUrl(path)
       updateUnmuteInCart({
         key: unmute.key,
         properties: {
@@ -73,15 +64,15 @@ const Unmute2 = ({
           _original_images: [fileUrl],
         },
       }).then(({ data }) => {
-        setLoading(false);
-        setSmallImage(false);
-        dispatch(updateUnmutes(data.items));
-      });
-    });
-  };
+        setLoading(false)
+        setSmallImage(false)
+        dispatch(updateUnmutes(data.items))
+      })
+    })
+  }
 
   const handleIgnoreSmallImage = async () => {
-    setLoading(true);
+    setLoading(true)
     updateUnmuteInCart({
       key: unmute.key,
       properties: {
@@ -89,27 +80,27 @@ const Unmute2 = ({
         _ignore_small_image: true,
       },
     }).then(({ data }) => {
-      setLoading(false);
-      setSmallImage(false);
-      dispatch(updateUnmutes(data.items));
-    });
-  };
+      setLoading(false)
+      setSmallImage(false)
+      dispatch(updateUnmutes(data.items))
+    })
+  }
 
   const saveEnhancedImage = async () => {
     if (!enhancedImage) {
-      return;
+      return
     }
-    setOpenEnhancingConfirm(false);
-    setLoading(true);
-    const uuid = unmute.properties._uuid;
-    const imageUrl = unmute.properties._images[0];
-    const filename = getFileNameWithoutExtension(imageUrl);
-    const file = base64ToFile(enhancedImage, `enhanced-${filename}.png`);
+    setOpenEnhancingConfirm(false)
+    setLoading(true)
+    const uuid = unmute.properties._uuid
+    const imageUrl = unmute.properties._images[0]
+    const filename = getFileNameWithoutExtension(imageUrl)
+    const file = base64ToFile(enhancedImage, `enhanced-${filename}.png`)
     uploadFile({
       path: uuid,
       file,
     }).then((path) => {
-      const fileUrl = getFileUrl(path);
+      const fileUrl = getFileUrl(path)
       updateUnmuteInCart({
         key: unmute.key,
         properties: {
@@ -119,30 +110,30 @@ const Unmute2 = ({
           _touched_images: [imageUrl],
           _original_images: [unmute.properties._original_images[0]],
         },
-        enhanced: true
+        enhanced: true,
       }).then(({ data }) => {
-        setLoading(false);
-        setSmallImage(false);
-        dispatch(updateUnmutes(data.items));
-      });
-    });
+        setLoading(false)
+        setSmallImage(false)
+        dispatch(updateUnmutes(data.items))
+      })
+    })
   }
 
   const cancelEnhancing = async () => {
-    setEnhancedImage(null);
-    setSmallImage(true);
-    setOpenEnhancingConfirm(false);
+    setEnhancedImage(null)
+    setSmallImage(true)
+    setOpenEnhancingConfirm(false)
   }
 
   const handleEnhanceSmallImage = async () => {
-    setLoading(true);
-    const imageUrl = unmute.properties._images[0];
-    const extractedPath = imageUrl.split('.com/')[1];
-    const res = await photosEnhance(extractedPath);
-    setEnhancedImage(res);
-    setOpenEnhancingConfirm(true);
-    setSmallImage(false);
-    setLoading(false);
+    setLoading(true)
+    const imageUrl = unmute.properties._images[0]
+    const extractedPath = imageUrl.split('.com/')[1]
+    const res = await photosEnhance(extractedPath)
+    setEnhancedImage(res)
+    setOpenEnhancingConfirm(true)
+    setSmallImage(false)
+    setLoading(false)
   }
 
   const {
@@ -153,15 +144,13 @@ const Unmute2 = ({
       _ignore_small_image: ignoreSmallImage,
       _crop_data: cropData,
     },
-  } = unmute;
+  } = unmute
 
-  const scale = { none: 0, 2: 2, 5: 5, 7: 7 }[passepartout];
-  const isLandscape = orientation === 'landscape';
+  const scale = { none: 0, 2: 2, 5: 5, 7: 7 }[passepartout]
+  const isLandscape = orientation === 'landscape'
 
-  const frame = isLandscape ? frame_landscape_image : frame_image;
-  const frame_width = isLandscape
-    ? 'w-[300px]'
-    : 'w-[250px]';
+  const frame = isLandscape ? frame_landscape_image : frame_image
+  const frame_width = isLandscape ? 'w-[300px]' : 'w-[250px]'
 
   /*useEffect(() => {
     if (isActive) {
@@ -170,27 +159,32 @@ const Unmute2 = ({
   }, [isActive, smallImage]);*/
 
   const handleImageLoad = (event) => {
-    const { naturalWidth, naturalHeight } = event.target;
+    const { naturalWidth, naturalHeight } = event.target
     if (naturalWidth < 637 && naturalHeight < 850) {
-      setSmallImage(true);
+      setSmallImage(true)
     } else {
-      setSmallImage(false);
+      setSmallImage(false)
     }
-  };
+  }
 
   useEffect(() => {
-    setFrameWidth(frameRef.current.offsetWidth);
-  }, [frame]);
+    setFrameWidth(frameRef.current.offsetWidth)
+  }, [frame])
 
-  const allImages = enhancedImage ? [enhancedImage, ...images] : images;
+  const allImages = enhancedImage ? [enhancedImage, ...images] : images
 
   return (
     <>
-      <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', 'snap-center flex items-center py-4')}>
+      <div
+        className={clsx(
+          isLandscape ? 'w-[300px]' : 'w-[250px]',
+          'snap-center flex items-center py-4'
+        )}
+      >
         <div
           className={clsx(
             'relative flex justify-center',
-            isLandscape ? 'mt-0' : 'mt-0',
+            isLandscape ? 'mt-0' : 'mt-0'
           )}
         >
           <img
@@ -199,7 +193,7 @@ const Unmute2 = ({
             alt="Frame"
             className={clsx(
               frame_width,
-              'relative top-0 z-[2] pointer-events-none',
+              'relative top-0 z-[2] pointer-events-none'
             )}
           />
           <img
@@ -215,12 +209,19 @@ const Unmute2 = ({
               padding: `${frame_padding(scale)}px`,
             }}
           >
-            <div className={`${images && images.length > 0 ? 'hidden' : 'block'}`}>
-              <FileUpload ref={pondRef} isActive={isActive} uploading={() => {
-                setLoadingNewImage(true);
-              }} uploaded={() => {
-                setLoadingNewImage(false);
-              }} />
+            <div
+              className={`${images && images.length > 0 ? 'hidden' : 'block'}`}
+            >
+              <FileUpload
+                ref={pondRef}
+                isActive={isActive}
+                uploading={() => {
+                  setLoadingNewImage(true)
+                }}
+                uploaded={() => {
+                  setLoadingNewImage(false)
+                }}
+              />
             </div>
             <button
               onClick={() => setOpenConfirm(true)}
@@ -231,7 +232,11 @@ const Unmute2 = ({
             {images && images.length > 0 ? (
               <>
                 <div className={'w-full h-full'}>
-                  <img src={enhancedImage || images[0]} alt="Frame" className={'w-full h-full object-cover'} />
+                  <img
+                    src={enhancedImage || images[0]}
+                    alt="Frame"
+                    className={'w-full h-full object-cover'}
+                  />
                 </div>
               </>
             ) : null}
@@ -246,24 +251,37 @@ const Unmute2 = ({
         </div>
       </div>
 
-      {(smallImage && !ignoreSmallImage) && (
+      {smallImage && !ignoreSmallImage && (
         <div>
           <div className="bg-red-50 p-4 rounded-xl">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="tracking-tight font-semibold text-red-700">For lav opløsning</h3>
+                <h3 className="tracking-tight font-semibold text-red-700">
+                  For lav opløsning
+                </h3>
                 <div className="mt-2 text-lg text-red-700">
                   <p>
-                    Vælg et billede med højere opløsning for at sikre den bedste kvalitet.
+                    Vælg et billede med højere opløsning for at sikre den bedste
+                    kvalitet.
                   </p>
                 </div>
               </div>
             </div>
             <div className="flex mt-3 p-3">
-              <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
+              <VButton
+                color={'red'}
+                text={'Brug alligevel'}
+                onClick={handleIgnoreSmallImage}
+                className={'w-full'}
+              />
             </div>
             <div className="flex mt-3 p-3">
-              <VButton color={'black'} text={'Forbedr med AI (+49kr)'} onClick={() => handleEnhanceSmallImage()} className={'w-full'} />
+              <VButton
+                color={'black'}
+                text={'Forbedr med AI (+49kr)'}
+                onClick={() => handleEnhanceSmallImage()}
+                className={'w-full'}
+              />
             </div>
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
@@ -290,24 +308,31 @@ const Unmute2 = ({
         </div>
       )}
 
-      {openConfirm && <ConfirmModal type={'denne UNMUTE'} onConfirm={() => {
-        onDelete(unmute.properties._uuid);
-        setOpenConfirm(false);
-      }} onCancel={() => setOpenConfirm(false)} />}
+      {openConfirm && (
+        <ConfirmModal
+          type={'denne UNMUTE'}
+          onConfirm={() => {
+            onDelete(unmute.properties._uuid)
+            setOpenConfirm(false)
+          }}
+          onCancel={() => setOpenConfirm(false)}
+        />
+      )}
 
-      {openEnhancingConfirm &&
+      {openEnhancingConfirm && (
         <ConfirmModal
           title={'Vil du bruge det forbedrede billede?'}
           text="Vælg om du vil bruge"
           buttonText="Ja (+49kr)"
           cancelText="Nej"
           onConfirm={() => {
-            saveEnhancedImage();
-          }} onCancel={() => cancelEnhancing()}
+            saveEnhancedImage()
+          }}
+          onCancel={() => cancelEnhancing()}
         />
-      }
+      )}
     </>
-  );
-};
+  )
+}
 
-export default Unmute2;
+export default Unmute2

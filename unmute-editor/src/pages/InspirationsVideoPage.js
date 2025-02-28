@@ -1,22 +1,27 @@
-import clsx from "clsx";
-import {Link, useParams} from "wouter";
-import {NavCloseIcon} from "../assets/icons/icon_nav_close";
-import { React, useEffect, useMemo } from "react";
-import { useDispatch, useSelector} from 'react-redux'
-import {setInspirations, setInspirationsLoading} from "../features/inspiration/inspirationSlice";
-import {getInspirations} from "../api/inspiration";
-import {Loader} from "../components/Loader";
+import clsx from 'clsx'
+import { Link, useParams } from 'wouter'
+import { NavCloseIcon } from '../assets/icons/icon_nav_close'
+import { React, useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  setInspirations,
+  setInspirationsLoading,
+} from '../features/inspiration/inspirationSlice'
+import { getInspirations } from '../api/inspiration'
+import { Loader } from '../components/Loader'
 
 export const InspirationsVideoPage = () => {
   const dispatch = useDispatch()
-  const inspirations = useSelector(state => state.inspiration.inspirations)
-  const inspirationsLoading = useSelector(state => state.inspiration.inspirationsLoading)
-  const {id} = useParams()
+  const inspirations = useSelector((state) => state.inspiration.inspirations)
+  const inspirationsLoading = useSelector(
+    (state) => state.inspiration.inspirationsLoading
+  )
+  const { id } = useParams()
   const inspiration = useMemo(() => {
-      if (inspirations && id) {
-        return inspirations.find(item => item.id === id)
-      }
-      return null
+    if (inspirations && id) {
+      return inspirations.find((item) => item.id === id)
+    }
+    return null
   }, [inspirations, inspirationsLoading, id])
 
   useEffect(() => {
@@ -36,14 +41,16 @@ export const InspirationsVideoPage = () => {
   }
 
   if (!inspiration) {
-    return (<Loader size={"w-24 h-24"} />)
+    return <Loader size={'w-24 h-24'} />
   }
 
   return (
     <div className={'offers-page flex items-center py-10'}>
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
-          <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Inspiration</h1>
+          <h1 className="font-serif text-muld-1000 text-[50px] mb-4">
+            Inspiration
+          </h1>
           <h2 className="font-serif text-muld-1000 text-[17px] text-center leading-tight">
             Inspiration for your text
           </h2>
@@ -55,13 +62,14 @@ export const InspirationsVideoPage = () => {
             src={inspiration.video_url}
             controls={false}
             autoPlay
-          >
-          </video>
+          ></video>
         </div>
 
         <div className="flex flex-row justify-center gap-4 mt-16">
-          <Link to="/inspiration"
-            className="text-rose-500 bg-rose-100 border border-rose-500 transition duration-200 ease-out focus:outline-none hover:bg-rose-300 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer">
+          <Link
+            to="/inspiration"
+            className="text-rose-500 bg-rose-100 border border-rose-500 transition duration-200 ease-out focus:outline-none hover:bg-rose-300 focus:ring-4 focus:ring-rose font-medium rounded-lg px-8 py-2.5 cursor-pointer"
+          >
             Write text
           </Link>
 
@@ -85,12 +93,12 @@ export const InspirationsVideoPage = () => {
             to="/inspirations"
             className={(active) =>
               clsx(
-                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg",
-                active ? "bg-beige-400" : ""
+                'inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-4 sm:rounded-lg',
+                active ? 'bg-beige-400' : ''
               )
             }
           >
-            <NavCloseIcon/>
+            <NavCloseIcon />
             <span className="font-sans text-[10px] text-muld-1000 text-center mt-2">
               Close
             </span>
@@ -98,5 +106,5 @@ export const InspirationsVideoPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

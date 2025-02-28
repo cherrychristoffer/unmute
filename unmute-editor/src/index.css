@@ -57,6 +57,14 @@ html {
   display: none;
 }
 
+.filepond--wrapper {
+  height: 100%;
+}
+
+.filepond--hopper {
+  height: 100%;
+}
+
 /**********/
 /* STYLES */
 /**********/

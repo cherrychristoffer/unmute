@@ -1,57 +1,57 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState } from 'react'
 
-import clsx from 'clsx';
+import clsx from 'clsx'
 
-import { useDispatch, useSelector } from 'react-redux';
-import { CloseIcon } from '../assets/icons/icon_close';
-import { ExclamationIcon } from '../assets/icons/icon_exclamation';
-import { PlusIcon } from '../assets/icons/icon_plus';
+import { useDispatch, useSelector } from 'react-redux'
+import { CloseIcon } from '../assets/icons/icon_close'
+import { ExclamationIcon } from '../assets/icons/icon_exclamation'
+import { PlusIcon } from '../assets/icons/icon_plus'
 
-import { Loader } from './Loader';
+import { Loader } from './Loader'
 
-import { getFileUrl, uploadFile } from '../api/aws';
-import { updateUnmuteInCart } from '../api/cart';
-import { updateUnmutes } from '../features/user/userSlice';
+import { getFileUrl, uploadFile } from '../api/aws'
+import { updateUnmuteInCart } from '../api/cart'
+import { updateUnmutes } from '../features/user/userSlice'
 
-import frame_image from '../assets/images/frame.png';
-import frame_landscape_image from '../assets/images/frame_landscape.png';
+import frame_image from '../assets/images/frame.png'
+import frame_landscape_image from '../assets/images/frame_landscape.png'
 
-import CropperComponent from './Cropper';
-import { setDisableAllActions } from '../features/image/imageSlice';
-import { ConfirmModal } from './ConfirmModal';
-import VButton from './VButton';
+import CropperComponent from './Cropper'
+import { setDisableAllActions } from '../features/image/imageSlice'
+import { ConfirmModal } from './ConfirmModal'
+import VButton from './VButton'
 
 const frame_padding = (scale, landscape) => {
-  return 16 + scale;
-};
+  return 16 + scale
+}
 
 const Unmute = ({
-                  unmute,
-                  onDelete,
-                  activeUnmute,
-                  index,
-                  swiperRef,
-                  showChangeImageButton,
-                }) => {
-  const dispatch = useDispatch();
+  unmute,
+  onDelete,
+  activeUnmute,
+  index,
+  swiperRef,
+  showChangeImageButton,
+}) => {
+  const dispatch = useDispatch()
 
-  const [loading, setLoading] = useState(false);
-  const [smallImage, setSmallImage] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [smallImage, setSmallImage] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false)
 
-  const [frameWidth, setFrameWidth] = useState();
-  const frameRef = useRef();
+  const [frameWidth, setFrameWidth] = useState()
+  const frameRef = useRef()
 
   const handleChange = async (event) => {
-    setLoading(true);
-    const uuid = unmute.properties._uuid;
-    const file = event.target.files[0];
+    setLoading(true)
+    const uuid = unmute.properties._uuid
+    const file = event.target.files[0]
 
     uploadFile({
       path: uuid,
       file,
     }).then((path) => {
-      const fileUrl = getFileUrl(path);
+      const fileUrl = getFileUrl(path)
       updateUnmuteInCart({
         key: unmute.key,
         properties: {
@@ -60,15 +60,15 @@ const Unmute = ({
           _original_images: [fileUrl],
         },
       }).then(({ data }) => {
-        setLoading(false);
-        setSmallImage(false);
-        dispatch(updateUnmutes(data.items));
-      });
-    });
-  };
+        setLoading(false)
+        setSmallImage(false)
+        dispatch(updateUnmutes(data.items))
+      })
+    })
+  }
 
   const handleIgnoreSmallImage = async () => {
-    setLoading(true);
+    setLoading(true)
     updateUnmuteInCart({
       key: unmute.key,
       properties: {
@@ -76,10 +76,10 @@ const Unmute = ({
         _ignore_small_image: true,
       },
     }).then(({ data }) => {
-      setLoading(false);
-      setSmallImage(false);
-      dispatch(updateUnmutes(data.items));
-    });
+      setLoading(false)
+      setSmallImage(false)
+      dispatch(updateUnmutes(data.items))
+    })
   }
 
   const {
@@ -89,15 +89,15 @@ const Unmute = ({
       _original_images: images,
       _ignore_small_image: ignoreSmallImage,
     },
-  } = unmute;
+  } = unmute
 
-  const scale = { none: 0, 2: 16, 5: 30, 7: 40 }[passepartout];
-  const isLandscape = orientation === 'landscape';
+  const scale = { none: 0, 2: 16, 5: 30, 7: 40 }[passepartout]
+  const isLandscape = orientation === 'landscape'
 
-  const frame = isLandscape ? frame_landscape_image : frame_image;
+  const frame = isLandscape ? frame_landscape_image : frame_image
   const frame_width = isLandscape
     ? 'min-w-[300px] w-[55%]'
-    : 'min-w-[250px] w-1/2';
+    : 'min-w-[250px] w-1/2'
 
   /*useEffect(() => {
     if (activeUnmute) {
@@ -106,25 +106,30 @@ const Unmute = ({
   }, [activeUnmute, smallImage]);*/
 
   const handleImageLoad = (event) => {
-    const { naturalWidth, naturalHeight } = event.target;
+    const { naturalWidth, naturalHeight } = event.target
     if (naturalWidth < 637 && naturalHeight < 850) {
-      setSmallImage(true);
+      setSmallImage(true)
     } else {
-      setSmallImage(false);
+      setSmallImage(false)
     }
-  };
+  }
 
   useEffect(() => {
-    setFrameWidth(frameRef.current.offsetWidth);
-  }, [frame]);
+    setFrameWidth(frameRef.current.offsetWidth)
+  }, [frame])
 
   return (
     <>
-      <div className={clsx(isLandscape ? 'w-[300px]' : 'w-[250px]', 'snap-center flex items-center py-4')}>
+      <div
+        className={clsx(
+          isLandscape ? 'w-[300px]' : 'w-[250px]',
+          'snap-center flex items-center py-4'
+        )}
+      >
         <div
           className={clsx(
             'relative flex justify-center',
-            isLandscape ? 'mt-0' : 'mt-0',
+            isLandscape ? 'mt-0' : 'mt-0'
           )}
         >
           <img
@@ -133,7 +138,7 @@ const Unmute = ({
             alt="Frame"
             className={clsx(
               frame_width,
-              'relative top-0 z-[2] pointer-events-none',
+              'relative top-0 z-[2] pointer-events-none'
             )}
           />
           <img
@@ -183,7 +188,12 @@ const Unmute = ({
             </div>
           ) : (
             <>
-              <label className={'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'} htmlFor={`mage-add-${unmute.key}`}>
+              <label
+                className={
+                  'w-[68px] h-[68px] bg-rose-500 hover:bg-rose-700 cursor-pointer fill-white rounded-full flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10'
+                }
+                htmlFor={`mage-add-${unmute.key}`}
+              >
                 <PlusIcon size={40} />
               </label>
               <input
@@ -198,21 +208,29 @@ const Unmute = ({
         </div>
       </div>
 
-      {(smallImage && !ignoreSmallImage) && (
+      {smallImage && !ignoreSmallImage && (
         <div>
           <div className="bg-red-50 p-4 rounded-xl">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="tracking-tight font-semibold text-red-700">For lav opløsning</h3>
+                <h3 className="tracking-tight font-semibold text-red-700">
+                  For lav opløsning
+                </h3>
                 <div className="mt-2 text-lg text-red-700">
                   <p>
-                    Vælg et billede med højere opløsning for at sikre den bedste kvalitet.
+                    Vælg et billede med højere opløsning for at sikre den bedste
+                    kvalitet.
                   </p>
                 </div>
               </div>
             </div>
             <div className="flex mt-3 p-3">
-              <VButton color={'red'} text={'Brug alligevel'} onClick={handleIgnoreSmallImage} className={'w-full'} />
+              <VButton
+                color={'red'}
+                text={'Brug alligevel'}
+                onClick={handleIgnoreSmallImage}
+                className={'w-full'}
+              />
             </div>
           </div>
           {/*<div className="text-rose-500 text-center pt-8">
@@ -239,12 +257,18 @@ const Unmute = ({
         </div>
       )}
 
-      {openConfirm && <ConfirmModal type={'denne UNMUTE'} onConfirm={() => {
-        onDelete(unmute.key);
-        setOpenConfirm(false);
-      }} onCancel={() => setOpenConfirm(false)} />}
+      {openConfirm && (
+        <ConfirmModal
+          type={'denne UNMUTE'}
+          onConfirm={() => {
+            onDelete(unmute.key)
+            setOpenConfirm(false)
+          }}
+          onCancel={() => setOpenConfirm(false)}
+        />
+      )}
     </>
-  );
-};
+  )
+}
 
-export default Unmute;
+export default Unmute

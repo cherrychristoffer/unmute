@@ -1,93 +1,93 @@
 export default function audioBufferToWav(buffer, options = {}) {
-  const numOfChannels = buffer.numberOfChannels;
-  const sampleRate = buffer.sampleRate;
-  const format = options.float32 ? 3 : 1; // format 3 is IEEE float, 1 is PCM
-  const bitDepth = format === 3 ? 32 : 16;
+  const numOfChannels = buffer.numberOfChannels
+  const sampleRate = buffer.sampleRate
+  const format = options.float32 ? 3 : 1 // format 3 is IEEE float, 1 is PCM
+  const bitDepth = format === 3 ? 32 : 16
 
-  let result;
+  let result
   if (numOfChannels === 2) {
-    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1));
+    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1))
   } else {
-    result = buffer.getChannelData(0);
+    result = buffer.getChannelData(0)
   }
 
-  return encodeWAV(result, format, sampleRate, numOfChannels, bitDepth);
+  return encodeWAV(result, format, sampleRate, numOfChannels, bitDepth)
 }
 
 function interleave(inputL, inputR) {
-  const length = inputL.length + inputR.length;
-  const result = new Float32Array(length);
+  const length = inputL.length + inputR.length
+  const result = new Float32Array(length)
 
-  let index = 0;
-  let inputIndex = 0;
+  let index = 0
+  let inputIndex = 0
 
   while (index < length) {
-    result[index++] = inputL[inputIndex];
-    result[index++] = inputR[inputIndex];
-    inputIndex++;
+    result[index++] = inputL[inputIndex]
+    result[index++] = inputR[inputIndex]
+    inputIndex++
   }
-  return result;
+  return result
 }
 
 function encodeWAV(samples, format, sampleRate, numChannels, bitDepth) {
-  const bytesPerSample = bitDepth / 8;
-  const blockAlign = numChannels * bytesPerSample;
+  const bytesPerSample = bitDepth / 8
+  const blockAlign = numChannels * bytesPerSample
 
-  const buffer = new ArrayBuffer(44 + samples.length * bytesPerSample);
-  const view = new DataView(buffer);
+  const buffer = new ArrayBuffer(44 + samples.length * bytesPerSample)
+  const view = new DataView(buffer)
 
   /* RIFF identifier */
-  writeString(view, 0, "RIFF");
+  writeString(view, 0, 'RIFF')
   /* file length */
-  view.setUint32(4, 36 + samples.length * bytesPerSample, true);
+  view.setUint32(4, 36 + samples.length * bytesPerSample, true)
   /* RIFF type */
-  writeString(view, 8, "WAVE");
+  writeString(view, 8, 'WAVE')
   /* format chunk identifier */
-  writeString(view, 12, "fmt ");
+  writeString(view, 12, 'fmt ')
   /* format chunk length */
-  view.setUint32(16, 16, true);
+  view.setUint32(16, 16, true)
   /* sample format (raw) */
-  view.setUint16(20, format, true);
+  view.setUint16(20, format, true)
   /* channel count */
-  view.setUint16(22, numChannels, true);
+  view.setUint16(22, numChannels, true)
   /* sample rate */
-  view.setUint32(24, sampleRate, true);
+  view.setUint32(24, sampleRate, true)
   /* byte rate (sample rate * block align) */
-  view.setUint32(28, sampleRate * blockAlign, true);
+  view.setUint32(28, sampleRate * blockAlign, true)
   /* block align (channel count * bytes per sample) */
-  view.setUint16(32, blockAlign, true);
+  view.setUint16(32, blockAlign, true)
   /* bits per sample */
-  view.setUint16(34, bitDepth, true);
+  view.setUint16(34, bitDepth, true)
   /* data chunk identifier */
-  writeString(view, 36, "data");
+  writeString(view, 36, 'data')
   /* data chunk length */
-  view.setUint32(40, samples.length * bytesPerSample, true);
+  view.setUint32(40, samples.length * bytesPerSample, true)
 
   if (format === 1) {
     // PCM
-    floatTo16BitPCM(view, 44, samples);
+    floatTo16BitPCM(view, 44, samples)
   } else {
-    writeFloat32(view, 44, samples);
+    writeFloat32(view, 44, samples)
   }
 
-  return buffer;
+  return buffer
 }
 
 function writeString(view, offset, string) {
   for (let i = 0; i < string.length; i++) {
-    view.setUint8(offset + i, string.charCodeAt(i));
+    view.setUint8(offset + i, string.charCodeAt(i))
   }
 }
 
 function floatTo16BitPCM(output, offset, input) {
   for (let i = 0; i < input.length; i++, offset += 2) {
-    const s = Math.max(-1, Math.min(1, input[i]));
-    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    const s = Math.max(-1, Math.min(1, input[i]))
+    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true)
   }
 }
 
 function writeFloat32(output, offset, input) {
   for (let i = 0; i < input.length; i++, offset += 4) {
-    output.setFloat32(offset, input[i], true);
+    output.setFloat32(offset, input[i], true)
   }
 }

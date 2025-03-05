@@ -148,15 +148,6 @@ function App() {
         unmutes.sort((a, b) => a.key - b.key)
 
         if (JSON.stringify(unmutes) !== JSON.stringify(newItems)) {
-          console.log('cart changed')
-          console.log(
-            'unmutes',
-            unmutes.map((unmute) => unmute.key)
-          )
-          console.log(
-            'newitems',
-            newItems.map((unmute) => unmute.key)
-          )
           dispatch(updateUnmutes(filteredItems))
         }
       }

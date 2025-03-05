@@ -36,12 +36,7 @@ export const UploadAudioPage = () => {
   const dispatch = useDispatch()
   const { id } = useParams()
 
-  const uploadFileToS3 = (file, path) => {
-    setLoading(true)
-    const sanitizedFileName = slugify(`${Date.now()}_${file.name}`, {
-      replacement: '_',
-      lower: false,
-    })
+  const uploadFileToS3 = (file, path, sanitizedFileName) => {
     const fileKey = `${path}/${sanitizedFileName}`
 
     let contentType = file.type
@@ -57,7 +52,6 @@ export const UploadAudioPage = () => {
         const progress = Math.round((evt.loaded * 100) / evt.total)
         // setProgress(progress);
         if (progress === 100) {
-          setLoading(false)
         }
       })
       .promise()
@@ -136,16 +130,19 @@ export const UploadAudioPage = () => {
     try {
       setLoading(true)
       const s3Path = 'videos'
-      await uploadFileToS3(file, s3Path)
-
-      const sanitizedFileName = slugify(file.name, {
+      const sanitizedFileName = slugify(`${Date.now()}_${file.name}`, {
         replacement: '_',
         lower: false,
       })
+
+      await uploadFileToS3(file, s3Path, sanitizedFileName)
+
       const videoKey = `${s3Path}/${sanitizedFileName}`
 
       const audio = await convertVideoToAudio(videoKey)
       const duration = await getBlobDuration(audio)
+
+      setLoading(false)
 
       const minuteData = convertToTimeFormat(duration)
       uploadFile({
@@ -169,7 +166,6 @@ export const UploadAudioPage = () => {
         }).then(({ data }) => {
           dispatch(updateUnmutes(data.items))
 
-          setLoading(false)
           window.location.href = `/pages/editor#/edit-audio/${id}`
           // navigate(`/edit-audio/${id}`);
         })

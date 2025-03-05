@@ -1,5 +1,4 @@
 import { React, useEffect, useRef, useState } from 'react'
-import Snackbar from '@mui/material/Snackbar'
 import clsx from 'clsx'
 import { useDispatch, useSelector } from 'react-redux'
 import { CloseIcon } from '../assets/icons/icon_close'
@@ -9,6 +8,7 @@ import { updateUnmutes } from '../features/user/userSlice'
 import frame_image from '../assets/images/frame.png'
 import frame_landscape_image from '../assets/images/frame_landscape.png'
 import { ConfirmModal } from './ConfirmModal'
+import ActiveItemNotification from './ActiveItemNotification'
 import PinturaCollagePortal from './PinturaCollage'
 import FileUploadCollage from './FileUploadCollage'
 import VButton from './VButton'
@@ -122,8 +122,6 @@ const CollageUnmute = ({
   const [openConfirm, setOpenConfirm] = useState(false)
   const [reorderActive, setReorderActive] = useState(false)
   const [reorderIndex1, setReorderIndex1] = useState(null)
-  const [open, setOpen] = useState(true)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
   const collageChangeImage = useSelector(
     (state) => state.image.collageChangeImage
@@ -131,10 +129,6 @@ const CollageUnmute = ({
 
   const [frameWidth, setFrameWidth] = useState()
   const frameRef = useRef()
-
-  const handleClose = () => {
-    setOpen(false)
-  }
 
   const {
     properties: {
@@ -350,60 +344,7 @@ const CollageUnmute = ({
         </div>
       )}
 
-      {/* {
-        !isMobile && (
-          <div className={'flex items-start gap-3 mt-5 bg-white border border-zinc-200 rounded-lg p-4 text-[12px]'}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20px" height="20px" className={'shrink-0'}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-            </svg>
-            Det er vigtigt, at du klikker på hvert billede og sikrer dig, at beskæringen er som ønsket.
-          </div>
-        )
-      } */}
-
-      {isActive && (
-        <Snackbar
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          open={open}
-          sx={{
-            left: '0!important',
-            right: '0!important',
-            transform: 'none!important',
-          }}
-          onClose={handleClose}
-        >
-          <div
-            className={
-              'flex items-start gap-3 p-4 rounded-lg bg-white border border-zinc-200 text-[12px]'
-            }
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              width="20px"
-              height="20px"
-              className={'shrink-0'}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-              />
-            </svg>
-            Det er vigtigt, at du klikker på hvert billede og sikrer dig, at
-            beskæringen er som ønsket.
-            <button
-              onClick={handleClose}
-              className="w-[34px] h-[34px] rounded-full flex items-center justify-center"
-            >
-              <CloseIcon fill="black" />
-            </button>
-          </div>
-        </Snackbar>
-      )}
+      {isActive && <ActiveItemNotification />}
 
       {openConfirm && (
         <ConfirmModal

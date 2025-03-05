@@ -50,7 +50,6 @@ const danishLocale = {
 }
 
 const PinturaPortal = ({ editorRef, activeUnmute, isOpen, onClose }) => {
-  console.log(activeUnmute)
   const horizontal = activeUnmute?.properties?._orientation === 'landscape'
   const orientationChanged = useSelector(
     (state) => state.image.orientationChanged

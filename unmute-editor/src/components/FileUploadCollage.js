@@ -133,32 +133,35 @@ const FileUploadCollage = forwardRef(
     }
 
     const updateInCart = async (item, newFileUrls) => {
-      let newImages, newOriginalImages, newImageStates
+      // fill newImages with empty values of item.properties._collage_max_items
+      let newImages = Array(item.properties._collage_max_items).fill(null)
+      let newOriginalImages = Array(item.properties._collage_max_items).fill(
+        null
+      )
+      let newImageStates = Array(item.properties._collage_max_items).fill({})
 
-      if (
-        item.properties._images.length === item.properties._collage_max_items
-      ) {
-        newImages = item.properties._images.map((image, i) => {
-          return i === index ? newFileUrls[0] : image
-        })
-        newOriginalImages = (item.properties._original_images || []).map(
-          (image, i) => {
-            return i === index ? newFileUrls[0] : image
-          }
-        )
-        newImageStates = item.properties._collage_image_states.map(
-          (image, i) => {
-            return i === index ? null : image
-          }
-        )
-      } else {
-        newImages = [...item.properties._images, ...newFileUrls]
-        newOriginalImages = [
-          ...(item.properties._original_images || []),
-          ...newFileUrls,
-        ]
-        newImageStates = [...item.properties._collage_image_states, {}]
-      }
+      newImages = newImages.map((_, i) => {
+        const newImage =
+          item.properties._images && item.properties._images.length > i
+            ? item.properties._images[i]
+            : ''
+        return i === index ? newFileUrls[0] : newImage
+      })
+
+      newOriginalImages = newOriginalImages.map((_, i) => {
+        const original_image =
+          item.properties._original_images &&
+          item.properties._original_images.length > i
+            ? item.properties._original_images[i]
+            : ''
+        return i === index ? newFileUrls[0] : original_image
+      })
+
+      newImageStates = newImageStates.map((imageState, i) => {
+        return i === index
+          ? imageState
+          : item.properties._collage_image_states[i]
+      })
 
       const cart = await updateUnmuteInCart({
         key: item.key,

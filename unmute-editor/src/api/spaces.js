@@ -49,7 +49,7 @@ export const uploadFile = async ({ file, path, customName = null }) => {
         return fileKey
       }
 
-      let { success, key } = await convertHeic(fileKey)
+      let { key } = await convertHeic(fileKey)
       return key
     })
     .catch((error) => {

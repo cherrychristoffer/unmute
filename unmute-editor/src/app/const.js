@@ -285,3 +285,94 @@ export const AWS_KEY_SECRET = 'tGaG+Up8lH67XPNb+/HCZT5RUKbtgb5VNfjwM/Qq'
 
 export const S3_REGION = 'eu-north-1'
 export const BASE_API_URL = 'https://api.unmutegreetings.dk/api/v1'
+
+export const cssGrids = {
+  portrait: {
+      collage_1_1: {
+          gridTemplateColumns: 'grid-cols-1',
+          items: ['', '']
+      },
+      collage_1_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['col-span-2', '', '']
+      },
+      collage_2_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['h-full', 'h-full', 'h-full', 'h-full']
+      },
+      collage_2_1_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['', '', 'col-span-2', '', '']
+      },
+      collage_1_2_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['col-span-2', '', '', '', '']
+      },
+      collage_2_2_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['', '', '', '', '', '']
+      },
+      collage_4_2_1_2_4: {
+          gridTemplateColumns: 'grid-cols-4 grid-rows-4',
+          items: [
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'col-span-2 row-span-2',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+          ]
+      },
+  },
+  landscape: {
+      collage_1_1: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['', '']
+      },
+      collage_1_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['', 'row-span-2', '']
+      },
+      collage_2_2: {
+          gridTemplateColumns: 'grid-cols-2',
+          items: ['h-full', 'h-full', 'h-full', 'h-full']
+      },
+      collage_2_1_2: {
+          gridTemplateColumns: 'grid-cols-3',
+          items: ['', 'row-span-2', '', '', '']
+      },
+      collage_1_2_2: {
+          gridTemplateColumns: 'grid-cols-3',
+          items: ['', '', 'row-span-2', '', '']
+      },
+      collage_2_2_2: {
+          gridTemplateColumns: 'grid-cols-3',
+          items: ['', '', '', '', '', '']
+      },
+      collage_4_2_1_2_4: {
+          gridTemplateColumns: 'grid-cols-4 grid-rows-4',
+          items: [
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'col-span-2 row-span-2',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+              'hide-label',
+          ]
+      },
+  },
+}

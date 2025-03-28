@@ -64,6 +64,7 @@ import {
   setChooseNewImage,
   setCollageChangeImage,
 } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 const FileUploadCollage = forwardRef(
   (
@@ -163,11 +164,20 @@ const FileUploadCollage = forwardRef(
           : item.properties._collage_image_states[i]
       })
 
+      const mergeImageUrl = await mergeImages(
+        item.properties._uuid,
+        newImages,
+        item.properties._orientation,
+        item.properties._collage_type,
+        item.properties._passepartout,
+      )
+
       const cart = await updateUnmuteInCart({
         key: item.key,
         properties: {
           ...item.properties,
           _images: newImages,
+          _cart_image: mergeImageUrl,
           _collage_image_states: newImageStates,
           _original_images: newOriginalImages,
         },

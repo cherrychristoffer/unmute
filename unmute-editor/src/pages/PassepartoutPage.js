@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateUnmuteInCart } from '../api/cart'
 
 import { useActiveUnmute } from '../api/useUnmutes'
+import { mergeImages } from '../hooks/mergeImage'
 
 import large from '../assets/images/passepartout/large.png'
 import medium from '../assets/images/passepartout/medium.png'
@@ -20,13 +21,28 @@ export const PassepartoutPage = () => {
   const { disableAllExtions } = useSelector((state) => state.image)
   const [loading, setLoading] = useState(false)
 
-  const handleClick = (passepartout) => {
+  const handleClick = async (passepartout) => {
     if (!activeUnmute) return
+    if (activeUnmute?.properties?._passepartout === passepartout) return
+
     setLoading(true)
+
+    let mergeImageUrl = null
+
+    if (activeUnmute.properties._collage) {
+      mergeImageUrl = await mergeImages(
+        activeUnmute.properties._uuid,
+        activeUnmute.properties._images,
+        activeUnmute.properties._orientation,
+        activeUnmute.properties._collage_type,
+        passepartout,
+      )
+    }
+
     dispatch(
       updateUnmute({
         ...activeUnmute,
-        properties: { ...activeUnmute.properties, _passepartout: passepartout },
+        properties: { ...activeUnmute.properties, _passepartout: passepartout, _cart_image: mergeImageUrl },
       })
     )
 
@@ -35,6 +51,7 @@ export const PassepartoutPage = () => {
       properties: {
         ...activeUnmute.properties,
         _passepartout: passepartout,
+        _cart_image: mergeImageUrl
       },
     })
       .then(({ data }) => {

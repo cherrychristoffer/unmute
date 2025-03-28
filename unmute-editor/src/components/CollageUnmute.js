@@ -12,97 +12,8 @@ import ActiveItemNotification from './ActiveItemNotification'
 import PinturaCollagePortal from './PinturaCollage'
 import FileUploadCollage from './FileUploadCollage'
 import VButton from './VButton'
-
-const cssGrids = {
-  portrait: {
-    collage_1_1: {
-      gridTemplateColumns: 'grid-cols-1',
-      items: ['', ''],
-    },
-    collage_1_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['col-span-2', '', ''],
-    },
-    collage_2_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['h-full', 'h-full', 'h-full', 'h-full'],
-    },
-    collage_2_1_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['', '', 'col-span-2', '', ''],
-    },
-    collage_1_2_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['col-span-2', '', '', '', ''],
-    },
-    collage_2_2_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['', '', '', '', '', ''],
-    },
-    collage_4_2_1_2_4: {
-      gridTemplateColumns: 'grid-cols-4 grid-rows-4',
-      items: [
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'col-span-2 row-span-2',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-      ],
-    },
-  },
-  landscape: {
-    collage_1_1: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['', ''],
-    },
-    collage_1_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['', 'row-span-2', ''],
-    },
-    collage_2_2: {
-      gridTemplateColumns: 'grid-cols-2',
-      items: ['h-full', 'h-full', 'h-full', 'h-full'],
-    },
-    collage_2_1_2: {
-      gridTemplateColumns: 'grid-cols-3',
-      items: ['', 'row-span-2', '', '', ''],
-    },
-    collage_1_2_2: {
-      gridTemplateColumns: 'grid-cols-3',
-      items: ['', '', 'row-span-2', '', ''],
-    },
-    collage_2_2_2: {
-      gridTemplateColumns: 'grid-cols-3',
-      items: ['', '', '', '', '', ''],
-    },
-    collage_4_2_1_2_4: {
-      gridTemplateColumns: 'grid-cols-4 grid-rows-4',
-      items: [
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'col-span-2 row-span-2',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-        'hide-label',
-      ],
-    },
-  },
-}
+import { cssGrids } from '../app/const'
+import { mergeImages } from '../hooks/mergeImage'
 
 const frame_padding = (scale) => {
   return 7 * scale
@@ -147,7 +58,7 @@ const CollageUnmute = ({
     ? 'min-w-[300px] w-[55%]'
     : 'min-w-[250px] w-1/2'
 
-  const handleSwapImages = (index) => {
+  const handleSwapImages = async (index) => {
     const newImages = [...images]
     const newOriginalImages = [...unmute.properties['_original_images']]
     const newImageStates = [...unmute.properties['_collage_image_states']]
@@ -160,11 +71,21 @@ const CollageUnmute = ({
     const tempState = newImageStates[reorderIndex1]
     newImageStates[reorderIndex1] = newImageStates[index]
     newImageStates[index] = tempState
+
+    const mergeImageUrl = await mergeImages(
+      unmute.properties._uuid,
+      newImages,
+      unmute.properties._orientation,
+      unmute.properties._collage_type,
+      unmute.properties._passepartout,
+    )
+
     updateUnmuteInCart({
       key: unmute.key,
       properties: {
         ...unmute.properties,
         _images: newImages,
+        _cart_image: mergeImageUrl,
         _collage_image_states: newImageStates,
         _original_images: newOriginalImages,
       },

@@ -11,6 +11,7 @@ import { useActiveUnmute } from '../api/useUnmutes'
 
 import { getFileUrl, uploadFile } from '../api/spaces'
 import { setOrientationChanged } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 export const UploadImagePage = () => {
   const dispatch = useDispatch()
@@ -38,11 +39,24 @@ export const UploadImagePage = () => {
   }
 
   const updateInCart = async (item, newFileUrls) => {
+    const imageUrls = [...newFileUrls, ...(item.properties._images || [])]
+    let mergeImageUrl = null
+    if (item.properties._collage) {
+      mergeImageUrl = await mergeImages(
+        item.properties._uuid,
+        imageUrls,
+        item.properties._orientation,
+        item.properties._collage_type,
+        item.properties._passepartout,
+      )
+    }
+
     const cart = await updateUnmuteInCart({
       key: item.key,
       properties: {
         ...item.properties,
-        _images: [...newFileUrls, ...(item.properties._images || [])], // Place new images first
+        _images: imageUrls, // Place new images first
+        _cart_image: mergeImageUrl,
         _image_state: null,
         _original_images: [
           ...newFileUrls,

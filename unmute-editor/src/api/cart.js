@@ -68,10 +68,12 @@ export const updateUnmuteInCart = async ({
 
   if (variant.id !== Number(realKey.split(':')[0])) {
     // remove the item from the cart
-    await axios.post(`${cartUrl}/change.js`, {
-      id: realKey,
-      quantity: 0,
-    })
+    if (realKey) {
+      await axios.post(`${cartUrl}/change.js`, {
+        id: realKey,
+        quantity: 0,
+      })
+    }
 
     const items = [
       {

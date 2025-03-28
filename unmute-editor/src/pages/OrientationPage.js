@@ -15,6 +15,7 @@ import {
   setMustCrop,
   setOrientationChanged,
 } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 export const OrientationPage = () => {
   const dispatch = useDispatch()
@@ -22,28 +23,61 @@ export const OrientationPage = () => {
   const { disableAllExtions } = useSelector((state) => state.image)
   const [loading, setLoading] = useState(false)
 
-  const handleClick = (orientation) => {
+  const handleClick = async (orientation) => {
     if (!activeUnmute) return
+    if (activeUnmute?.properties?._orientation === orientation) return
     // if (activeUnmute.properties._collage) {
     //   return;
     // }
     setLoading(true)
-    dispatch(
-      updateUnmute({
-        ...activeUnmute,
-        properties: {
-          ...activeUnmute.properties,
-          _orientation: orientation,
-        },
-      })
-    )
-    updateUnmuteInCart({
+
+    let mergeImageUrl = null
+    let activeUnmuteItem = {
+      ...activeUnmute,
+      properties: {
+        ...activeUnmute.properties,
+        _orientation: orientation,
+      },
+    }
+    let activeUnmuteCartItem = {
       key: activeUnmute.key,
       properties: {
         ...activeUnmute.properties,
         _orientation: orientation,
       },
-    })
+    }
+
+    if (activeUnmute.properties._collage) {
+      mergeImageUrl = await mergeImages(
+        activeUnmute.properties._uuid,
+        activeUnmute.properties._images,
+        orientation,
+        activeUnmute.properties._collage_type,
+        activeUnmute.properties._passepartout,
+      )
+
+      activeUnmuteItem = {
+        ...activeUnmuteItem,
+        properties: {
+          ...activeUnmuteItem.properties,
+          _cart_image: mergeImageUrl,
+        }
+      }
+
+      activeUnmuteCartItem = {
+        ...activeUnmuteCartItem,
+        properties: {
+          ...activeUnmuteCartItem.properties,
+          _cart_image: mergeImageUrl,
+        }
+      }
+    }
+
+    dispatch(
+      updateUnmute(activeUnmuteItem)
+    )
+
+    updateUnmuteInCart(activeUnmuteCartItem)
       .catch((err) => {
         console.error(err)
         setLoading(false)
@@ -85,14 +119,14 @@ export const OrientationPage = () => {
               />
               {(activeUnmute?.properties?._orientation === item.value ||
                 (!activeUnmute && item.value === 'portrait')) && (
-                <CheckIcon
-                  color={'fill-rose-100'}
-                  size={16}
-                  className={
-                    'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'
-                  }
-                />
-              )}
+                  <CheckIcon
+                    color={'fill-rose-100'}
+                    size={16}
+                    className={
+                      'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'
+                    }
+                  />
+                )}
             </button>
           ))}
         </div>

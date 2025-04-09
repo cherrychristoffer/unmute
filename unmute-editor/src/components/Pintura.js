@@ -22,10 +22,8 @@ import {
   plugin_filter_locale_en_gb,
   plugin_annotate_locale_en_gb,
   plugin_decorate_locale_en_gb,
-  plugin_redact_locale_en_gb,
   plugin_resize_locale_en_gb,
   plugin_sticker_locale_en_gb,
-  plugin_frame_locale_en_gb,
 
   // markup editor locale
   markup_editor_locale_en_gb,

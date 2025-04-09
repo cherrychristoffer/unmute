@@ -23,9 +23,6 @@ const CollageUnmute = ({
   unmute,
   onDelete,
   isActive,
-  index,
-  swiperRef,
-  showChangeImageButton,
 }) => {
   const dispatch = useDispatch()
 

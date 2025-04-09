@@ -1,8 +1,8 @@
 import { React, useRef } from 'react'
-import { Link, useLocation, useParams } from 'wouter'
+import { useLocation, useParams } from 'wouter'
 
 import { updateUnmute, updateUnmutes } from '../../features/user/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { updateUnmuteInCart } from '../../api/cart'
 

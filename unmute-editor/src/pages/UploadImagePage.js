@@ -1,6 +1,6 @@
 import { React, useState } from 'react'
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useLocation } from 'wouter'
 
 import { Loader } from '../components/Loader'
@@ -18,7 +18,6 @@ export const UploadImagePage = () => {
   const [_location, navigate] = useLocation()
   const { activeUnmute } = useActiveUnmute()
   const [loading, setLoading] = useState(false)
-  const unmutes = useSelector((state) => state.user.unmutes)
 
   const url = new URL(window.location)
   const type = url.searchParams.get('type')

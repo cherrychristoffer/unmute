@@ -10,23 +10,6 @@ import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
 import { getFileUrl, uploadFile } from '../api/aws'
 
-function base64ToFile(base64String, filename) {
-  const byteString = atob(base64String.split(',')[1]) // Remove the 'data:image/png;base64,' part
-  const mimeType = base64String.split(',')[0].split(':')[1].split(';')[0] // Extract mime type
-
-  const byteNumbers = new Array(byteString.length)
-  for (let i = 0; i < byteString.length; i++) {
-    byteNumbers[i] = byteString.charCodeAt(i)
-  }
-
-  const byteArray = new Uint8Array(byteNumbers)
-  const blob = new Blob([byteArray], { type: mimeType })
-
-  const file = new File([blob], filename, { type: mimeType })
-
-  return file
-}
-
 export const ReplacePage = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()

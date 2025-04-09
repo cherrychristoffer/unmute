@@ -1,56 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 import frame_image from '../assets/images/frame.png'
 import frame_landscape_image from '../assets/images/frame_landscape.png'
 import clsx from 'clsx'
-import { useDispatch } from 'react-redux'
 import { PlusIcon } from '../assets/icons/icon_plus'
-// import { Loader } from './Loader';
-import { addUnmuteToCart, updateUnmuteInCart } from '../api/cart'
-import { addUnmute, updateUnmutes } from '../features/user/userSlice'
-import { getFileUrl, uploadFile } from '../api/aws'
-// import FileUpload from './FileUpload';
-import { Link, useLocation } from 'wouter'
+import { Link } from 'wouter'
 
 export const EmptyBox = ({ orientation }) => {
-  const dispatch = useDispatch()
-  const [_location, navigate] = useLocation()
-  const [loading, setLoading] = useState(false)
-  // const [key, setKey] = useState(0);
-
   const isLandscape = orientation === 'landscape'
   const frame = isLandscape ? frame_landscape_image : frame_image
   const frame_width = isLandscape
     ? 'min-w-[300px] w-[55%]'
     : 'min-w-[250px] w-1/2'
-
-  const handleChange = async (event) => {
-    setLoading(true)
-    addUnmuteToCart({ quantity: 1, extra: true }).then(({ data }) => {
-      const unmute = data.items?.[0]
-      if (!unmute) return
-      dispatch(addUnmute(unmute))
-
-      const uuid = unmute.properties._uuid
-      const file = event.target.files[0]
-      uploadFile({
-        path: uuid,
-        file,
-      }).then((path) => {
-        const fileUrl = getFileUrl(path)
-        updateUnmuteInCart({
-          key: unmute.key,
-          properties: {
-            ...unmute.properties,
-            _images: [fileUrl],
-            _original_images: [fileUrl],
-          },
-        }).then(({ data }) => {
-          setLoading(false)
-          dispatch(updateUnmutes(data.items))
-        })
-      })
-    })
-  }
 
   return (
     <>
@@ -89,10 +49,6 @@ export const EmptyBox = ({ orientation }) => {
             >
               Vælg foto eller kollage
             </span>
-            {/*<FileUpload newUnmute={true} uploading={() => setLoading(true)} uploaded={() => {
-              setKey(key + 1);
-              setLoading(false);
-            }} />*/}
           </Link>
         </div>
       </div>

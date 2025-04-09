@@ -1,20 +1,18 @@
-//import { Cropper } from "react-cropper";
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import clsx from 'clsx'
+import { useParams } from 'wouter'
 import {
   setImageRef,
   setMinValue,
   setRatio,
   updateZoomValue,
 } from '../features/image/imageSlice'
-import { useEffect, useRef, useState } from 'react'
-import clsx from 'clsx'
 import { getFileUrl, uploadFile } from '../api/aws'
 import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
 
-//import "cropperjs/dist/cropper.css";
 import '../assets/styles/custom-cropper.css'
-import { useParams } from 'wouter'
 
 const estimateZoomCount = (value, count = 0, values = {}) => {
   values[count] = value
@@ -30,9 +28,6 @@ const returnZoomValues = (value) => {
 }
 
 const CropperComponent = ({
-  frame_width,
-  isLandscape,
-  frame_padding,
   scale,
   unmute,
   activeUnmute,

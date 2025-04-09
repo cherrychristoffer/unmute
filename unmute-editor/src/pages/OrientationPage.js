@@ -12,7 +12,6 @@ import { useActiveUnmute } from '../api/useUnmutes'
 import landscape from '../assets/images/orientation/landscape.png'
 import portrait from '../assets/images/orientation/portrait.png'
 import {
-  setMustCrop,
   setOrientationChanged,
 } from '../features/image/imageSlice'
 import { mergeImages } from '../hooks/mergeImage'

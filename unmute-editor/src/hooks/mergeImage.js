@@ -46,6 +46,9 @@ const mergeImages = async (path, imgSources, orientation, collage_type, _passepa
     canvas.height = dpc * 30;
   }
 
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   const borderWidth = passepartout * dpc;
   const width = canvas.width - borderWidth * 2;
   const height = canvas.height - borderWidth * 2;

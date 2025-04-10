@@ -169,7 +169,7 @@ const FileUploadCollage = forwardRef(
         newImages,
         item.properties._orientation,
         item.properties._collage_type,
-        item.properties._passepartout,
+        item.properties._passepartout
       )
 
       const cart = await updateUnmuteInCart({

@@ -130,12 +130,20 @@ const FileUpload = forwardRef(
     }
 
     const updateInCart = async (item, newFileUrls) => {
+      const mergeImageUrl = await mergeImages(
+        item.properties._uuid,
+        [...newFileUrls, ...(item.properties._images || [])],
+        item.properties._orientation,
+        item.properties._collage ? item.properties._collage_type : null,
+        item.properties._passepartout
+      )
       const cart = await updateUnmuteInCart({
         key: item.key,
         properties: {
           ...item.properties,
           _images: [...newFileUrls, ...(item.properties._images || [])], // Place new images first
           _image_state: resetImageState ? null : item.properties._image_state,
+          _cart_image: mergeImageUrl,
           _original_images: [
             ...newFileUrls,
             ...(item.properties._original_images || []),

@@ -40,15 +40,13 @@ export const UploadImagePage = () => {
   const updateInCart = async (item, newFileUrls) => {
     const imageUrls = [...newFileUrls, ...(item.properties._images || [])]
     let mergeImageUrl = null
-    if (item.properties._collage) {
-      mergeImageUrl = await mergeImages(
-        item.properties._uuid,
-        imageUrls,
-        item.properties._orientation,
-        item.properties._collage_type,
-        item.properties._passepartout,
-      )
-    }
+    mergeImageUrl = await mergeImages(
+      item.properties._uuid,
+      imageUrls,
+      item.properties._orientation,
+      item.properties._collage ? item.properties._collage_type : null,
+      item.properties._passepartout
+    )
 
     const cart = await updateUnmuteInCart({
       key: item.key,

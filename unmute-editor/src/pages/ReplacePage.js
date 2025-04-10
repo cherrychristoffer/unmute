@@ -40,13 +40,25 @@ export const ReplacePage = () => {
     uploadFile({
       path: uuid,
       file,
-    }).then((path) => {
+    }).then(async (path) => {
       const fileUrl = getFileUrl(path)
+
+      const mergeImageUrl = await mergeImages(
+        activeUnmute.properties._uuid,
+        [fileUrl],
+        activeUnmute.properties._orientation,
+        activeUnmute.properties._collage
+          ? activeUnmute.properties._collage_type
+          : null,
+        activeUnmute.properties._passepartout
+      )
+
       updateUnmuteInCart({
         key: activeUnmute.key,
         properties: {
           ...activeUnmute.properties,
           _images: [fileUrl],
+          _cart_image: mergeImageUrl,
           _original_images: [fileUrl],
         },
       }).then(({ data }) => {

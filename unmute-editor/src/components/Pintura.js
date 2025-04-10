@@ -6,6 +6,7 @@ import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { setOrientationChanged } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 import pinturaDa from '../pintura_da'
 
@@ -109,11 +110,20 @@ const PinturaPortal = ({ editorRef, activeUnmute, isOpen, onClose }) => {
   }
 
   const updateInCart = async (imageState, item, newFileUrls) => {
+    const finalImageUrl = await mergeImages(
+      item.properties._uuid,
+      [newFileUrls],
+      item.properties._orientation,
+      item.properties._collage ? item.properties._collage_type : null,
+      item.properties._passepartout
+    )
+
     const cart = await updateUnmuteInCart({
       key: item.key,
       properties: {
         ...item.properties,
         _images: [newFileUrls],
+        _cart_image: finalImageUrl,
         _image_state: imageState,
       },
     })

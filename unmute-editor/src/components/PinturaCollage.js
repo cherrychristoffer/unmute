@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { PinturaEditor } from '@pqina/react-pintura'
 import { getFileUrl, uploadFile } from '../api/spaces'
 import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
 import { setOrientationChanged } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 import pinturaDa from '../pintura_da'
 import '@pqina/pintura/pintura.css'
@@ -126,11 +127,24 @@ const PinturaCollagePortal = ({
       }
     )
 
+    let mergeImageUrl = null
+
+    if (item.properties._collage) {
+      mergeImageUrl = await mergeImages(
+        item.properties._uuid,
+        imageMap,
+        item.properties._orientation,
+        item.properties._collage_type,
+        item.properties._passepartout
+      )
+    }
+
     const cart = await updateUnmuteInCart({
       key: item.key,
       properties: {
         ...item.properties,
         _images: imageMap,
+        _cart_image: mergeImageUrl,
         _collage_image_states: imageStateMap,
       },
     })

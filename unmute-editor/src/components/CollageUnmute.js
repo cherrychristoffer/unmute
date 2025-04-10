@@ -19,11 +19,7 @@ const frame_padding = (scale) => {
   return 7 * scale
 }
 
-const CollageUnmute = ({
-  unmute,
-  onDelete,
-  isActive,
-}) => {
+const CollageUnmute = ({ unmute, onDelete, isActive }) => {
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(false)
@@ -74,7 +70,7 @@ const CollageUnmute = ({
       newImages,
       unmute.properties._orientation,
       unmute.properties._collage_type,
-      unmute.properties._passepartout,
+      unmute.properties._passepartout
     )
 
     updateUnmuteInCart({

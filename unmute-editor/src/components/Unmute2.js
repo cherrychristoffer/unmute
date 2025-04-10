@@ -20,6 +20,7 @@ import { ConfirmModal } from './ConfirmModal'
 import VButton from './VButton'
 import FileUpload from './FileUpload'
 import { getFileNameWithoutExtension } from '../hooks/helper'
+import { mergeImages } from '../hooks/mergeImage'
 
 const frame_padding = (scale) => {
   return 7 * scale
@@ -54,13 +55,22 @@ const Unmute2 = ({
     uploadFile({
       path: uuid,
       file,
-    }).then((path) => {
+    }).then(async (path) => {
       const fileUrl = getFileUrl(path)
+      const finalImageUrl = await mergeImages(
+        unmute.properties._uuid,
+        [fileUrl],
+        unmute.properties._orientation,
+        null,
+        unmute.properties._passepartout
+      )
+
       updateUnmuteInCart({
         key: unmute.key,
         properties: {
           ...unmute.properties,
           _images: [fileUrl],
+          _cart_image: finalImageUrl,
           _original_images: [fileUrl],
         },
       }).then(({ data }) => {
@@ -99,14 +109,22 @@ const Unmute2 = ({
     uploadFile({
       path: uuid,
       file,
-    }).then((path) => {
+    }).then(async (path) => {
       const fileUrl = getFileUrl(path)
+      const finalImageUrl = await mergeImages(
+        unmute.properties._uuid,
+        [fileUrl],
+        unmute.properties._orientation,
+        null,
+        unmute.properties._passepartout
+      )
       updateUnmuteInCart({
         key: unmute.key,
         properties: {
           ...unmute.properties,
           _images: [fileUrl],
           _image_state: null,
+          _cart_image: finalImageUrl,
           _touched_images: [imageUrl],
           _original_images: [unmute.properties._original_images[0]],
         },

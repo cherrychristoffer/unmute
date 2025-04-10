@@ -11,6 +11,7 @@ import {
 import { getFileUrl, uploadFile } from '../api/aws'
 import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 import '../assets/styles/custom-cropper.css'
 
@@ -104,11 +105,21 @@ const CropperComponent = ({
       uploadFile({
         path: unmute.properties._uuid,
         file,
-      }).then(() => {
+      }).then(async () => {
         const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`)
+
+        const finalImageUrl = await mergeImages(
+          unmute.properties._uuid,
+          [fileUrl],
+          unmute.properties._orientation,
+          unmute.properties._collage ? unmute.properties._collage_type : null,
+          unmute.properties._passepartout
+        )
+
         const properties = {
           ...unmute.properties,
           _images: [fileUrl],
+          _cart_image: finalImageUrl,
           [key]: true, // key = _cropped or key = _default_cropped
         }
 

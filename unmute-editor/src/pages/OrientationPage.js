@@ -11,9 +11,7 @@ import { useActiveUnmute } from '../api/useUnmutes'
 
 import landscape from '../assets/images/orientation/landscape.png'
 import portrait from '../assets/images/orientation/portrait.png'
-import {
-  setOrientationChanged,
-} from '../features/image/imageSlice'
+import { setOrientationChanged } from '../features/image/imageSlice'
 import { mergeImages } from '../hooks/mergeImage'
 
 export const OrientationPage = () => {
@@ -46,35 +44,33 @@ export const OrientationPage = () => {
       },
     }
 
-    if (activeUnmute.properties._collage) {
-      mergeImageUrl = await mergeImages(
-        activeUnmute.properties._uuid,
-        activeUnmute.properties._images,
-        orientation,
-        activeUnmute.properties._collage_type,
-        activeUnmute.properties._passepartout,
-      )
+    mergeImageUrl = await mergeImages(
+      activeUnmute.properties._uuid,
+      activeUnmute.properties._images,
+      orientation,
+      activeUnmute.properties._collage
+        ? activeUnmute.properties._collage_type
+        : null,
+      activeUnmute.properties._passepartout
+    )
 
-      activeUnmuteItem = {
-        ...activeUnmuteItem,
-        properties: {
-          ...activeUnmuteItem.properties,
-          _cart_image: mergeImageUrl,
-        }
-      }
-
-      activeUnmuteCartItem = {
-        ...activeUnmuteCartItem,
-        properties: {
-          ...activeUnmuteCartItem.properties,
-          _cart_image: mergeImageUrl,
-        }
-      }
+    activeUnmuteItem = {
+      ...activeUnmuteItem,
+      properties: {
+        ...activeUnmuteItem.properties,
+        _cart_image: mergeImageUrl,
+      },
     }
 
-    dispatch(
-      updateUnmute(activeUnmuteItem)
-    )
+    activeUnmuteCartItem = {
+      ...activeUnmuteCartItem,
+      properties: {
+        ...activeUnmuteCartItem.properties,
+        _cart_image: mergeImageUrl,
+      },
+    }
+
+    dispatch(updateUnmute(activeUnmuteItem))
 
     updateUnmuteInCart(activeUnmuteCartItem)
       .catch((err) => {
@@ -118,14 +114,14 @@ export const OrientationPage = () => {
               />
               {(activeUnmute?.properties?._orientation === item.value ||
                 (!activeUnmute && item.value === 'portrait')) && (
-                  <CheckIcon
-                    color={'fill-rose-100'}
-                    size={16}
-                    className={
-                      'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'
-                    }
-                  />
-                )}
+                <CheckIcon
+                  color={'fill-rose-100'}
+                  size={16}
+                  className={
+                    'absolute top-0 bottom-0 left-0 right-0 m-auto w-[25px] h-[25px] bg-rose-500 rounded-full flex items-center justify-center'
+                  }
+                />
+              )}
             </button>
           ))}
         </div>

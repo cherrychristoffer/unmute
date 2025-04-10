@@ -6,6 +6,7 @@ import { getCroppedImg } from '../hooks/cropImage'
 import { getFileUrl, uploadFile } from '../api/aws'
 import { updateUnmuteInCart } from '../api/cart'
 import { updateUnmutes } from '../features/user/userSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 const ImageEditor = ({
   image,
@@ -80,11 +81,21 @@ const ImageEditor = ({
         path: unmute.properties._uuid,
         file,
       })
-        .then((path) => {
+        .then(async (path) => {
           const fileUrl = getFileUrl(path)
+
+          const finalImageUrl = await mergeImages(
+            unmute.properties._uuid,
+            [fileUrl],
+            unmute.properties._orientation,
+            unmute.properties._collage ? unmute.properties._collage_type : null,
+            unmute.properties._passepartout
+          )
+
           const properties = {
             ...unmute.properties,
             _images: [fileUrl],
+            _cart_image: finalImageUrl,
             _crop_data: crop,
             _zoom: zoomValue,
           }

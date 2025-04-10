@@ -29,20 +29,24 @@ export const PassepartoutPage = () => {
 
     let mergeImageUrl = null
 
-    if (activeUnmute.properties._collage) {
-      mergeImageUrl = await mergeImages(
-        activeUnmute.properties._uuid,
-        activeUnmute.properties._images,
-        activeUnmute.properties._orientation,
-        activeUnmute.properties._collage_type,
-        passepartout,
-      )
-    }
+    mergeImageUrl = await mergeImages(
+      activeUnmute.properties._uuid,
+      activeUnmute.properties._images,
+      activeUnmute.properties._orientation,
+      activeUnmute.properties._collage
+        ? activeUnmute.properties._collage_type
+        : null,
+      passepartout
+    )
 
     dispatch(
       updateUnmute({
         ...activeUnmute,
-        properties: { ...activeUnmute.properties, _passepartout: passepartout, _cart_image: mergeImageUrl },
+        properties: {
+          ...activeUnmute.properties,
+          _passepartout: passepartout,
+          _cart_image: mergeImageUrl,
+        },
       })
     )
 
@@ -51,7 +55,7 @@ export const PassepartoutPage = () => {
       properties: {
         ...activeUnmute.properties,
         _passepartout: passepartout,
-        _cart_image: mergeImageUrl
+        _cart_image: mergeImageUrl,
       },
     })
       .then(({ data }) => {

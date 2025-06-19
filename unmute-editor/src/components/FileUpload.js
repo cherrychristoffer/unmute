@@ -47,7 +47,7 @@ setPlugins(plugin_crop, plugin_finetune, plugin_filter)
 const editorDefaults = getEditorDefaults()
 
 import { renderToString } from 'react-dom/server'
-import { forwardRef, React, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import { useActiveUnmute } from '../api/useUnmutes'
 import { deleteFile, getFileUrl, uploadFile } from '../api/spaces'
 import {
@@ -63,6 +63,7 @@ import {
 } from '../features/user/userSlice'
 import { PlusIcon } from '../assets/icons/icon_plus'
 import { setChooseNewImage } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 const FileUpload = forwardRef(
   (
@@ -132,7 +133,7 @@ const FileUpload = forwardRef(
     const updateInCart = async (item, newFileUrls) => {
       const mergeImageUrl = await mergeImages(
         item.properties._uuid,
-        [...newFileUrls, ...(item.properties._images || [])],
+        [...newFileUrls],
         item.properties._orientation,
         item.properties._collage ? item.properties._collage_type : null,
         item.properties._passepartout
@@ -141,7 +142,7 @@ const FileUpload = forwardRef(
         key: item.key,
         properties: {
           ...item.properties,
-          _images: [...newFileUrls, ...(item.properties._images || [])], // Place new images first
+          _images: [...newFileUrls], // Place new images first
           _image_state: resetImageState ? null : item.properties._image_state,
           _cart_image: mergeImageUrl,
           _original_images: [

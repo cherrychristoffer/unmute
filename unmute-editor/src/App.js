@@ -185,9 +185,9 @@ function App() {
       className={`app-wrapper ${isSpecialRoute ? 'with-navigation' : ''} pt-[10px] sm:pt-[30px] pb-[110px] sm:pb-[130px]`}
     >
       {/* <progress id="progress-bar"></progress> */}
-      <div className="flex flex-col items-center justify-center h-24">
+      <div className="flex flex-col items-center justify-center h-20">
         <div id="globalprogress">
-          <Loader size="w-16 h-16" wrapper_size="w-24 h-24" />
+          <Loader size="w-16 h-16" wrapper_size="w-20 h-20" />
         </div>
       </div>
 

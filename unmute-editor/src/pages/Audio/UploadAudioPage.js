@@ -1,22 +1,22 @@
 import React, { useState } from 'react'
-import { Link, useLocation, useParams } from 'wouter'
+import { useDispatch } from 'react-redux'
+import { Link, useParams } from 'wouter'
 import AWS from 'aws-sdk'
+import slugify from 'slugify'
+import { v4 as uuid } from 'uuid'
+import getBlobDuration from 'get-blob-duration'
+import { convertVideoToAudio } from '../../api/video'
+import { getFileUrl, uploadFile } from '../../api/aws'
+import { updateUnmuteInCart } from '../../api/cart'
+import { updateUnmutes } from '../../features/user/userSlice'
+import { useActiveUnmute } from '../../api/useUnmutes'
+import { Loader } from '../../components/Loader'
 import {
   AWS_KEY_ID,
   AWS_KEY_SECRET,
   S3_BUCKET,
   S3_REGION,
 } from '../../app/const'
-import getBlobDuration from 'get-blob-duration'
-import { convertVideoToAudio } from '../../api/video'
-import { getFileUrl, uploadFile } from '../../api/aws'
-import { updateUnmuteInCart } from '../../api/cart'
-import { addUnmute, updateUnmutes } from '../../features/user/userSlice'
-import { v4 as uuid } from 'uuid'
-import { useActiveUnmute } from '../../api/useUnmutes'
-import { useDispatch } from 'react-redux'
-import { Loader } from '../../components/Loader'
-import slugify from 'slugify'
 
 AWS.config.update({
   accessKeyId: AWS_KEY_ID,
@@ -29,7 +29,6 @@ const s3 = new AWS.S3({
 })
 
 export const UploadAudioPage = () => {
-  const [_location, navigate] = useLocation()
   // const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false)
   const { activeUnmute } = useActiveUnmute()
@@ -56,16 +55,6 @@ export const UploadAudioPage = () => {
       })
       .promise()
   }
-  const formatTime = (time) => {
-    let minutes = Math.floor(time / 60)
-    let seconds = time % 60
-
-    if (seconds < 10) {
-      seconds = `0${seconds}`
-    }
-
-    return `${minutes}:${seconds}`
-  }
   function convertToTimeFormat(seconds) {
     const roundedSeconds = Math.floor(seconds)
 
@@ -88,8 +77,6 @@ export const UploadAudioPage = () => {
     // if (duration > 600) return alert("Lydfilen må maksimalt vare 10 minutter");
 
     const minuteData = convertToTimeFormat(duration)
-    const [minutes, seconds] = minuteData?.split(':')?.map(Number)
-    const dataSeconds = minutes * 60 + seconds
     const formatAudio = recordingBlob.name.split('.').pop()
     const newUuid = uuid()
     const file = new File([recordingBlob], `${newUuid}.${formatAudio}`, {
@@ -117,7 +104,6 @@ export const UploadAudioPage = () => {
       }).then(({ data }) => {
         dispatch(updateUnmutes(data.items))
         window.location.href = `/pages/editor#/edit-audio/${id}`
-        // navigate(`/edit-audio/${id}`);
       })
     })
   }
@@ -167,11 +153,11 @@ export const UploadAudioPage = () => {
           dispatch(updateUnmutes(data.items))
 
           window.location.href = `/pages/editor#/edit-audio/${id}`
-          // navigate(`/edit-audio/${id}`);
         })
       })
-    } catch (error) {
-      console.error('Error uploading video or converting:', error)
+    } catch (err) {
+      setLoading(false)
+      alert(err)
     }
   }
 

@@ -1,4 +1,4 @@
-import { uploadFile, getFileUrl } from '../api/spaces'
+import { getFileUrl, uploadFile } from '../api/spaces'
 
 const gap = 10
 
@@ -314,6 +314,38 @@ const mergeImages = async (
           height: height / 4 - gap,
         },
       ],
+      collage_2_2_1: [
+        {
+          x: 0 + borderWidth,
+          y: 0 + borderWidth,
+          width: width / 2 - gap,
+          height: height / 3 - gap,
+        },
+        {
+          x: 0 + borderWidth,
+          y: height / 3 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 3 - gap * 2,
+        },
+        {
+          x: 0 + borderWidth,
+          y: (height * 2) / 3 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 3 - gap,
+        },
+        {
+          x: width / 2 + borderWidth + gap,
+          y: 0 + borderWidth,
+          width: width / 2 - gap,
+          height: height / 2 - gap,
+        },
+        {
+          x: width / 2 + borderWidth + gap,
+          y: height / 2 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 2 - gap,
+        },
+      ],
     },
     landscape: {
       collage_1_1: [
@@ -556,6 +588,38 @@ const mergeImages = async (
           y: (height * 3) / 4 + borderWidth + gap,
           width: width / 4 - gap,
           height: height / 4 - gap,
+        },
+      ],
+      collage_2_2_1: [
+        {
+          x: 0 + borderWidth,
+          y: 0 + borderWidth,
+          width: width / 2 - gap,
+          height: height / 2 - gap,
+        },
+        {
+          x: 0 + borderWidth,
+          y: height / 2 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 2 - gap,
+        },
+        {
+          x: width / 2 + borderWidth + gap,
+          y: 0 + borderWidth,
+          width: width / 2 - gap,
+          height: height / 3 - gap,
+        },
+        {
+          x: width / 2 + borderWidth + gap,
+          y: height / 3 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 3 - gap * 2,
+        },
+        {
+          x: width / 2 + borderWidth + gap,
+          y: (height * 2) / 3 + borderWidth + gap,
+          width: width / 2 - gap,
+          height: height / 3 - gap,
         },
       ],
     },

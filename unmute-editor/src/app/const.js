@@ -4,7 +4,7 @@ let spacesBucket, s3Bucket, variants, collageVariants
 
 let AIEnhancedVariants = []
 
-if (shop === 'unmuteframes.myshopify.com') {
+if (['unmuteframes.myshopify.com', '127.0.0.1:9293'].includes(shop)) {
   s3Bucket = 'unmute-stage'
   spacesBucket = 'unmute-test'
 
@@ -330,6 +330,16 @@ export const cssGrids = {
         'hide-label',
       ],
     },
+    collage_2_2_1: {
+      gridTemplateColumns: 'grid-cols-2 grid-rows-6',
+      items: [
+        'row-span-2',
+        'row-span-3',
+        'row-span-2',
+        'row-span-3',
+        'row-span-2',
+      ],
+    },
   },
   landscape: {
     collage_1_1: {
@@ -372,6 +382,16 @@ export const cssGrids = {
         'hide-label',
         'hide-label',
         'hide-label',
+      ],
+    },
+    collage_2_2_1: {
+      gridTemplateColumns: 'grid-cols-6 grid-rows-2',
+      items: [
+        'col-span-2',
+        'col-span-2',
+        'col-span-2',
+        'col-span-3',
+        'col-span-3',
       ],
     },
   },

@@ -8,6 +8,7 @@ import Collage4 from '../assets/images/collage/collage4.png'
 import Collage5 from '../assets/images/collage/collage5.png'
 import Collage6 from '../assets/images/collage/collage6.png'
 import Collage7 from '../assets/images/collage/collage7.png'
+import Collage8 from '../assets/images/collage/collage8.png'
 import { addUnmuteToCart } from '../api/cart'
 import { addUnmute } from '../features/user/userSlice'
 import { useDispatch } from 'react-redux'
@@ -51,6 +52,11 @@ export const CollagePage = () => {
       image: Collage4,
       type: 'collage_4_2_1_2_4',
       max: 13,
+    },
+    {
+      image: Collage8,
+      type: 'collage_2_2_1',
+      max: 5,
     },
   ]
 

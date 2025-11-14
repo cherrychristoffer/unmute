@@ -296,7 +296,7 @@ const Unmute2 = ({
             <div className="flex mt-3 p-3">
               <VButton
                 color={'black'}
-                text={'Forbedr med AI (+49kr)'}
+                text={'Forbedr med AI'}
                 onClick={() => handleEnhanceSmallImage()}
                 className={'w-full'}
               />

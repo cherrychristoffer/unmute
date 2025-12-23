@@ -105,8 +105,8 @@ const CropperComponent = ({
       uploadFile({
         path: unmute.properties._uuid,
         file,
-      }).then(async () => {
-        const fileUrl = getFileUrl(`${unmute.properties._uuid}/cropped.png`)
+      }).then(async (path) => {
+        const fileUrl = getFileUrl(path)
 
         const finalImageUrl = await mergeImages(
           unmute.properties._uuid,

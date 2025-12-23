@@ -58,5 +58,46 @@ const fetchSignedUrl = async ({ storageType, contentType, filename }) => {
   url.search = params.toString()
 
   const response = await axios.get(url.toString())
-  return response.data
+  const data = unwrapSignedUrlResponse(response.data)
+
+  if (!data?.signedUrl) {
+    throw new Error(data?.error || 'Signed URL missing from response.')
+  }
+
+  return data
+}
+
+const unwrapSignedUrlResponse = (payload) => {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Signed URL response is empty.')
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(payload, 'body')) {
+    return payload
+  }
+
+  const parsedBody =
+    typeof payload.body === 'string' ? safeJsonParse(payload.body) : payload.body
+
+  if (!parsedBody) {
+    throw new Error('Unable to parse signed URL response body.')
+  }
+
+  if (typeof payload.statusCode === 'number' && payload.statusCode >= 400) {
+    const error = new Error(
+      parsedBody.error || `Signed URL request failed (${payload.statusCode}).`
+    )
+    error.statusCode = payload.statusCode
+    throw error
+  }
+
+  return parsedBody
+}
+
+const safeJsonParse = (value) => {
+  try {
+    return JSON.parse(value)
+  } catch (error) {
+    return null
+  }
 }

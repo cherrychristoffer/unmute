@@ -5,8 +5,8 @@ let spacesBucket, s3Bucket, variants, collageVariants
 let AIEnhancedVariants = []
 
 if (['unmuteframes.myshopify.com', '127.0.0.1:9293'].includes(shop)) {
-  s3Bucket = 'unmute-stage'
-  spacesBucket = 'unmute-test'
+  s3Bucket = 'unmute-prod-v2'
+  spacesBucket = 'unmute-prod-v2'
 
   collageVariants = [
     {
@@ -137,8 +137,8 @@ if (['unmuteframes.myshopify.com', '127.0.0.1:9293'].includes(shop)) {
   ]
 } else {
   // production
-  s3Bucket = 'unmute-prod'
-  spacesBucket = 'unmute-prod'
+  s3Bucket = 'unmute-prod-v2'
+  spacesBucket = 'unmute-prod-v2'
 
   collageVariants = [
     {
@@ -157,7 +157,7 @@ if (['unmuteframes.myshopify.com', '127.0.0.1:9293'].includes(shop)) {
       orientation: 'portrait',
     },
     {
-      id: 50350798045522,
+      id: 50350798045522,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
       passpartout: 2,
       orientation: 'landscape',
     },

@@ -45,7 +45,7 @@ export const OffersPage = () => {
   const UNMUTE = [
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png',
       quantity: 1,
       title: 'En UNMUTE',
       price: window.unmuteEditorSettings?.price_1 || '499',
@@ -55,7 +55,7 @@ export const OffersPage = () => {
     },
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png',
       quantity: 1,
       title: 'Collage',
       price: window.unmuteEditorSettings?.price_3 || '499',
@@ -66,7 +66,7 @@ export const OffersPage = () => {
     },
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
       quantity: 2,
       title: 'Mest populær',
       price: window.unmuteEditorSettings?.price_2 || '499',
@@ -76,7 +76,7 @@ export const OffersPage = () => {
     },
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png',
       quantity: 3,
       title: 'Bedste tilbud',
       price: window.unmuteEditorSettings?.price_4 || '499',

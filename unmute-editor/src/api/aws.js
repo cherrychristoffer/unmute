@@ -26,6 +26,7 @@ export const uploadFile = async ({ file, path }) => {
 
     await axios.put(signedUrlResponse.signedUrl, file, {
       headers: {
+        'x-amz-acl': 'public-read',
         'Content-Type': contentType,
       },
       onUploadProgress: (evt) => {

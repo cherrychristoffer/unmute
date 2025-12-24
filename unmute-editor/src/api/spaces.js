@@ -14,11 +14,12 @@ export const uploadFile = async ({ file, path, customName = null }) => {
     const signedUrlResponse = await fetchSignedUrl({
       storageType: 'do',
       contentType,
-      filename: customName || file?.name,
+      filename: customName || file?.name
     })
 
     await axios.put(signedUrlResponse.signedUrl, file, {
       headers: {
+        'x-amz-acl': 'public-read',
         'Content-Type': contentType,
       },
     })
@@ -33,6 +34,7 @@ export const uploadFile = async ({ file, path, customName = null }) => {
     }
 
     let { key } = await convertHeic(signedUrlResponse.key)
+
     return key
   } catch (error) {
     console.error('Upload failed:', error)
@@ -77,7 +79,9 @@ const unwrapSignedUrlResponse = (payload) => {
   }
 
   const parsedBody =
-    typeof payload.body === 'string' ? safeJsonParse(payload.body) : payload.body
+    typeof payload.body === 'string'
+      ? safeJsonParse(payload.body)
+      : payload.body
 
   if (!parsedBody) {
     throw new Error('Unable to parse signed URL response body.')

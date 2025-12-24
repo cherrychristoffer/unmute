@@ -4,20 +4,20 @@ export const AudioIllustrations = () => {
   const ONBOARDING = [
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/no_headphones.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/tips/no_headphones.png',
       label: 'Brug ikke headset til at optage',
       class: '',
     },
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/distance.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/tips/distance.png',
       label:
         'Ændre tips i midten til følgende: Hold mikrofon/telefon min. 30cm væk fra munden',
       class: '',
     },
     {
       image:
-        'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/tips/inspiration.png',
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/tips/inspiration.png',
       label: 'Skriv stikord til din optagelse',
       class: '',
     },

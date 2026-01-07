@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux'
 
 import {
   fetchCartData,
-  updateUnmuteInCart,
   removeUnmuteInCart,
+  updateUnmuteInCart,
 } from './api/cart'
 
 import { Route, Switch, useLocation } from 'wouter'

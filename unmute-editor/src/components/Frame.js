@@ -9,7 +9,7 @@ import { Loader } from './Loader'
 
 import { deleteFile } from '../api/aws'
 import { removeUnmuteInCart } from '../api/cart'
-import { updateAllUnmutes, deleteUnmute } from '../features/user/userSlice'
+import { deleteUnmute, updateAllUnmutes } from '../features/user/userSlice'
 
 import { setActiveUnmuteIndex } from '../features/user/userSlice'
 

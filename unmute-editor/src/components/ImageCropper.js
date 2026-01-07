@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { setImageRef, updateZoomValue } from '../features/image/imageSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'wouter'

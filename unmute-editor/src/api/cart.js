@@ -2,9 +2,9 @@ import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  enhancedVariants,
   shopifyCollageVariants,
   shopifyVariants,
-  enhancedVariants,
 } from '../app/const'
 
 const cartUrl = `${window.Shopify.routes.root}cart`

@@ -14,7 +14,7 @@ export const uploadFile = async ({ file, path, customName = null }) => {
     const signedUrlResponse = await fetchSignedUrl({
       storageType: 'do',
       contentType,
-      filename: customName || file?.name
+      filename: customName || file?.name,
     })
 
     await axios.put(signedUrlResponse.signedUrl, file, {

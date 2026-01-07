@@ -90,7 +90,9 @@ const unwrapSignedUrlResponse = (payload) => {
   }
 
   const parsedBody =
-    typeof payload.body === 'string' ? safeJsonParse(payload.body) : payload.body
+    typeof payload.body === 'string'
+      ? safeJsonParse(payload.body)
+      : payload.body
 
   if (!parsedBody) {
     throw new Error('Unable to parse signed URL response body.')

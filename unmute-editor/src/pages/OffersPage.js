@@ -1,54 +1,51 @@
-import { React, useEffect, useRef, useState } from 'react';
-import { useLocation, useSearch } from 'wouter';
+import { React, useEffect, useState } from 'react'
+import { useLocation, useSearch } from 'wouter'
 
-import { addUnmute } from '../features/user/userSlice';
-import { addUnmuteToCart } from '../api/cart';
-import { useDispatch, useSelector } from 'react-redux';
+import { addUnmute } from '../features/user/userSlice'
+import { addUnmuteToCart } from '../api/cart'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { useParams } from 'wouter';
+import { Loader } from '../components/Loader'
 
-import { Loader } from '../components/Loader';
-
-const shop = new URLSearchParams(window.location).get('host');
+const shop = new URLSearchParams(window.location).get('host')
 
 export const OffersPage = () => {
-  const [_location, navigate] = useLocation();
-  const dispatch = useDispatch();
-  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user);
+  const [_location, navigate] = useLocation()
+  const dispatch = useDispatch()
+  const { unmutes, isLoadingUnmutes } = useSelector((state) => state.user)
 
-  const params = useSearch();
-  const [stayOnPage, setStayOnPage] = useState(params?.includes('stay=true'));
-
-  console.log('offers page', params?.includes('stay=true'));
+  const params = useSearch()
+  const [stayOnPage, setStayOnPage] = useState(params?.includes('stay=true'))
 
   const handleClick = ({ quantity }) => {
-    setStayOnPage(true);
+    setStayOnPage(true)
     addUnmuteToCart({ quantity }).then(({ data }) => {
       data.items.forEach((unmute) => {
-        dispatch(addUnmute(unmute));
-      });
-      navigate('/upload-image?type=single');
-    });
-  };
+        dispatch(addUnmute(unmute))
+      })
+      navigate('/upload-image?type=single')
+    })
+  }
 
   useEffect(() => {
     if (unmutes?.length > 0 && !stayOnPage) {
-      navigate('/orientation');
+      navigate('/orientation')
     }
-  }, [unmutes]);
+  }, [unmutes])
 
-  const navigateToCollage = () => navigate('/collage');
+  const navigateToCollage = () => navigate('/collage')
 
   if (isLoadingUnmutes || (unmutes?.length !== 0 && !stayOnPage))
     return (
       <div className="flex justify-center">
         <Loader />
       </div>
-    );
+    )
 
   const UNMUTE = [
     {
-      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png',
+      image:
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer1.png',
       quantity: 1,
       title: 'En UNMUTE',
       price: window.unmuteEditorSettings?.price_1 || '499',
@@ -57,16 +54,8 @@ export const OffersPage = () => {
       inactive: false,
     },
     {
-      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
-      quantity: 2,
-      title: 'Mest populær',
-      price: window.unmuteEditorSettings?.price_2 || '499',
-      saving: window.unmuteEditorSettings?.savings_2 || 0,
-      onClick: handleClick,
-      inactive: false,
-    },
-    {
-      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png',
+      image:
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer3.png',
       quantity: 1,
       title: 'Collage',
       price: window.unmuteEditorSettings?.price_3 || '499',
@@ -76,7 +65,18 @@ export const OffersPage = () => {
       //inactive: shop !== 'unmuteframes.myshopify.com',
     },
     {
-      image: 'https://unmute-prod.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png',
+      image:
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer2.png',
+      quantity: 2,
+      title: 'Mest populær',
+      price: window.unmuteEditorSettings?.price_2 || '499',
+      saving: window.unmuteEditorSettings?.savings_2 || 0,
+      onClick: handleClick,
+      inactive: false,
+    },
+    {
+      image:
+        'https://unmute-prod-v2.s3.eu-north-1.amazonaws.com/static-assets/offers/offer4.png',
       quantity: 3,
       title: 'Bedste tilbud',
       price: window.unmuteEditorSettings?.price_4 || '499',
@@ -85,26 +85,29 @@ export const OffersPage = () => {
       onClick: handleClick,
       inactive: false,
     },
-  ];
+  ]
 
   const currency = (value) => {
-    value = parseFloat(value) * 100;
+    value = parseFloat(value) * 100
     if (typeof value !== 'number') {
-      return value;
+      return value
     }
     let formatter = new Intl.NumberFormat('da-DK', {
       style: 'currency',
-      currency: 'DKK'
-    });
-    return formatter.format(value / 100).replace(',00', '');
-  };
-
+      currency: 'DKK',
+    })
+    return formatter.format(value / 100).replace(',00', '')
+  }
 
   return (
-    <div className={'offers-page flex items-center py-10 pb-[100px] sm:pb-[140px]'}>
+    <div
+      className={'offers-page flex items-center py-10 pb-[100px] sm:pb-[140px]'}
+    >
       <div className="content">
         <div className="mx-auto flex flex-col items-center">
-          <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Unmute</h1>
+          <h1 className="font-serif text-muld-1000 text-[30px] md:text-[50px] mb-4">
+            UNMUTE YOURSELF
+          </h1>
           <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
             Vælg antal
             <br />
@@ -124,11 +127,11 @@ export const OffersPage = () => {
                 className={`rounded-xl aspect-square object-cover ring-2 ring-offset-4 ring-transparent group-hover:ring-rose-300 ${item.inactive && 'opacity-2'}`}
                 alt={item.title}
               />
-              {item.inactive &&
+              {item.inactive && (
                 <span className="coming-soon text-[20px] self-center">
                   Kommer snart
                 </span>
-              }
+              )}
               <div
                 className={`py-4 ${item.inactive && 'opacity-50 z-[1] pointer-events-none'}`}
               >
@@ -145,8 +148,7 @@ export const OffersPage = () => {
                       <span style={{ display: 'inline-block' }}> </span>
                     ) : (
                       `${currency(item.price)}`
-                    )
-                    }
+                    )}
                   </p>
                   <p className="text-[18px] text-zinc-600">
                     {item.inactive ? (
@@ -154,16 +156,18 @@ export const OffersPage = () => {
                     ) : (
                       <>
                         Antal: {item.quantity}
-                        {(item.saving && item.saving > 0) ? (
-                          <span className={
-                            item.special ? 'text-rose-500' : 'text-rose-500'
-                          }
-                          > (Spar {currency(item.saving)})
+                        {item.saving && item.saving > 0 ? (
+                          <span
+                            className={
+                              item.special ? 'text-rose-500' : 'text-rose-500'
+                            }
+                          >
+                            {' '}
+                            (Spar {currency(item.saving)})
                           </span>
                         ) : null}
                       </>
-                    )
-                    }
+                    )}
                   </p>
                 </div>
               </div>
@@ -172,5 +176,5 @@ export const OffersPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

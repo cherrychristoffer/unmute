@@ -1,8 +1,8 @@
-import { React } from "react";
+import { React } from 'react'
 
-import { Link } from "wouter";
+import { Link } from 'wouter'
 
-import { BottomNavigation } from "../components/UnmuteBottomNavigation";
+import { BottomNavigation } from '../components/UnmuteBottomNavigation'
 
 export const AddPage = () => {
   return (
@@ -23,5 +23,5 @@ export const AddPage = () => {
       </div>
       <BottomNavigation />
     </>
-  );
-};
+  )
+}

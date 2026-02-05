@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "css-loader": "^7.1.2",
     "filepond": "^4.32.1",
+    "filepond-plugin-file-validate-type": "^1.2.9",
     "get-blob-duration": "^1.2.0",
     "lodash": "^4.17.21",
     "postcss": "^8.4.41",
@@ -55,9 +56,12 @@
     "start": "webpack --mode development --watch",
     "build": "webpack --mode production",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write \"**/*.+(js|json|ts|tsx)\"",
+    "format": "npm run prettier -- --write"
   },
   "devDependencies": {
-    "file-loader": "^6.2.0"
+    "file-loader": "^6.2.0",
+    "prettier": "^3.5.2"
   }
 }

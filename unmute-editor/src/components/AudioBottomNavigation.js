@@ -1,18 +1,13 @@
-import clsx from "clsx";
+import clsx from 'clsx'
 
-import { React } from "react";
+import { React } from 'react'
 
-import { Link, useLocation } from "wouter";
-import { NavCheckIcon } from "../assets/icons/icon_nav_check";
-import { NavCloseIcon } from "../assets/icons/icon_nav_close";
-import { NavEditIcon } from "../assets/icons/icon_nav_edit";
-import { NavPauseIcon } from "../assets/icons/icon_nav_pause";
-import { NavPlayIcon } from "../assets/icons/icon_nav_play";
-import { NavRecordingIcon } from "../assets/icons/icon_nav_recording";
-import { setScrolltoActive } from "../features/image/imageSlice";
-import { useDispatch } from "react-redux";
-import { NavAddIcon } from "../assets/icons/icon_nav_add";
-import { UploadIcon } from "../assets/icons/icon_audio";
+import { Link } from 'wouter'
+import { NavCheckIcon } from '../assets/icons/icon_nav_check'
+import { NavCloseIcon } from '../assets/icons/icon_nav_close'
+import { NavPauseIcon } from '../assets/icons/icon_nav_pause'
+import { NavPlayIcon } from '../assets/icons/icon_nav_play'
+import { NavAddIcon } from '../assets/icons/icon_nav_add'
 
 export const AudioBottomNavigation = ({
   isPaused = false,
@@ -24,27 +19,24 @@ export const AudioBottomNavigation = ({
   deleteRecording = () => {},
   mergeAudio = () => {},
 }) => {
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
-
   const NAVIGATION = [
     {
-      label: "Slet",
+      label: 'Slet',
       action: deleteRecording,
       icon: <NavCloseIcon />,
     },
     {
-      label: "Afspil",
+      label: 'Afspil',
       action: playAudio,
       icon: <NavPlayIcon />,
     },
     {
-      label: "Pause",
+      label: 'Pause',
       action: pauseAudio,
       icon: <NavPauseIcon />,
     },
     {
-      label: "Tilføj lyd",
+      label: 'Tilføj lyd',
 
       icon: <NavAddIcon />,
       action: goEditorPage,
@@ -77,12 +69,12 @@ export const AudioBottomNavigation = ({
     },*/
 
     {
-      label: "Færdig",
+      label: 'Færdig',
       // to: "/orientation",
       action: mergeAudio,
       icon: <NavCheckIcon />,
     },
-  ];
+  ]
 
   return (
     <div className="fixed bottom-0 left-0 z-10 w-full bg-beige-300 border-t border-beige-200 sm:max-w-max sm:p-3 sm:rounded-xl sm:mx-auto sm:left-0 sm:right-0 sm:bottom-4">
@@ -93,7 +85,7 @@ export const AudioBottomNavigation = ({
               key={index}
               onClick={item.action}
               className={
-                "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg"
+                'inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg'
               }
             >
               {item.icon}
@@ -107,8 +99,8 @@ export const AudioBottomNavigation = ({
               to={item.to}
               className={(active) =>
                 clsx(
-                  "inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg",
-                  active ? "bg-beige-400" : ""
+                  'inline-flex flex-col items-center justify-center py-3 group transition duration-200 ease-out hover:bg-beige-400 sm:px-6 sm:rounded-lg',
+                  active ? 'bg-beige-400' : ''
                 )
               }
             >
@@ -121,5 +113,5 @@ export const AudioBottomNavigation = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}

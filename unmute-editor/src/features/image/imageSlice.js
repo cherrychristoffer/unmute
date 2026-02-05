@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 export const userSlice = createSlice({
-  name: "image",
+  name: 'image',
   initialState: {
     zoomValue: 1,
     imageRef: null,
@@ -14,47 +14,47 @@ export const userSlice = createSlice({
     lastSaved: null,
     orientationChanged: false,
     chooseNewImage: false,
-    collageChangeImage: false
+    collageChangeImage: false,
   },
   reducers: {
     updateZoomValue: (state, action) => {
-      state.zoomValue = action.payload;
+      state.zoomValue = action.payload
     },
     setImageRef: (state, action) => {
-      state.imageRef = action.payload;
+      state.imageRef = action.payload
     },
     setMinValue: (state, action) => {
-      state.minValue = action.payload;
+      state.minValue = action.payload
     },
     setRatio: (state, action) => {
-      state.ratio = action.payload;
+      state.ratio = action.payload
     },
     setMustCrop: (state) => {
-      state.mustCropAsNumber = state.mustCropAsNumber + 1;
+      state.mustCropAsNumber = state.mustCropAsNumber + 1
     },
     setScrolltoExtra: (state) => {
-      state.scrollToExtra = state.scrollToExtra + 1;
+      state.scrollToExtra = state.scrollToExtra + 1
     },
     setScrolltoActive: (state) => {
-      state.scrollToActive = state.scrollToActive + 1;
+      state.scrollToActive = state.scrollToActive + 1
     },
     setDisableAllActions: (state, action) => {
-      state.disableAllExtions = action.payload;
+      state.disableAllExtions = action.payload
     },
     setLastSaved: (state, action) => {
-      state.lastSaved = action.payload;
+      state.lastSaved = action.payload
     },
     setOrientationChanged: (state, action) => {
-      state.orientationChanged = action.payload;
+      state.orientationChanged = action.payload
     },
     setChooseNewImage: (state, action) => {
-      state.chooseNewImage = action.payload;
+      state.chooseNewImage = action.payload
     },
     setCollageChangeImage: (state, action) => {
-      state.collageChangeImage = action.payload;
-    }
+      state.collageChangeImage = action.payload
+    },
   },
-});
+})
 
 // Action creators are generated for each case reducer function
 export const {
@@ -69,7 +69,7 @@ export const {
   setLastSaved,
   setOrientationChanged,
   setChooseNewImage,
-  setCollageChangeImage
-} = userSlice.actions;
+  setCollageChangeImage,
+} = userSlice.actions
 
-export default userSlice.reducer;
+export default userSlice.reducer

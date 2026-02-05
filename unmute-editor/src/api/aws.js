@@ -1,60 +1,118 @@
-import AWS from 'aws-sdk';
+import axios from 'axios'
+import { S3_BUCKET, S3_REGION } from '../app/const'
 
-import { AWS_KEY_ID, AWS_KEY_SECRET, S3_BUCKET, S3_REGION } from '../app/const';
-
-import { clamp } from 'lodash';
-import slugify from 'slugify';
-
-AWS.config.update({
-  accessKeyId: AWS_KEY_ID,
-  secretAccessKey: AWS_KEY_SECRET,
-});
-
-const s3 = new AWS.S3({
-  params: { Bucket: S3_BUCKET },
-  region: S3_REGION,
-});
+import { clamp } from 'lodash'
+const SIGNED_URL_LAMBDA_URL =
+  'https://jgicaiizhje65xwo6kem5ifuei0rbgjj.lambda-url.eu-north-1.on.aws'
 
 export const getFileUrl = (path) =>
-  `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${path}`;
+  `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${path}`
 
 export const uploadFile = async ({ file, path }) => {
-  const progressBar = document.querySelector('#progress-bar');
+  const progressBar = document.querySelector('#globalprogress')
 
-  progressBar.style.display = 'block';
-  progressBar.style.width = '5%';
+  if (progressBar) {
+    progressBar.style.display = 'block'
+  }
 
-  const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
-  const fileKey = `${path}/${sanitizedFileName}`;
+  const contentType = file?.type || 'application/octet-stream'
 
-  let contentType = file.type;
-
-  return s3
-    .putObject({
-      Bucket: S3_BUCKET,
-      Key: fileKey,
-      Body: file,
-      ContentType: contentType,
+  try {
+    const signedUrlResponse = await fetchSignedUrl({
+      storageType: 's3',
+      contentType,
+      filename: file?.name,
     })
-    .on('httpUploadProgress', (evt) => {
-      const progress = clamp((evt.loaded * 100) / evt.total, 5, 100);
 
-      if (progress === 100) {
-        progressBar.style.display = 'none';
-      }
+    await axios.put(signedUrlResponse.signedUrl, file, {
+      headers: {
+        'x-amz-acl': 'public-read',
+        'Content-Type': contentType,
+      },
+      onUploadProgress: (evt) => {
+        if (!evt.total) {
+          return
+        }
 
-      progressBar.style.width = `${progress}%`;
+        const progress = clamp((evt.loaded * 100) / evt.total, 5, 100)
+
+        if (progress === 100 && progressBar) {
+          progressBar.style.display = 'none'
+        }
+      },
     })
-    .promise()
-    .then(() => {
-      return fileKey;
-    })
-    .catch((error) => {
-      console.error('Upload failed:', error);
-      throw error;
-    });
-};
+
+    return signedUrlResponse.key
+  } catch (error) {
+    console.error('Upload failed:', error)
+    throw error
+  } finally {
+    if (progressBar) {
+      progressBar.style.display = 'none'
+    }
+  }
+}
 
 export const deleteFile = async ({ path }) => {
-  await s3.deleteObject({ Bucket: S3_BUCKET, Key: path }).promise();
-};
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+}
+
+const fetchSignedUrl = async ({ storageType, contentType, filename }) => {
+  const url = new URL(SIGNED_URL_LAMBDA_URL)
+  const params = new URLSearchParams({
+    storageType,
+    contentType,
+  })
+
+  if (filename) {
+    params.set('filename', filename)
+  }
+
+  url.search = params.toString()
+
+  const response = await axios.get(url.toString())
+  const data = unwrapSignedUrlResponse(response.data)
+
+  if (!data?.signedUrl) {
+    throw new Error(data?.error || 'Signed URL missing from response.')
+  }
+
+  return data
+}
+
+const unwrapSignedUrlResponse = (payload) => {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Signed URL response is empty.')
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(payload, 'body')) {
+    return payload
+  }
+
+  const parsedBody =
+    typeof payload.body === 'string'
+      ? safeJsonParse(payload.body)
+      : payload.body
+
+  if (!parsedBody) {
+    throw new Error('Unable to parse signed URL response body.')
+  }
+
+  if (typeof payload.statusCode === 'number' && payload.statusCode >= 400) {
+    const error = new Error(
+      parsedBody.error || `Signed URL request failed (${payload.statusCode}).`
+    )
+    error.statusCode = payload.statusCode
+    throw error
+  }
+
+  return parsedBody
+}
+
+const safeJsonParse = (value) => {
+  try {
+    return JSON.parse(value)
+  } catch (error) {
+    return null
+  }
+}

@@ -1,32 +1,32 @@
-import { React, useRef } from "react";
-import { Link, useLocation, useParams } from "wouter";
+import { React, useRef } from 'react'
+import { useLocation, useParams } from 'wouter'
 
-import { updateUnmute, updateUnmutes } from "../../features/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { updateUnmute, updateUnmutes } from '../../features/user/userSlice'
+import { useDispatch } from 'react-redux'
 
-import { updateUnmuteInCart } from "../../api/cart";
+import { updateUnmuteInCart } from '../../api/cart'
 
-import { useActiveUnmute } from "../../api/useUnmutes";
+import { useActiveUnmute } from '../../api/useUnmutes'
 
-import TextareaAutosize from "react-textarea-autosize";
-import { AudioIllustrations } from "../../components/AudioIllustrations";
+import TextareaAutosize from 'react-textarea-autosize'
+import { AudioIllustrations } from '../../components/AudioIllustrations'
 
 export const InspirationPage = () => {
-  const inspirationRef = useRef();
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
-  const { activeUnmute } = useActiveUnmute();
-  const { id } = useParams();
+  const inspirationRef = useRef()
+  const dispatch = useDispatch()
+  const [_location, navigate] = useLocation()
+  const { activeUnmute } = useActiveUnmute()
+  const { id } = useParams()
 
   const handleClick = () => {
-    const inspiration = inspirationRef.current.value;
+    const inspiration = inspirationRef.current.value
 
     dispatch(
       updateUnmute({
         ...activeUnmute,
         properties: { ...activeUnmute.properties, _inspiration: inspiration },
       })
-    );
+    )
 
     updateUnmuteInCart({
       key: activeUnmute.key,
@@ -35,10 +35,10 @@ export const InspirationPage = () => {
         _inspiration: inspiration,
       },
     }).then(({ data }) => {
-      dispatch(updateUnmutes(data.items));
-      navigate(`/start-recording/${id}`);
-    });
-  };
+      dispatch(updateUnmutes(data.items))
+      navigate(`/start-recording/${id}`)
+    })
+  }
 
   return (
     <div className="flex flex-col items-center py-20">
@@ -48,7 +48,7 @@ export const InspirationPage = () => {
         </h1>
         <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
           Skriv ideer eller et manuskript til,
-          <br/>
+          <br />
           hvad du gerne vil sige.
         </h2>
       </div>
@@ -79,10 +79,10 @@ export const InspirationPage = () => {
         </button>
       </div>
 
-      <div>
+      <div className="w-10/12">
         <div className="mx-auto flex flex-col items-center">
           <h4 className="font-serif text-muld-1000 text-[32px] mt-16">
-            Tips
+            VIGTIGE TIPS
           </h4>
         </div>
 
@@ -91,5 +91,5 @@ export const InspirationPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

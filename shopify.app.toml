@@ -1,14 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "0afa516afa016eee9beff16fbfb1efc8"
-name = "unmute-editor"
-handle = "unmute-editor-3"
+client_id = "152ad4ed3578c6f1d516e8e84bc76178"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
+name = "Unmute Editor"
+handle = "unmute-editor-app"
 
 [build]
-dev_store_url = "unmute-greetings.myshopify.com"
-include_config_on_deploy = true
+dev_store_url = "unmuteframes.myshopify.com"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes

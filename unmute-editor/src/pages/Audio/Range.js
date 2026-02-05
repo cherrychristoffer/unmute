@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from 'react'
 
 export const Range = ({
   min = 0,
@@ -37,7 +37,7 @@ export const Range = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Range;
+export default Range

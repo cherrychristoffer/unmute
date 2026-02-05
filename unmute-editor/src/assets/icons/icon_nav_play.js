@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react'
 
-const NavPlayIcon = ({ color, size = 33, className = "" }) => {
+const NavPlayIcon = ({ color, size = 33, className = '' }) => {
   return (
     <div className={className}>
       <svg
@@ -32,7 +32,7 @@ const NavPlayIcon = ({ color, size = 33, className = "" }) => {
         </defs>
       </svg>
     </div>
-  );
-};
+  )
+}
 
-export { NavPlayIcon };
+export { NavPlayIcon }

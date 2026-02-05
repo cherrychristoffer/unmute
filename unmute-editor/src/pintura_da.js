@@ -123,7 +123,6 @@ export default {
   shapeTitleTextAlignCenter: 'Centreret tekst',
   shapeTitleTextAlignRight: 'Højrejusteret tekst',
 
-
   // Crop
   cropLabel: 'Beskær',
   cropLabelButtonRecenter: 'Centrer igen',
@@ -151,4 +150,4 @@ export default {
   finetuneLabelGamma: 'Gamma',
   finetuneLabelClarity: 'Klarhed',
   finetuneLabelVignette: 'Vignet',
-};
+}

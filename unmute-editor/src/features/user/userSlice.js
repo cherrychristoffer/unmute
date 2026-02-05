@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
-import { uniqBy } from "lodash";
+import { uniqBy } from 'lodash'
 
 /*
 Example `unmute` state:
@@ -67,34 +67,35 @@ Example `unmute` state:
 */
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: {
     unmutes: [],
     isLoadingUnmutes: true,
     activeUnmuteIndex: 0,
     audioBlob: [],
     blankFrames: 1,
+    updatingUnmuteIndex: null,
   },
   reducers: {
     setIsLoadingUnmutes: (state, action) => {
-      state.isLoadingUnmutes = action.payload;
+      state.isLoadingUnmutes = action.payload
     },
     addBlankFrame: (state, action) => {
-      state.blankFrames++;
+      state.blankFrames++
     },
     removeBlankFrame: (state, action) => {
-      state.blankFrames--;
+      state.blankFrames--
     },
     addUnmute: (state, action) => {
       const newUnmutes = uniqBy(
         [...state.unmutes, action.payload],
-        "properties._uuid"
-      );
+        'properties._uuid'
+      )
 
       return {
         ...state,
         unmutes: newUnmutes,
-      };
+      }
     },
 
     replaceUnmute: (state, action) => {
@@ -102,35 +103,50 @@ export const userSlice = createSlice({
     },
 
     updateAllUnmutes: (state, action) => {
-      state.unmutes = action.payload;
+      state.unmutes = action.payload
     },
 
     deleteUnmute: (state, action) => {
       const filteredUnmutes = state.unmutes.filter(
         (unmute) => unmute.key !== action.payload
-      );
+      )
       return {
         ...state,
         unmutes: filteredUnmutes,
-      };
+      }
     },
 
     updateUnmute: (state, action) => {
       const unmutes = state.unmutes.map((unmute) => {
         if (unmute.properties._uuid !== action.payload.properties._uuid) {
-          return unmute;
+          return unmute
         }
 
         return {
           ...unmute,
           ...action.payload,
-        };
-      });
+        }
+      })
 
       return {
         ...state,
         unmutes,
-      };
+      }
+    },
+
+    updateUnmuteKeys: (state, action) => {
+      return {
+        ...state,
+        unmutes: state.unmutes.map((item) => {
+          const updatedUnmute = action.payload.find(
+            (state) => state.properties._uuid === item.properties._uuid
+          )
+          if (updatedUnmute) {
+            return updatedUnmute
+          }
+          return item
+        }),
+      }
     },
 
     updateUnmutes: (state, action) => {
@@ -139,26 +155,26 @@ export const userSlice = createSlice({
         unmutes: state.unmutes.map((item) => {
           const updatedUnmute = action.payload.find(
             (state) => state.properties._uuid === item.properties._uuid
-          );
+          )
           if (updatedUnmute) {
-            return updatedUnmute;
+            return updatedUnmute
           }
-          return item;
+          return item
         }),
-      };
+      }
     },
 
     setActiveUnmuteIndex: (state, action) => {
       return {
         ...state,
         activeUnmuteIndex: action.payload,
-      };
+      }
     },
     setAudioBlob: (state, action) => {
       return {
         ...state,
         audioBlob: action.payload,
-      };
+      }
     },
     addAudioUnmute: (state, action) => {
       return {
@@ -166,19 +182,25 @@ export const userSlice = createSlice({
         unmutes: state.unmutes.map((item) => {
           const updatedUnmute = action.payload.find(
             (state) => state.properties._uuid === item.properties._uuid
-          );
+          )
 
           if (updatedUnmute) {
-            const dataUnmute = updateUnmute.properties.audios;
-            return updatedUnmute;
+            const dataUnmute = updateUnmute.properties.audios
+            return updatedUnmute
           } else {
-            return item;
+            return item
           }
         }),
-      };
+      }
+    },
+    setUpdatingUnmuteIndex: (state, action) => {
+      return {
+        ...state,
+        updatingUnmuteIndex: action.payload,
+      }
     },
   },
-});
+})
 
 // Action creators are generated for each case reducer function
 export const {
@@ -195,6 +217,7 @@ export const {
   addAudioUnmute,
   setIsLoadingUnmutes,
   replaceUnmute,
-} = userSlice.actions;
+  setUpdatingUnmuteIndex,
+} = userSlice.actions
 
-export default userSlice.reducer;
+export default userSlice.reducer

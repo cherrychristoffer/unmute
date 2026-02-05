@@ -13,6 +13,7 @@ export default [
         "error",
         {
           allowSeparatedGroups: true,
+          memberSyntaxSortOrder: false,
         },
       ],
       "no-unused-vars": [

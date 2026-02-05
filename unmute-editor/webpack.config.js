@@ -1,27 +1,27 @@
-const TerserPlugin = require("terser-webpack-plugin");
-const path = require("path");
+const TerserPlugin = require('terser-webpack-plugin')
+const path = require('path')
 
 module.exports = {
-  mode: "production",
-  entry: "./src/index.js",
+  mode: 'production',
+  entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, "../extensions/unmute-editor/assets"),
-    filename: "unmute-editor.js",
+    path: path.resolve(__dirname, '../extensions/unmute-editor/assets'),
+    filename: 'unmute-editor.js',
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        loader: "file-loader",
+        loader: 'file-loader',
       },
     ],
   },
@@ -32,4 +32,4 @@ module.exports = {
       }),
     ],
   },
-};
+}

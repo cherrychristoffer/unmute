@@ -1,9 +1,9 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore } from '@reduxjs/toolkit'
 
-import userReducer from "../features/user/userSlice";
-import imageSlice from "../features/image/imageSlice";
-import inspirationSlice from "../features/inspiration/inspirationSlice";
-import replaceSlice from "../features/replace/replaceSlice";
+import userReducer from '../features/user/userSlice'
+import imageSlice from '../features/image/imageSlice'
+import inspirationSlice from '../features/inspiration/inspirationSlice'
+import replaceSlice from '../features/replace/replaceSlice'
 
 export default configureStore({
   reducer: {
@@ -16,4 +16,4 @@ export default configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-});
+})

@@ -1,51 +1,107 @@
-import AWS from 'aws-sdk';
-
-import { SPACES_BUCKET, SPACES_KEY_ID, SPACES_KEY_SECRET, AWS_KEY_ID, AWS_KEY_SECRET, S3_BUCKET, S3_REGION } from '../app/const';
-
-import { clamp } from 'lodash';
-import slugify from 'slugify';
-
-AWS.config.update({
-  accessKeyId: SPACES_KEY_ID,
-  secretAccessKey: SPACES_KEY_SECRET,
-});
-
-const s3 = new AWS.S3({
-  params: { Bucket: SPACES_BUCKET },
-  endpoint: `https://fra1.digitaloceanspaces.com`,
-  region: 'fra1',
-});
+import axios from 'axios'
+import { SPACES_BUCKET } from '../app/const'
+import { convertHeic } from './image'
+const SIGNED_URL_LAMBDA_URL =
+  'https://jgicaiizhje65xwo6kem5ifuei0rbgjj.lambda-url.eu-north-1.on.aws'
 
 export const getFileUrl = (path) =>
-  `https://${SPACES_BUCKET}.fra1.digitaloceanspaces.com/${path}`;
+  `https://${SPACES_BUCKET}.fra1.digitaloceanspaces.com/${path}`
 
 export const uploadFile = async ({ file, path, customName = null }) => {
-  const sanitizedFileName = slugify(file.name, { replacement: '_', lower: false });
-  const fileKey = `${path}/${customName ? customName : sanitizedFileName}`;
+  const contentType = file?.type || 'application/octet-stream'
 
-  let contentType = file.type;
+  try {
+    const signedUrlResponse = await fetchSignedUrl({
+      storageType: 'do',
+      contentType,
+      filename: customName || file?.name,
+    })
 
-  return s3
-    .putObject({
-      Bucket: SPACES_BUCKET,
-      Key: fileKey,
-      Body: file,
-      ContentType: contentType,
-      ACL: 'public-read-write',
+    await axios.put(signedUrlResponse.signedUrl, file, {
+      headers: {
+        'x-amz-acl': 'public-read',
+        'Content-Type': contentType,
+      },
     })
-    .on('httpUploadProgress', (evt) => {
-      //evt.loaded
-    })
-    .promise()
-    .then(() => {
-      return fileKey;
-    })
-    .catch((error) => {
-      console.error('Upload failed:', error);
-      throw error;
-    });
-};
+
+    const lowerCaseFilename = file.name.toLowerCase()
+    const isHEIC = lowerCaseFilename.endsWith('.heic')
+    const isHEIF = lowerCaseFilename.endsWith('.heif')
+    const isHEICorHEIFFile = isHEIC || isHEIF
+
+    if (!isHEICorHEIFFile) {
+      return signedUrlResponse.key
+    }
+
+    let { key } = await convertHeic(signedUrlResponse.key)
+
+    return key
+  } catch (error) {
+    console.error('Upload failed:', error)
+    throw error
+  }
+}
 
 export const deleteFile = async ({ path }) => {
-  await s3.deleteObject({ Bucket: SPACES_BUCKET, Key: path }).promise();
-};
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+}
+
+const fetchSignedUrl = async ({ storageType, contentType, filename }) => {
+  const url = new URL(SIGNED_URL_LAMBDA_URL)
+  const params = new URLSearchParams({
+    storageType,
+    contentType,
+  })
+
+  if (filename) {
+    params.set('filename', filename)
+  }
+
+  url.search = params.toString()
+
+  const response = await axios.get(url.toString())
+  const data = unwrapSignedUrlResponse(response.data)
+
+  if (!data?.signedUrl) {
+    throw new Error(data?.error || 'Signed URL missing from response.')
+  }
+
+  return data
+}
+
+const unwrapSignedUrlResponse = (payload) => {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Signed URL response is empty.')
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(payload, 'body')) {
+    return payload
+  }
+
+  const parsedBody =
+    typeof payload.body === 'string'
+      ? safeJsonParse(payload.body)
+      : payload.body
+
+  if (!parsedBody) {
+    throw new Error('Unable to parse signed URL response body.')
+  }
+
+  if (typeof payload.statusCode === 'number' && payload.statusCode >= 400) {
+    const error = new Error(
+      parsedBody.error || `Signed URL request failed (${payload.statusCode}).`
+    )
+    error.statusCode = payload.statusCode
+    throw error
+  }
+
+  return parsedBody
+}
+
+const safeJsonParse = (value) => {
+  try {
+    return JSON.parse(value)
+  } catch (error) {
+    return null
+  }
+}

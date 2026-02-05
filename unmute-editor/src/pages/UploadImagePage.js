@@ -1,108 +1,125 @@
-import { React, useState } from 'react';
+import { React, useState } from 'react'
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'wouter';
+import { useDispatch } from 'react-redux'
+import { useLocation } from 'wouter'
 
-import { Loader } from '../components/Loader';
+import { Loader } from '../components/Loader'
 
-import { updateUnmuteInCart } from '../api/cart';
-import { updateUnmutes } from '../features/user/userSlice';
-import { useActiveUnmute } from '../api/useUnmutes';
+import { updateUnmuteInCart } from '../api/cart'
+import { updateUnmutes } from '../features/user/userSlice'
+import { useActiveUnmute } from '../api/useUnmutes'
 
-import { getFileUrl, uploadFile } from '../api/spaces';
-import { setOrientationChanged } from '../features/image/imageSlice';
+import { getFileUrl, uploadFile } from '../api/spaces'
+import { setOrientationChanged } from '../features/image/imageSlice'
+import { mergeImages } from '../hooks/mergeImage'
 
 export const UploadImagePage = () => {
-  const dispatch = useDispatch();
-  const [_location, navigate] = useLocation();
-  const { activeUnmute } = useActiveUnmute();
-  const [loading, setLoading] = useState(false);
-  const unmutes = useSelector((state) => state.user.unmutes);
-  const [files, setFiles] = useState([]);
+  const dispatch = useDispatch()
+  const [_location, navigate] = useLocation()
+  const { activeUnmute } = useActiveUnmute()
+  const [loading, setLoading] = useState(false)
 
-  const url = new URL(window.location);
-  const type = url.searchParams.get('type');
+  const url = new URL(window.location)
+  const type = url.searchParams.get('type')
 
   const uploadImage = async (item, file) => {
     try {
-      const uuid = item.properties._uuid;
+      const uuid = item.properties._uuid
       const path = await uploadFile({
         file,
         path: uuid,
-      });
+      })
       // Get the file URL from the path
-      return getFileUrl(path); // Ensure this is returned
+      return getFileUrl(path) // Ensure this is returned
     } catch (err) {
-      console.log(err);
-      return null;
+      console.log(err)
+      return null
     }
-  };
+  }
 
   const updateInCart = async (item, newFileUrls) => {
+    const imageUrls = [...newFileUrls, ...(item.properties._images || [])]
+    let mergeImageUrl = null
+    mergeImageUrl = await mergeImages(
+      item.properties._uuid,
+      imageUrls,
+      item.properties._orientation,
+      item.properties._collage ? item.properties._collage_type : null,
+      item.properties._passepartout
+    )
+
     const cart = await updateUnmuteInCart({
       key: item.key,
       properties: {
         ...item.properties,
-        _images: [...newFileUrls, ...(item.properties._images || [])], // Place new images first
+        _images: imageUrls, // Place new images first
+        _cart_image: mergeImageUrl,
         _image_state: null,
-        _original_images: [...newFileUrls, ...(item.properties._original_images || [])], // Place new original images first
+        _original_images: [
+          ...newFileUrls,
+          ...(item.properties._original_images || []),
+        ], // Place new original images first
       },
-    });
-    dispatch(updateUnmutes(cart.data.items));
-  };
+    })
+    dispatch(updateUnmutes(cart.data.items))
+  }
 
-// Handle single file upload
+  // Handle single file upload
   const handleChange = async (event) => {
-    setLoading(true);
-    const file = event.target.files[0];
+    setLoading(true)
+    const file = event.target.files[0]
 
     try {
       // Upload the image
-      const fileUrl = await uploadImage(activeUnmute, file);
+      const fileUrl = await uploadImage(activeUnmute, file)
 
       if (fileUrl) {
         // Update the cart with the new file URL
-        await updateInCart(activeUnmute, [fileUrl]);
+        await updateInCart(activeUnmute, [fileUrl])
       }
 
-      dispatch(setOrientationChanged(true));
-      setLoading(false);
-      navigate('/orientation');
+      dispatch(setOrientationChanged(true))
+      setLoading(false)
+      navigate('/orientation')
     } catch (err) {
-      console.log(err);
-      setLoading(false);
+      console.log(err)
+      setLoading(false)
     }
-  };
+  }
 
-// Handle multiple file uploads
+  // Handle multiple file uploads
   const handleCollageChange = async (event) => {
-    setLoading(true);
-    const files = Array.from(event.target.files).slice(0, activeUnmute.properties._collage_max_items);
-    const newFileUrls = [];
+    setLoading(true)
+    const files = Array.from(event.target.files).slice(
+      0,
+      activeUnmute.properties._collage_max_items -
+        activeUnmute.properties._images.length
+    )
+    const newFileUrls = []
 
     try {
       // Upload all files concurrently using Promise.all
       const uploadPromises = files.map((file) =>
-        uploadImage(activeUnmute, file),
-      );
-      const fileUrls = await Promise.all(uploadPromises);
+        uploadImage(activeUnmute, file)
+      )
+      const fileUrls = await Promise.all(uploadPromises)
 
       // Filter out any null values in case of errors during upload
-      const validFileUrls = fileUrls.filter((url) => url !== null);
-      newFileUrls.push(...validFileUrls);
+      const validFileUrls = fileUrls.filter((url) => url !== null)
+      newFileUrls.push(...validFileUrls)
 
       // Update the cart once after all files have been uploaded
       if (newFileUrls.length > 0) {
-        await updateInCart(activeUnmute, newFileUrls);
+        await updateInCart(activeUnmute, newFileUrls)
       }
 
-      setLoading(false);
-      navigate('/orientation');
+      setLoading(false)
+      navigate('/orientation')
     } catch (err) {
-      console.log(err);
-      setLoading(false);
+      console.log(err)
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col items-center py-24">
@@ -111,7 +128,7 @@ export const UploadImagePage = () => {
           <h1 className="font-serif text-muld-1000 text-[50px] mb-4">Upload</h1>
           {type !== 'multiple' ? (
             <h2 className="font-serif text-rose-500 text-[17px] text-center leading-tight">
-              Vælg dit yndlings-foto
+              Vælg dit yndlings foto
             </h2>
           ) : (
             <>
@@ -140,7 +157,7 @@ export const UploadImagePage = () => {
                   </label>
                   <input
                     type="file"
-                    accept="image/png, image/jpeg, image/jpg"
+                    accept="image/png, image/jpeg, image/jpg, image/heic, image/webp"
                     className="hidden"
                     id="image"
                     onChange={handleChange}
@@ -158,7 +175,7 @@ export const UploadImagePage = () => {
                     type="file"
                     multiple
                     onChange={handleCollageChange}
-                    accept="image/png, image/jpeg, image/jpg"
+                    accept="image/png, image/jpeg, image/jpg, image/heic, image/webp"
                     className="hidden"
                     id="image"
                   />
@@ -169,5 +186,5 @@ export const UploadImagePage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

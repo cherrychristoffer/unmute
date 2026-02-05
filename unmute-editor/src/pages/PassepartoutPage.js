@@ -2,7 +2,7 @@ import { React, useState } from 'react'
 
 import { CheckIcon } from '../assets/icons/icon_check'
 
-import { updateUnmute, updateUnmutes } from '../features/user/userSlice'
+import { updateUnmute, updateUnmutes, setUpdatingUnmuteIndex } from '../features/user/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { updateUnmuteInCart } from '../api/cart'
@@ -19,13 +19,15 @@ export const PassepartoutPage = () => {
   const dispatch = useDispatch()
   const { activeUnmute } = useActiveUnmute()
   const { disableAllExtions } = useSelector((state) => state.image)
+  const { activeUnmuteIndex } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
 
   const handleClick = async (passepartout) => {
     if (!activeUnmute) return
     if (activeUnmute?.properties?._passepartout === passepartout) return
 
-    setLoading(true)
+    setLoading(true);
+    dispatch(setUpdatingUnmuteIndex(activeUnmuteIndex));
 
     let mergeImageUrl = null
 
@@ -60,11 +62,13 @@ export const PassepartoutPage = () => {
     })
       .then(({ data }) => {
         dispatch(updateUnmutes(data.items))
-        setLoading(false)
       })
       .catch((err) => {
         console.error(err)
+      })
+      .finally(() => {
         setLoading(false)
+        dispatch(setUpdatingUnmuteIndex(null));
       })
   }
 

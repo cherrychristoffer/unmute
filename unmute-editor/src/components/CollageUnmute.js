@@ -14,14 +14,15 @@ import FileUploadCollage from './FileUploadCollage'
 import VButton from './VButton'
 import { cssGrids } from '../app/const'
 import { mergeImages } from '../hooks/mergeImage'
+import { Loader } from './Loader'
 
 const frame_padding = (scale) => {
   return 7 * scale
 }
 
-const CollageUnmute = ({ unmute, onDelete, isActive }) => {
+const CollageUnmute = ({ unmute, onDelete, isActive, index }) => {
   const dispatch = useDispatch()
-
+  const { updatingUnmuteIndex } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
   const [openConfirm, setOpenConfirm] = useState(false)
   const [reorderActive, setReorderActive] = useState(false)
@@ -199,27 +200,35 @@ const CollageUnmute = ({ unmute, onDelete, isActive }) => {
               'relative top-0 z-[2] pointer-events-none'
             )}
           />
-          <div
-            className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[orientation][unmute.properties['_collage_type']].gridTemplateColumns} auto-rows-fr gap-2 bg-white`}
-            style={{
-              padding: `${frame_padding(scale)}px`,
-            }}
-          >
-            {Array.from({ length: maxItems }, (_, index) => (
-              <CollageItem
-                key={index}
-                image={images[index] || null}
-                activeUnmute={unmute}
-                index={index}
-              />
-            ))}
-          </div>
-          <button
-            onClick={() => setOpenConfirm(true)}
-            className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-[20000000]"
-          >
-            <CloseIcon />
-          </button>
+          {updatingUnmuteIndex === index ? (
+            <div className='absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] flex items-center justify-center'>
+              <Loader />
+            </div>
+          ) : (
+            <>
+              <div
+                className={`collage-container absolute top-[17px] left-[17px] w-[calc(100%-34px)] h-[calc(100%-34px)] !m-0 grid ${cssGrids[orientation][unmute.properties['_collage_type']].gridTemplateColumns} auto-rows-fr gap-2 bg-white`}
+                style={{
+                  padding: `${frame_padding(scale)}px`,
+                }}
+              >
+                {Array.from({ length: maxItems }, (_, index) => (
+                  <CollageItem
+                    key={index}
+                    image={images[index] || null}
+                    activeUnmute={unmute}
+                    index={index}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => setOpenConfirm(true)}
+                className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-4 -right-4 z-[20000000]"
+              >
+                <CloseIcon />
+              </button>
+            </>
+          )}
         </div>
       </div>
 

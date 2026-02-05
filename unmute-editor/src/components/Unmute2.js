@@ -2,7 +2,7 @@ import { React, useEffect, useRef, useState } from 'react'
 
 import clsx from 'clsx'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { CloseIcon } from '../assets/icons/icon_close'
 
 import { Loader } from './Loader'
@@ -35,6 +35,7 @@ const Unmute2 = ({
   showChangeImageButton,
 }) => {
   const dispatch = useDispatch()
+  const { updatingUnmuteIndex } = useSelector((state) => state.user)
 
   const [loading, setLoading] = useState(false)
   const [loadingNewImage, setLoadingNewImage] = useState(false)
@@ -221,51 +222,57 @@ const Unmute2 = ({
             className={'hidden'}
           />
 
-          <div
-            className={`absolute inset-[16px]`}
-            style={{
-              padding: `${frame_padding(scale)}px`,
-            }}
-          >
-            <div
-              className={`${images && images.length > 0 ? 'hidden' : 'block'}`}
-            >
-              <FileUpload
-                ref={pondRef}
-                isActive={isActive}
-                uploading={() => {
-                  setLoadingNewImage(true)
-                }}
-                uploaded={() => {
-                  setLoadingNewImage(false)
-                }}
-              />
+          {updatingUnmuteIndex === index ? (
+            <div className="absolute inset-[16px] flex items-center justify-center">
+              <Loader />
             </div>
-            <button
-              onClick={() => setOpenConfirm(true)}
-              className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-10 -right-10 z-[20000000]"
+          ) : (
+            <div
+              className={`absolute inset-[16px]`}
+              style={{
+                padding: `${frame_padding(scale)}px`,
+              }}
             >
-              <CloseIcon />
-            </button>
-            {images && images.length > 0 ? (
-              <>
-                <div className={'w-full h-full'}>
-                  <img
-                    src={enhancedImage || images[0]}
-                    alt="Frame"
-                    className={'w-full h-full object-cover'}
-                  />
-                </div>
-              </>
-            ) : null}
-            {loadingNewImage && (
-              <div className="absolute inset-0 bg-white bg-opacity-90 z-10">
-                <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-                  <Loader size={'w-24 h-24'} />
-                </div>
+              <div
+                className={`${images && images.length > 0 ? 'hidden' : 'block'}`}
+              >
+                <FileUpload
+                  ref={pondRef}
+                  isActive={isActive}
+                  uploading={() => {
+                    setLoadingNewImage(true)
+                  }}
+                  uploaded={() => {
+                    setLoadingNewImage(false)
+                  }}
+                />
               </div>
-            )}
-          </div>
+              <button
+                onClick={() => setOpenConfirm(true)}
+                className="w-[34px] h-[34px] bg-beige-600 hover:bg-beige-700 rounded-full flex items-center justify-center absolute -top-10 -right-10 z-[20000000]"
+              >
+                <CloseIcon />
+              </button>
+              {images && images.length > 0 ? (
+                <>
+                  <div className={'w-full h-full'}>
+                    <img
+                      src={enhancedImage || images[0]}
+                      alt="Frame"
+                      className={'w-full h-full object-cover'}
+                    />
+                  </div>
+                </>
+              ) : null}
+              {loadingNewImage && (
+                <div className="absolute inset-0 bg-white bg-opacity-90 z-10">
+                  <div className="flex items-center justify-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
+                    <Loader size={'w-24 h-24'} />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

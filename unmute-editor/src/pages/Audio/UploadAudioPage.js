@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useParams } from 'wouter'
-import AWS from 'aws-sdk'
 import slugify from 'slugify'
 import { v4 as uuid } from 'uuid'
 import getBlobDuration from 'get-blob-duration'
@@ -11,22 +10,6 @@ import { updateUnmuteInCart } from '../../api/cart'
 import { updateUnmutes } from '../../features/user/userSlice'
 import { useActiveUnmute } from '../../api/useUnmutes'
 import { Loader } from '../../components/Loader'
-import {
-  AWS_KEY_ID,
-  AWS_KEY_SECRET,
-  S3_BUCKET,
-  S3_REGION,
-} from '../../app/const'
-
-AWS.config.update({
-  accessKeyId: AWS_KEY_ID,
-  secretAccessKey: AWS_KEY_SECRET,
-})
-
-const s3 = new AWS.S3({
-  params: { Bucket: S3_BUCKET },
-  region: S3_REGION,
-})
 
 export const UploadAudioPage = () => {
   // const [progress, setProgress] = useState(0);
@@ -35,26 +18,6 @@ export const UploadAudioPage = () => {
   const dispatch = useDispatch()
   const { id } = useParams()
 
-  const uploadFileToS3 = (file, path, sanitizedFileName) => {
-    const fileKey = `${path}/${sanitizedFileName}`
-
-    let contentType = file.type
-
-    return s3
-      .putObject({
-        Bucket: S3_BUCKET,
-        Key: fileKey,
-        Body: file,
-        ContentType: contentType,
-      })
-      .on('httpUploadProgress', (evt) => {
-        const progress = Math.round((evt.loaded * 100) / evt.total)
-        // setProgress(progress);
-        if (progress === 100) {
-        }
-      })
-      .promise()
-  }
   function convertToTimeFormat(seconds) {
     const roundedSeconds = Math.floor(seconds)
 
@@ -115,15 +78,8 @@ export const UploadAudioPage = () => {
 
     try {
       setLoading(true)
-      const s3Path = 'videos'
-      const sanitizedFileName = slugify(`${Date.now()}_${file.name}`, {
-        replacement: '_',
-        lower: false,
-      })
 
-      await uploadFileToS3(file, s3Path, sanitizedFileName)
-
-      const videoKey = `${s3Path}/${sanitizedFileName}`
+      const videoKey = await uploadFile({ file, path: id })
 
       const audio = await convertVideoToAudio(videoKey)
       const duration = await getBlobDuration(audio)
